@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'hotel.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hotel',
+        'NAME': 'hotel_m',
         'USER': 'root',
         'PASSWORD': 'sena202x',
         'HOST': 'localhost',
