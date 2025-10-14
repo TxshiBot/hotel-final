@@ -4,3 +4,7 @@ from django.db import connection
 def Dashboard(request):
     return render(request, 'dashboard.html')
 
+
+def ListarHabitaciones(request):
+    return render(request, 'habitaciones/listarhabitaciones.html')
+

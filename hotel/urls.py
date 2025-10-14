@@ -17,10 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from hotel.views import *
+# ---- DASBOARD ---- #
+from hotel.views import Dashboard
+
+# ---- HABITACIONES ---- #
+from hotel.views import ListarHabitaciones
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard', Dashboard, name='dashboard'),
+    path('listahabitaciones', ListarHabitaciones, name='habitaciones')
 ]
