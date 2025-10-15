@@ -8,3 +8,6 @@ def Dashboard(request):
 def ListarHabitaciones(request):
     return render(request, 'habitaciones/listarhabitaciones.html')
 
+
+def RegistroHabitaciones(request):
+    return render(request, 'habitaciones/registrarhabitaciones.html')

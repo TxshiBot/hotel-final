@@ -689,16 +689,31 @@
     .room-card {
         animation: fadeInUp 0.3s ease forwards;
     }
+
+    .room-floor {
+        font-size: 0.75rem;
+        color: var(--medium-gray);
+        background: var(--light-gray);
+        padding: 4px 10px;
+        border-radius: 12px;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    body.dark-mode .room-floor {
+        background: var(--dark-bg-secondary);
+        color: var(--dark-text-secondary);
+    }
+
 </style>
 
 <body>
-
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
         <div class="top-bar">
             <h1><i class="fas fa-door-open"></i> Vista General de Habitaciones</h1>
-            
+
             <!-- Search and Filters -->
             <div class="controls-bar">
                 <div class="search-bar">
@@ -726,14 +741,15 @@
 
         <!-- Rooms Grid -->
         <div class="rooms-grid" id="roomsGrid">
-            <!-- EJEMPLO DE CARD - Aquí irá tu FOR de Django -->
-            <!-- 
+            <!-- EJEMPLO DE CARD CON DJANGO -->
+            <!--
             {% for habitacion in habitaciones %}
             <div class="room-card {{ habitacion.estado }}" data-status="{{ habitacion.estado }}">
                 <div class="room-header">
                     <div class="room-number">{{ habitacion.numero }}</div>
                     <i class="fas fa-bed room-icon"></i>
                 </div>
+                <div class="room-floor"><i class="fas fa-layer-group"></i> Piso {{ habitacion.piso }}</div>
                 <div class="room-type">{{ habitacion.tipo }}</div>
                 <div class="room-status">
                     <span class="status-dot"></span>
@@ -744,12 +760,13 @@
             {% endfor %}
             -->
 
-            <!-- EJEMPLO ESTÁTICO (borra esto cuando uses el FOR) -->
+            <!-- EJEMPLOS ESTÁTICOS -->
             <div class="room-card available" data-status="available">
                 <div class="room-header">
                     <div class="room-number">203</div>
                     <i class="fas fa-bed room-icon"></i>
                 </div>
+                <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 2</div>
                 <div class="room-type">Sencilla</div>
                 <div class="room-status">
                     <span class="status-dot"></span>
@@ -763,6 +780,7 @@
                     <div class="room-number">210</div>
                     <i class="fas fa-user-check room-icon"></i>
                 </div>
+                <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 2</div>
                 <div class="room-type">Doble</div>
                 <div class="room-status">
                     <span class="status-dot"></span>
@@ -776,6 +794,7 @@
                     <div class="room-number">207</div>
                     <i class="fas fa-broom room-icon"></i>
                 </div>
+                <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 2</div>
                 <div class="room-type">Sencilla</div>
                 <div class="room-status">
                     <span class="status-dot"></span>
@@ -789,6 +808,7 @@
                     <div class="room-number">105</div>
                     <i class="fas fa-tools room-icon"></i>
                 </div>
+                <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 1</div>
                 <div class="room-type">Suite</div>
                 <div class="room-status">
                     <span class="status-dot"></span>
