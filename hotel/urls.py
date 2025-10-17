@@ -25,7 +25,7 @@ from hotel.views import ListarHabitaciones
 from hotel.views import RegistroHabitaciones
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dashboard', Dashboard, name='dashboard'),
+    path('', Dashboard, name='dashboard'),
     path('listahabitaciones', ListarHabitaciones, name='habitaciones'),
     path('registrohabitaciones', RegistroHabitaciones, name='registrohabitaciones' ),
 ]

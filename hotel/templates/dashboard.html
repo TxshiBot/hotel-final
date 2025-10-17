@@ -2,7 +2,7 @@
 {% include 'inc/header.html' %}
 
 <style>
-    /* Estilos específicos del Dashboard */
+    /* Top Bar */
     .top-bar {
         background: var(--white);
         padding: 20px 25px;
@@ -304,6 +304,10 @@
 <!-- Top Bar -->
 <div class="top-bar">
     <h1><i class="fas fa-chart-pie"></i> Panel de Control</h1>
+    <div class="top-bar-actions">
+        <button class="top-bar-btn"><i class="fas fa-bell"></i> Notificaciones</button>
+        <button class="top-bar-btn"><i class="fas fa-user"></i> Perfil</button>
+    </div>
 </div>
 
 <!-- Stats Grid -->
@@ -411,3 +415,55 @@
 <div class="chart-card" style="margin-top: 20px;">
     <h3><i class="fas fa-ring"></i> Ocupación en Tiempo Real</h3>
     <div class="progress-rings">
+        <div class="progress-ring">
+            <svg width="130" height="130">
+                <circle cx="65" cy="65" r="55" fill="none" stroke="#DEE2E6" stroke-width="12"></circle>
+                <circle class="progress-ring-circle" cx="65" cy="65" r="55" fill="none"
+                        stroke="#4A90A4" stroke-width="12"
+                        stroke-dasharray="345" stroke-dashoffset="169"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                <div class="percentage">51%</div>
+                <div class="label">Ocupación</div>
+            </div>
+        </div>
+        <div class="progress-ring">
+            <svg width="130" height="130">
+                <circle cx="65" cy="65" r="55" fill="none" stroke="#DEE2E6" stroke-width="12"></circle>
+                <circle class="progress-ring-circle" cx="65" cy="65" r="55" fill="none"
+                        stroke="#7FB3BE" stroke-width="12"
+                        stroke-dasharray="345" stroke-dashoffset="255"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                <div class="percentage">26%</div>
+                <div class="label">Disponibles</div>
+            </div>
+        </div>
+        <div class="progress-ring">
+            <svg width="130" height="130">
+                <circle cx="65" cy="65" r="55" fill="none" stroke="#DEE2E6" stroke-width="12"></circle>
+                <circle class="progress-ring-circle" cx="65" cy="65" r="55" fill="none"
+                        stroke="#B0D4DA" stroke-width="12"
+                        stroke-dasharray="345" stroke-dashoffset="286"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                <div class="percentage">17%</div>
+                <div class="label">Reservadas</div>
+            </div>
+        </div>
+        <div class="progress-ring">
+            <svg width="130" height="130">
+                <circle cx="65" cy="65" r="55" fill="none" stroke="#DEE2E6" stroke-width="12"></circle>
+                <circle class="progress-ring-circle" cx="65" cy="65" r="55" fill="none"
+                        stroke="#6C757D" stroke-width="12"
+                        stroke-dasharray="345" stroke-dashoffset="324"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                <div class="percentage">6%</div>
+                <div class="label">Mantenimiento</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'inc/footer.html'%}

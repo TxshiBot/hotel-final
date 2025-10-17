@@ -1,5 +1,122 @@
 {% load static %}
 
+</div> <!-- Cierra main-content del header.html -->
+
+    <!-- JavaScript Libraries -->
     <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+
+    <!-- JavaScript Global - Funciones compartidas por todas las páginas -->
+    <script>
+        // ============================================
+        // FUNCIÓN: Alternar Tema Oscuro/Claro
+        // ============================================
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+
+            // Guardar la preferencia en localStorage
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // ============================================
+        // FUNCIÓN: Cambiar Layout de Navegación
+        // ============================================
+        function toggleLayout() {
+            document.body.classList.toggle('layout-top');
+
+            const btn = document.querySelector('.layout-toggle i');
+            if (btn) {
+                if (document.body.classList.contains('layout-top')) {
+                    btn.className = 'fas fa-bars';
+                } else {
+                    btn.className = 'fas fa-exchange-alt';
+                }
+            }
+
+            // Guardar preferencia de layout
+            const isTopLayout = document.body.classList.contains('layout-top');
+            localStorage.setItem('layout', isTopLayout ? 'top' : 'sidebar');
+        }
+
+        // ============================================
+        // CARGAR PREFERENCIAS AL INICIAR LA PÁGINA
+        // ============================================
+        window.addEventListener('DOMContentLoaded', () => {
+            // Cargar tema guardado
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // Cargar layout guardado
+            const savedLayout = localStorage.getItem('layout');
+            if (savedLayout === 'top') {
+                document.body.classList.add('layout-top');
+                const btn = document.querySelector('.layout-toggle i');
+                if (btn) {
+                    btn.className = 'fas fa-bars';
+                }
+            }
+        });
+
+        // ============================================
+        // FUNCIONALIDAD DE FILTROS (Solo en habitaciones)
+        // ============================================
+        if (document.querySelector('.filter-btn')) {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const roomCards = document.querySelectorAll('.room-card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover clase active de todos los botones
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // Agregar clase active al botón clickeado
+                    this.classList.add('active');
+
+                    // Obtener el filtro seleccionado
+                    const filter = this.getAttribute('data-filter');
+
+                    // Filtrar las habitaciones según el estado
+                    roomCards.forEach(card => {
+                        if (filter === 'all') {
+                            card.style.display = 'block';
+                        } else {
+                            if (card.getAttribute('data-status') === filter) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        // ============================================
+        // FUNCIONALIDAD DE BÚSQUEDA (Solo en habitaciones)
+        // ============================================
+        const searchInput = document.getElementById('searchInput');
+
+        if (searchInput) {
+            const roomCards = document.querySelectorAll('.room-card');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                roomCards.forEach(card => {
+                    const roomNumber = card.querySelector('.room-number')?.textContent.toLowerCase() || '';
+                    const roomType = card.querySelector('.room-type')?.textContent.toLowerCase() || '';
+
+                    // Mostrar la habitación si coincide con la búsqueda
+                    if (roomNumber.includes(searchTerm) || roomType.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 </html>
