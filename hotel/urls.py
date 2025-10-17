@@ -17,15 +17,27 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+<<<<<<< Updated upstream
 # ---- DASBOARD ---- #
 from hotel.views import Dashboard
+=======
+from hotel.views import Dashboard
+
+from hotel.views import ListarHabitaciones
+
+>>>>>>> Stashed changes
 
 # ---- HABITACIONES ---- #
 from hotel.views import ListarHabitaciones
 from hotel.views import RegistroHabitaciones
 urlpatterns = [
     path('admin/', admin.site.urls),
+<<<<<<< Updated upstream
     path('', Dashboard, name='dashboard'),
     path('listahabitaciones', ListarHabitaciones, name='habitaciones'),
     path('registrohabitaciones', RegistroHabitaciones, name='registrohabitaciones' ),
+=======
+    path('dashboard', Dashboard, name='dashboard'),
+    path('habitaciones', ListarHabitaciones, name='habitaciones'),
+>>>>>>> Stashed changes
 ]

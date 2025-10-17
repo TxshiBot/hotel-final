@@ -6,8 +6,12 @@ def Dashboard(request):
 
 
 def ListarHabitaciones(request):
+<<<<<<< Updated upstream
     return render(request, 'habitaciones/listarhabitaciones.html')
 
 
 def RegistroHabitaciones(request):
     return render(request, 'habitaciones/registrarhabitaciones.html')
+=======
+    return render(request, 'habitaciones/listarhabitaciones.html')
+>>>>>>> Stashed changes
