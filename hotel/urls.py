@@ -23,9 +23,15 @@ from hotel.views import Dashboard
 # ---- HABITACIONES ---- #
 from hotel.views import ListarHabitaciones
 from hotel.views import RegistroHabitaciones
+
+# ---- RESERVAS ---- # 
+from hotel.views import Reservar
+from hotel.views import ListarReservas
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Dashboard, name='dashboard'),
     path('listahabitaciones', ListarHabitaciones, name='habitaciones'),
     path('registrohabitaciones', RegistroHabitaciones, name='registrohabitaciones' ),
+    path('reservar', Reservar, name='reservar' ),
+    path('listarreservas', ListarReservas, name='reservas' ),
 ]

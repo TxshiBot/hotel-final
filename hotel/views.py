@@ -11,3 +11,11 @@ def ListarHabitaciones(request):
 
 def RegistroHabitaciones(request):
     return render(request, 'habitaciones/registrarhabitaciones.html')
+
+
+def Reservar(request):
+    return render(request, 'reservas/reservar.html')
+
+
+def ListarReservas(request):
+    return render(request, 'reservas/reservas.html')

@@ -45,12 +45,39 @@ class Habitaciones(models.Model):
 
 class Reservas(models.Model):
     id = models.AutoField(primary_key=True)
-    check_in = models.DateTimeField(null=False)
-    check_out = models.DateTimeField(null=False)
+    nombre = models.CharField(null=False, max_length=50)
+    apellido = models.CharField(null=False, max_length=50)
+    ciudad = models.CharField(null=False, max_length=50)
+    telefono_domicilio = models.IntegerField(null=False)
+    email = models.CharField(null=False, max_length=50)
+    domicilio = models.CharField(null=False, max_length=255)
+    departamento = models.CharField(null=False, max_length=50)
+    telefono_oficina = models.CharField(null=False, max_length=50)
+    formadepago = models.CharField(null=False, max_length=50)
+    check_in = models.DateTimeField(null=False, max_length=50)
+    check_out = models.DateTimeField(null=False, max_length=50)
     companion = models.IntegerField(null=False)
-    observaciones = models.TextField(null=False)
-    cliente_id = models.ForeignKey(Registro_Huespedes, on_delete=models.CASCADE)
-    habitacion_id = models.ForeignKey(Habitaciones, on_delete=models.CASCADE)
+    
+    # OPCIONAL: COMPAÑÍA #
+    nombre_compania = models.CharField(null=True, max_length=50)
+    compania_domicilio = models.CharField(null=True, max_length=50)
+    compania_ciudad = models.CharField(null=True, max_length=50)
+    compania_email = models.CharField(null=True, max_length=50)
+    
+    # HUESPEDES #
+    hospedaje_deseado = models.CharField(null=True, max_length=50)
+    cotizado = models.IntegerField(null=True)
+    solicitado = models.IntegerField(null=True)
+    num_hues= models.IntegerField(null=True)
+    num_habt = models.IntegerField(null=True)
+    
+    # DATOS EMPLEADO # 
+    empleados = models.CharField(null=False, max_length=50)
+    telefono = models.IntegerField(null=False)
+    
+    # EXTRA # 
+    solicitud = models.CharField(null=False, max_length=50)
+    observaciones = models.CharField(null=False, max_length=50)
 
     class Meta:
         db_table = 'reserva'
