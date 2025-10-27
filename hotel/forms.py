@@ -17,7 +17,7 @@ class ReservarForm(forms.ModelForm):
             'check_in', 'check_out', 'companion', 'formadepago',
             # Nota: Los campos 'num_hues' y 'num_habt' son NULLABLE en el modelo, 
             # pero están en tu lista de "obligatorios". Los movemos al final por ser NULLABLE.
-            'empleados', 'telefono', 'solicitud', 'observaciones',
+            'empleados', 'telefono',
             
             # Campos Opcionales/NULLABLE (ajustados a los nombres EXACTOS del modelo)
             'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
@@ -37,7 +37,7 @@ class ReservarForm(forms.ModelForm):
             'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
-            'compania_email',
+            'compania_email', 'solicitud', 'observaciones'
         )
         
         # Adicionalmente, los campos marcados como obligatorios en tu formulario original

@@ -15,15 +15,12 @@ class Registro_Huespedes(models.Model):
         db_table = 'registro_huespedes'
 
 
-class Habitaciones(models.Model):
+class Categorias(models.Model):
     id = models.AutoField(primary_key=True)
-    estado = models.CharField(max_length=20, null=False)
-    tipo = models.CharField(max_length=20, null=False)
-    precio = models.IntegerField(null=False)
-    piso = models.IntegerField(null=False, default=1)
-    
+    tipo_hab = models.CharField(max_length=100, null=False)
+
     class Meta:
-        db_table = 'habitaciones'
+        db_table = 'categorias'
 
 
 class Reservas(models.Model):
@@ -32,7 +29,7 @@ class Reservas(models.Model):
     apellido = models.CharField(null=False, max_length=50)
     ciudad = models.CharField(null=False, max_length=50)
     identificacion = models.IntegerField(blank=True, null=False, default=0)
-    telefono_domicilio = models.IntegerField(null=False)
+    telefono_domicilio = models.CharField(null=False, max_length=10, blank=True)
     email = models.CharField(null=False, max_length=50)
     domicilio = models.CharField(null=False, max_length=255)
     departamento = models.CharField(null=False, max_length=50)
@@ -57,11 +54,24 @@ class Reservas(models.Model):
     
     # DATOS EMPLEADO # 
     empleados = models.CharField(null=False, max_length=50)
-    telefono = models.IntegerField(null=False)
+    telefono = models.CharField(null=False, max_length=10, blank=True)
     
     # EXTRA # 
-    solicitud = models.CharField(null=False, max_length=50)
-    observaciones = models.CharField(null=False, max_length=50)
+    solicitud = models.CharField(null=True, max_length=50)
+    observaciones = models.CharField(null=True, max_length=50)
+    confirmado = models.CharField(null=True, max_length=50)
 
     class Meta:
         db_table = 'reserva'
+
+
+class Habitaciones(models.Model):
+    id = models.AutoField(primary_key=True)
+    estado = models.CharField(max_length=20, null=False)
+    tipo = models.ForeignKey(Categorias, on_delete=models.CASCADE, null=False, blank=True)
+    precio = models.IntegerField(null=False)
+    piso = models.IntegerField(null=False, default=1)
+    reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE, null=False, blank=True)
+
+    class Meta:
+        db_table = 'habitaciones'
