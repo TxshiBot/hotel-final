@@ -1,16 +1,5 @@
 from django.db import models
 
-
-class Hab_Categorias(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100, null=False)
-    descripcion = models.CharField(max_length=255, null=False)
-    vistas = models.CharField(max_length=50, null=False)
-
-    class Meta:
-        db_table = 'hab_categorias'
-
-
 class Registro_Huespedes(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, null=False)
@@ -27,18 +16,12 @@ class Registro_Huespedes(models.Model):
 
 
 class Habitaciones(models.Model):
-    ESTADO_CHOICES = [
-        ('A', 'A'),
-        ('B', 'B'),
-        ('C', 'C'),
-    ]
-
     id = models.AutoField(primary_key=True)
-    estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, null=False)
+    estado = models.CharField(max_length=20, null=False)
+    tipo = models.CharField(max_length=20, null=False)
     precio = models.IntegerField(null=False)
     piso = models.IntegerField(null=False, default=1)
-    categoria_id = models.ForeignKey(Hab_Categorias, on_delete=models.CASCADE)
-
+    
     class Meta:
         db_table = 'habitaciones'
 
@@ -48,6 +31,7 @@ class Reservas(models.Model):
     nombre = models.CharField(null=False, max_length=50)
     apellido = models.CharField(null=False, max_length=50)
     ciudad = models.CharField(null=False, max_length=50)
+    identificacion = models.IntegerField(blank=True, null=False, default=0)
     telefono_domicilio = models.IntegerField(null=False)
     email = models.CharField(null=False, max_length=50)
     domicilio = models.CharField(null=False, max_length=255)
@@ -63,7 +47,7 @@ class Reservas(models.Model):
     compania_domicilio = models.CharField(null=True, max_length=50)
     compania_ciudad = models.CharField(null=True, max_length=50)
     compania_email = models.CharField(null=True, max_length=50)
-    
+
     # HUESPEDES #
     hospedaje_deseado = models.CharField(null=True, max_length=50)
     cotizado = models.IntegerField(null=True)
