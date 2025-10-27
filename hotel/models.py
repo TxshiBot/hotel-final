@@ -80,4 +80,4 @@ class Reservas(models.Model):
     observaciones = models.CharField(null=False, max_length=50)
 
     class Meta:
-        db_table = 'reserva'
+        db_table = 'reserva' 
