@@ -59,7 +59,7 @@ class Reservas(models.Model):
     # EXTRA # 
     solicitud = models.CharField(null=True, max_length=50)
     observaciones = models.CharField(null=True, max_length=50)
-    confirmado = models.CharField(null=True, max_length=50)
+    confirmado = models.CharField(null=True, max_length=50, default='Pendiente')
 
     class Meta:
         db_table = 'reserva'
@@ -71,7 +71,7 @@ class Habitaciones(models.Model):
     tipo = models.ForeignKey(Categorias, on_delete=models.CASCADE, null=False, blank=True)
     precio = models.IntegerField(null=False)
     piso = models.IntegerField(null=False, default=1)
-    reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE, null=False, blank=True)
+    reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         db_table = 'habitaciones'

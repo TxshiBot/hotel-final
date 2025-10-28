@@ -2,1069 +2,574 @@
 {% include 'inc/header.html'%}
 
 <style>
-    /* Top Bar */
-    .top-bar {
-        background: var(--white);
-        padding: 20px 25px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        border: 1px solid var(--border-gray);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    body.dark-mode .top-bar {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    .top-bar-left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    .top-bar h1 {
-        font-size: 1.75rem;
-        color: var(--dark-slate);
-        font-weight: 600;
-        margin: 0;
-    }
-
-    body.dark-mode .top-bar h1 {
-        color: var(--dark-text);
-    }
-
-    /* Botón Nueva Reserva */
-    .btn-new {
-        padding: 12px 24px;
-        background: var(--steel-blue);
-        color: var(--white);
-        border: none;
-        border-radius: 6px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-    }
-
-    .btn-new:hover {
-        background: var(--dark-slate);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(74, 144, 164, 0.3);
-    }
-
-    body.dark-mode .btn-new {
-        background: var(--steel-blue-dark);
-    }
-
-    /* Filters Bar */
-    .filters-bar {
-        background: var(--white);
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        border: 1px solid var(--border-gray);
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    body.dark-mode .filters-bar {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    .search-box {
-        flex: 1;
-        min-width: 250px;
-        position: relative;
-    }
-
-    .search-box input {
-        width: 100%;
-        padding: 10px 15px 10px 40px;
-        border: 1px solid var(--border-gray);
-        border-radius: 6px;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-        background: var(--white);
-        color: var(--dark-slate);
-    }
-
-    body.dark-mode .search-box input {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
-    }
-
-    .search-box i {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--medium-gray);
-    }
-
-    .filter-select {
-        padding: 10px 15px;
-        border: 1px solid var(--border-gray);
-        border-radius: 6px;
-        background: var(--white);
-        color: var(--dark-slate);
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 150px;
-    }
-
-    body.dark-mode .filter-select {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
-    }
-
-    /* Stats Cards */
-    .stats-mini {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-
-    .stat-mini-card {
-        background: var(--white);
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid var(--border-gray);
-        text-align: center;
-    }
-
-    body.dark-mode .stat-mini-card {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    .stat-mini-card .number {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: var(--steel-blue);
-    }
-
-    body.dark-mode .stat-mini-card .number {
-        color: var(--steel-blue-dark);
-    }
-
-    .stat-mini-card .label {
-        font-size: 0.85rem;
-        color: var(--medium-gray);
-        margin-top: 5px;
-    }
-
-    body.dark-mode .stat-mini-card .label {
-        color: var(--dark-text-secondary);
-    }
-
-    /* Reservations Grid */
-    .reservations-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .reservation-card {
-        background: var(--white);
-        border: 1px solid var(--border-gray);
-        border-radius: 8px;
-        padding: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        animation: fadeInUp 0.3s ease forwards;
-    }
-
-    body.dark-mode .reservation-card {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    /* Barra lateral para estado */
-    .reservation-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        transition: all 0.2s ease;
-    }
-
-    .reservation-card.status-confirmed::before {
-        background: var(--available);
-    }
-
-    .reservation-card.status-pending::before {
-        background: var(--cleaning);
-    }
-
-    .reservation-card.status-cancelled::before {
-        background: var(--occupied);
-    }
-
-    .reservation-card.status-checkedin::before {
-        background: var(--reserved);
-    }
-
-    .reservation-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        border-color: var(--steel-blue);
-    }
-
-    .reservation-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .reservation-id {
-        font-size: 0.85rem;
-        color: var(--medium-gray);
-        font-weight: 500;
-    }
-
-    body.dark-mode .reservation-id {
-        color: var(--dark-text-secondary);
-    }
-
-    .reservation-status {
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .status-confirmed {
-        background: rgba(40, 167, 69, 0.1);
-        color: var(--available);
-    }
-
-    .status-pending {
-        background: rgba(253, 126, 20, 0.1);
-        color: var(--cleaning);
-    }
-
-    .status-cancelled {
-        background: rgba(220, 53, 69, 0.1);
-        color: var(--occupied);
-    }
-
-    .status-checkedin {
-        background: rgba(0, 123, 255, 0.1);
-        color: var(--reserved);
-    }
-
-    body.dark-mode .status-confirmed {
-        background: rgba(46, 204, 113, 0.15);
-        color: var(--available-dark);
-    }
-
-    body.dark-mode .status-pending {
-        background: rgba(243, 156, 18, 0.15);
-        color: var(--cleaning-dark);
-    }
-
-    body.dark-mode .status-cancelled {
-        background: rgba(231, 76, 60, 0.15);
-        color: var(--occupied-dark);
-    }
-
-    body.dark-mode .status-checkedin {
-        background: rgba(52, 152, 219, 0.15);
-        color: var(--reserved-dark);
-    }
-
-    .guest-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--dark-slate);
-        margin-bottom: 8px;
-        word-wrap: break-word;
-    }
-
-    body.dark-mode .guest-name {
-        color: var(--dark-text);
-    }
-
-    .reservation-dates {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: var(--medium-gray);
-        font-size: 0.9rem;
-        margin-bottom: 12px;
-        flex-wrap: wrap;
-    }
-
-    body.dark-mode .reservation-dates {
-        color: var(--dark-text-secondary);
-    }
-
-    .reservation-info {
-        display: flex;
-        gap: 15px;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid var(--border-gray);
-        flex-wrap: wrap;
-    }
-
-    body.dark-mode .reservation-info {
-        border-top-color: var(--dark-border);
-    }
-
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        color: var(--medium-gray);
-    }
-
-    body.dark-mode .info-item {
-        color: var(--dark-text-secondary);
-    }
-
-    .info-item i {
-        font-size: 1rem;
-    }
-
-    /* Modal Styles */
-    .modal-content {
-        background: var(--white);
-        border-radius: 8px;
-        border: none;
-    }
-
-    body.dark-mode .modal-content {
-        background: var(--dark-card);
-        color: var(--dark-text);
-    }
-
-    .modal-header {
-        border-bottom: 1px solid var(--border-gray);
-        padding: 20px 25px;
-    }
-
-    body.dark-mode .modal-header {
-        border-bottom-color: var(--dark-border);
-    }
-
-    .modal-title {
-        color: var(--dark-slate);
-        font-weight: 600;
-    }
-
-    body.dark-mode .modal-title {
-        color: var(--dark-text);
-    }
-
-    .modal-body {
-        padding: 25px;
-    }
-
-    .detail-section {
-        margin-bottom: 25px;
-    }
-
-    .detail-section-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--steel-blue);
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    body.dark-mode .detail-section-title {
-        color: var(--steel-blue-dark);
-    }
-
-    .detail-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 12px;
-    }
-
-    .detail-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .detail-label {
-        font-size: 0.8rem;
-        color: var(--medium-gray);
-        font-weight: 500;
-        text-transform: uppercase;
-    }
-
-    body.dark-mode .detail-label {
-        color: var(--dark-text-secondary);
-    }
-
-    .detail-value {
-        font-size: 0.95rem;
-        color: var(--dark-slate);
-    }
-
-    body.dark-mode .detail-value {
-        color: var(--dark-text);
-    }
-
-    .btn-close {
-        filter: brightness(0) saturate(100%) invert(0);
-    }
-
-    body.dark-mode .btn-close {
-        filter: brightness(0) saturate(100%) invert(1);
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: var(--medium-gray);
-        background: var(--white);
-        border-radius: 8px;
-        border: 1px solid var(--border-gray);
-        margin-top: 20px;
-    }
-
-    body.dark-mode .empty-state {
-        background: var(--dark-card);
-        color: var(--dark-text-secondary);
-        border-color: var(--dark-border);
-    }
-
-    .empty-state i {
-        font-size: 4rem;
-        margin-bottom: 20px;
-        opacity: 0.3;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 992px) {
-        .reservations-grid {
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-        }
-
-        .stats-mini {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .top-bar {
-            flex-direction: column;
-            align-items: stretch;
-            padding: 15px;
-        }
-
-        .top-bar h1 {
-            font-size: 1.5rem;
-        }
-
-        .top-bar-left {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-        }
-
-        .btn-new {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .filters-bar {
-            flex-direction: column;
-            padding: 15px;
-        }
-
-        .search-box {
-            width: 100%;
-            min-width: auto;
-        }
-
-        .filter-select {
-            width: 100%;
-        }
-
-        .stats-mini {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .stat-mini-card .number {
-            font-size: 1.5rem;
-        }
-
-        .reservations-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .detail-row {
-            grid-template-columns: 1fr;
-        }
-
-        .modal-dialog {
-            margin: 10px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .top-bar h1 {
-            font-size: 1.3rem;
-        }
-
-        .stats-mini {
-            grid-template-columns: 1fr;
-        }
-
-        .reservation-info {
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .info-item {
-            width: 100%;
-        }
-    }
-
-    /* Animation */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+/* === GENERAL STYLES === */
+/* Estilos del Top Bar (Buscador y Botón Nueva Reserva) */
+.top-bar {
+    background: var(--white);
+    padding: 20px 25px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+body.dark-mode .top-bar { background: var(--dark-card); border-color: var(--dark-border); }
+.top-bar-left { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.top-bar h1 { font-size: 1.75rem; color: var(--dark-slate); font-weight: 600; margin: 0; }
+body.dark-mode .top-bar h1 { color: var(--dark-text); }
+.btn-new {
+    padding: 12px 24px; background: var(--steel-blue); color: var(--white);
+    border: none; border-radius: 6px; font-weight: 500; cursor: pointer;
+    transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none;
+}
+.btn-new:hover { background: var(--dark-slate); }
+body.dark-mode .btn-new { background: var(--steel-blue-dark); }
+body.dark-mode .btn-new:hover { background: var(--steel-blue); }
+
+/* Estilos del Buscador */
+.search-form { display: flex; gap: 5px; }
+.search-input {
+    padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
+    font-size: 0.95rem; background: var(--light-gray); color: var(--dark-slate);
+    transition: all 0.2s ease; width: 250px;
+}
+body.dark-mode .search-input { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+.search-input:focus { outline: none; border-color: var(--steel-blue); box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1); }
+body.dark-mode .search-input:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
+.btn-search {
+    padding: 10px 15px; background: var(--ice-blue); color: var(--steel-blue);
+    border: 1px solid var(--border-gray); border-radius: 6px; cursor: pointer;
+}
+body.dark-mode .btn-search { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--steel-blue-dark); }
+
+/* === ESTILOS DE LA CARD === */
+.reservation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    padding: 0 25px; /* Ajusta si es necesario */
+}
+
+.reservation-card {
+    background: var(--white); border-radius: 8px; border: 1px solid var(--border-gray);
+    overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease;
+    border-left: 5px solid transparent; cursor: pointer;
+}
+body.dark-mode .reservation-card { background: var(--dark-card); border-color: var(--dark-border); }
+.reservation-card:hover { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
+body.dark-mode .reservation-card:hover { box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05); }
+
+/* Colores de Estado para el borde */
+.card-pendiente { border-left-color: var(--reserved); }
+.card-confirmada { border-left-color: var(--available); }
+body.dark-mode .card-pendiente { border-left-color: var(--reserved); } /* Mantener o ajustar color */
+body.dark-mode .card-confirmada { border-left-color: var(--available); } /* Mantener o ajustar color */
+
+/* Badge de estado */
+.status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 500; text-transform: uppercase; white-space: nowrap; color: var(--white); }
+.status-confirmado { background-color: var(--available); }
+.status-pendiente { background-color: var(--reserved); }
+
+/* Cabecera de la Card */
+.card-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); }
+body.dark-mode .card-header { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
+.reserva-id { font-weight: 600; color: var(--dark-slate); font-size: 0.9rem; }
+body.dark-mode .reserva-id { color: var(--dark-text); }
+
+/* Cuerpo de la Card */
+.card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem; color: var(--dark-slate); }
+body.dark-mode .card-body { color: var(--dark-text-secondary); }
+.card-body > div { display: flex; align-items: center; gap: 8px; }
+.card-body i { width: 16px; text-align: center; color: var(--steel-blue); opacity: 0.8; }
+body.dark-mode .card-body i { color: var(--steel-blue-dark); }
+.card-body .label { font-weight: 500; color: var(--steel-blue); margin-right: 5px; }
+body.dark-mode .card-body .label { color: var(--steel-blue-dark); }
+.date-item { display: flex; align-items: center; gap: 8px; width: 100%; } /* Asegura alineación */
+
+/* Pie de la Card */
+.card-footer { padding: 12px 15px; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); font-size: 0.85rem; color: var(--dark-slate); display: flex; flex-direction: column; gap: 10px; }
+body.dark-mode .card-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); color: var(--dark-text-secondary); }
+.guest-count { display: flex; align-items: center; gap: 8px; }
+
+/* Botones de Confirmación */
+.btn-confirmar {
+    width: 100%; padding: 10px 15px; margin-top: 10px; border: none;
+    border-radius: 6px; font-weight: 500; cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; display: flex;
+    align-items: center; justify-content: center; gap: 8px;
+}
+/* Estilo botón pendiente */
+.btn-confirmar-pendiente { background-color: var(--steel-blue); color: var(--white); }
+.btn-confirmar-pendiente:hover { background-color: #3a7c8e; }
+body.dark-mode .btn-confirmar-pendiente { background-color: var(--steel-blue-dark); }
+body.dark-mode .btn-confirmar-pendiente:hover { background-color: var(--steel-blue); }
+/* Estilo botón confirmado */
+.btn-confirmar-confirmado { background-color: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
+.btn-confirmar-confirmado:hover { background-color: var(--ice-blue); }
+body.dark-mode .btn-confirmar-confirmado { background-color: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+body.dark-mode .btn-confirmar-confirmado:hover { background-color: var(--dark-bg); }
+
+/* === ESTILOS DEL MODAL (INCLUYE CORRECCIONES DARK MODE) === */
+.modal-content { /* Contenedor principal del modal */
+    background-color: var(--white); /* Fondo blanco por defecto */
+    border: 1px solid var(--border-gray);
+    border-radius: 8px; /* Redondear esquinas */
+}
+body.dark-mode .modal-content {
+    background-color: var(--dark-card); /* Fondo oscuro principal */
+    border-color: var(--dark-border);
+}
+
+.modal-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--light-gray);
+    border-bottom: 1px solid var(--border-gray);
+    border-top-left-radius: 8px; /* Redondear esquinas superiores */
+    border-top-right-radius: 8px;
+}
+body.dark-mode .modal-header {
+    background-color: var(--dark-bg-secondary);
+    border-bottom-color: var(--dark-border);
+}
+.modal-title {
+    color: var(--dark-slate);
+    font-weight: 600;
+}
+body.dark-mode .modal-title {
+    color: var(--dark-text); /* Título claro */
+}
+.reserva-id-modal { font-weight: bold; color: var(--steel-blue); }
+body.dark-mode .reserva-id-modal { color: var(--steel-blue-dark); }
+
+/* Botón de cerrar 'X' */
+.modal-header .btn-close {
+    background-color: transparent; /* Fondo transparente */
+    border: none;
+    opacity: 0.6;
+}
+body.dark-mode .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Hace el ícono blanco */
+    opacity: 0.8;
+}
+.modal-header .btn-close:hover { opacity: 1; }
+
+.modal-body {
+    padding: 25px;
+    background-color: var(--white); /* Fondo del cuerpo */
+}
+body.dark-mode .modal-body {
+    background-color: var(--dark-card); /* Fondo oscuro del cuerpo */
+}
+
+/* Secciones dentro del modal */
+.detail-section { margin-bottom: 25px; }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-section-title {
+    font-size: 1.1rem; font-weight: 600; color: var(--steel-blue); margin-bottom: 15px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--ice-blue); display: flex; align-items: center; gap: 10px;
+}
+body.dark-mode .detail-section-title { color: var(--steel-blue-dark); border-bottom-color: var(--dark-border); }
+
+/* Grid para detalles */
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px 20px; }
+.detail-item { display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; }
+.detail-item.full-width { grid-column: 1 / -1; }
+
+/* Etiquetas y Valores */
+.detail-label { font-weight: 500; color: var(--steel-blue); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+body.dark-mode .detail-label { color: var(--steel-blue-dark); } /* Color de acento oscuro */
+
+.detail-value { color: var(--dark-slate); word-wrap: break-word; }
+body.dark-mode .detail-value { color: var(--dark-text); } /* Texto claro */
+
+/* Footer del modal */
+.modal-footer {
+    padding: 1rem 1.5rem;
+    background-color: var(--light-gray);
+    border-top: 1px solid var(--border-gray);
+    border-bottom-left-radius: 8px; /* Redondear esquinas inferiores */
+    border-bottom-right-radius: 8px;
+}
+body.dark-mode .modal-footer {
+    background-color: var(--dark-bg-secondary);
+    border-top-color: var(--dark-border);
+}
+/* Estilo del botón Cerrar del footer si es necesario */
+body.dark-mode .modal-footer .btn-secondary {
+    /* Puedes ajustar colores si el botón default no se ve bien */
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+body.dark-mode .modal-footer .btn-secondary:hover {
+    background-color: var(--dark-bg-secondary);
+}
 </style>
 
 <div class="top-bar">
     <div class="top-bar-left">
-        <h1><i class="fas fa-calendar-check"></i> Gestión de Reservas</h1>
-    </div>
-    <a href="{% url 'reservar' %}" class="btn-new">
-        <i class="fas fa-plus"></i> Nueva Reserva
-    </a>
-</div>
-
-<!-- 
-    NOTA: Estos estadísticos se llenarían dinámicamente desde Django:
-    
-    En views.py:
-    def reservas_view(request):
-        from django.db.models import Count, Q
-        from datetime import date
+        <h1><i class="fas fa-calendar-check"></i> Listado de Reservas</h1>
         
-        stats = {
-            'confirmadas': Reserva.objects.filter(estado='confirmed').count(),
-            'pendientes': Reserva.objects.filter(estado='pending').count(),
-            'checkin_hoy': Reserva.objects.filter(
-                fecha_checkin=date.today(),
-                estado='confirmed'
-            ).count(),
-            'checkout_hoy': Reserva.objects.filter(
-                fecha_checkout=date.today()
-            ).count(),
-        }
-        
-        return render(request, 'reservas.html', {'stats': stats})
-    
-    En el template:
-    <div class="number">{{ stats.confirmadas }}</div>
--->
-<div class="stats-mini">
-    <div class="stat-mini-card">
-        <div class="number">24</div>
-        <div class="label">Confirmadas</div>
+        <form method="GET" action="{% url 'reservas' %}" class="search-form" onsubmit="return false;"> {# Añadido onsubmit="return false;" para prevenir envío tradicional #}
+            <input type="text" 
+                name="q" 
+                id="searchInput" {# AÑADIDO ID #}
+                class="search-input" 
+                placeholder="Buscar por ID, nombre o estado..." 
+                value="{{ request.GET.q|default:'' }}">
+            {# Puedes eliminar este botón si quieres #}
+            <button type="submit" class="btn-search" style="display: none;"> {# Oculto en lugar de eliminarlo #}
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+
     </div>
-    <div class="stat-mini-card">
-        <div class="number">8</div>
-        <div class="label">Pendientes</div>
-    </div>
-    <div class="stat-mini-card">
-        <div class="number">12</div>
-        <div class="label">Check-in Hoy</div>
-    </div>
-    <div class="stat-mini-card">
-        <div class="number">6</div>
-        <div class="label">Check-out Hoy</div>
+    <div class="top-bar-right">
+        <a href="{% url 'reservar' %}" class="btn-new">
+            <i class="fas fa-plus"></i> Nueva Reserva
+        </a>
     </div>
 </div>
 
-<div class="filters-bar">
-    <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" placeholder="Buscar por nombre, ID o habitación..." id="searchReservations">
-    </div>
-    <select class="filter-select" id="filterStatus">
-        <option value="all">Todos los estados</option>
-        <option value="confirmed">Confirmadas</option>
-        <option value="pending">Pendientes</option>
-        <option value="checkedin">Check-in</option>
-        <option value="cancelled">Canceladas</option>
-    </select>
-    <select class="filter-select" id="filterDate">
-        <option value="all">Todas las fechas</option>
-        <option value="today">Hoy</option>
-        <option value="week">Esta semana</option>
-        <option value="month">Este mes</option>
-    </select>
-</div>
+<div class="reservation-grid">
+    
+    {% csrf_token %}
 
-<!-- 
-    NOTA: El grid de reservas se generaría dinámicamente desde Django:
-    
-    En views.py:
-    def reservas_view(request):
-        reservas = Reserva.objects.select_related('huesped', 'habitacion').all()
-        return render(request, 'reservas.html', {'reservas': reservas})
-    
-    En el template:
     {% for reserva in reservas %}
-    <div class="reservation-card status-{{ reserva.estado }}" 
-         data-status="{{ reserva.estado }}" 
-         data-reserva-id="{{ reserva.codigo }}" 
-         data-guest-name="{{ reserva.huesped.nombre_completo }}"
-         onclick="showReservationDetails('{{ reserva.codigo }}', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#{{ reserva.codigo }}</span>
-            <span class="reservation-status status-{{ reserva.estado }}">
-                {{ reserva.get_estado_display }}
+<div class="reservation-card 
+     {% if reserva.confirmado == 'Confirmado' %}card-confirmada{% else %}card-pendiente{% endif %}" 
+     id="reserva-card-{{ reserva.id }}"
+     
+     data-bs-toggle="modal" 
+     data-bs-target="#reservationModal"
+     
+     data-id="{{ reserva.id }}"
+     data-nombre="{{ reserva.nombre }} {{ reserva.apellido }}"
+     data-identificacion="{{ reserva.identificacion|default:'N/A' }}"
+     data-email="{{ reserva.email }}"
+     
+     data-telefono-domicilio="{{ reserva.telefono_domicilio|default:'' }}"
+     data-telefono-oficina="{{ reserva.telefono_oficina|default:'' }}"
+     
+     data-domicilio="{{ reserva.domicilio }}"
+     data-ciudad="{{ reserva.ciudad }}"
+     data-departamento="{{ reserva.departamento }}"
+     data-checkin="{{ reserva.check_in|date:'d M Y, H:i' }}"
+     data-checkout="{{ reserva.check_out|date:'d M Y, H:i' }}"
+     data-huespedes="{{ reserva.companion }}"
+     
+     data-habitaciones="{{ reserva.num_habt|default:'' }}"
+     data-hospedaje-deseado="{{ reserva.hospedaje_deseado|default:'' }}"
+     data-cotizado="{{ reserva.cotizado|default:'' }}"
+     data-solicitado="{{ reserva.solicitado|default:'' }}"
+     
+     data-empleado="{{ reserva.empleados|default:'N/A' }}"
+     data-telefono-empleado="{{ reserva.telefono|default:'N/A' }}"
+     data-confirmado="{{ reserva.confirmado|default:'Pendiente' }}"
+     data-forma-pago="{{ reserva.formadepago|default:'N/A' }}"
+     
+     data-solicitud="{{ reserva.solicitud|default:'' }}"
+     data-observaciones="{{ reserva.observaciones|default:'' }}"
+     
+     data-nombre-compania="{{ reserva.nombre_compania|default:'' }}"
+     data-domicilio-compania="{{ reserva.compania_domicilio|default:'' }}"
+     data-ciudad-compania="{{ reserva.compania_ciudad|default:'' }}"
+     data-email-compania="{{ reserva.compania_email|default:'' }}"
+     >
+        
+        <div class="card-header">
+            <span class="reserva-id">#{{ reserva.id }}</span>
+            <span class="status-badge 
+                {% if reserva.confirmado == 'Confirmado' %}status-confirmado
+                {% else %}status-pendiente{% endif %}"
+                id="status-badge-{{ reserva.id }}">
+                {{ reserva.confirmado|default:'Pendiente' }}
             </span>
         </div>
-        <div class="guest-name">{{ reserva.huesped.nombre_completo }}</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>{{ reserva.fecha_checkin|date:"d M" }} - {{ reserva.fecha_checkout|date:"d M, Y" }}</span>
+        
+        <div class="card-body">
+            <div class="guest-name">
+                <i class="fas fa-user"></i>
+                <span class="value"><span class="label">Huésped:</span> {{ reserva.nombre }} {{ reserva.apellido }}</span>
+            </div>
+            <div class="date-item">
+                <i class="fas fa-calendar-day"></i>
+                <div><span class="label">Check-in:</span> {{ reserva.check_in|date:"d/m/Y" }}</div>
+            </div>
+            <div class="date-item">
+                <i class="fas fa-calendar-day"></i>
+                <div><span class="label">Check-out:</span> {{ reserva.check_out|date:"d/m/Y" }}</div>
+            </div>
+             <div class="room-info">
+                 <i class="fas fa-door-open"></i>
+                 <div><span class="label">Tipo:</span> {{ reserva.hospedaje_deseado|default:'N/E' }} ({{ reserva.num_habt|default:'?' }} Hab.)</div>
+            </div>
         </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. {{ reserva.habitacion.numero }}</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>{{ reserva.numero_huespedes }} huésped{{ reserva.numero_huespedes|pluralize:"es" }}</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>{{ reserva.numero_noches }} noche{{ reserva.numero_noches|pluralize:"s" }}</span>
-            </div>
+
+        <div class="card-footer">
+             <div class="guest-count">
+                 <i class="fas fa-users"></i> {{ reserva.companion }} Huésped(es)
+             </div>
+            <button class="btn-confirmar 
+                    {% if reserva.confirmado == 'Confirmado' %}btn-confirmar-confirmado{% else %}btn-confirmar-pendiente{% endif %}"
+                    data-reserva-id="{{ reserva.id }}" 
+                    id="btn-confirmar-{{ reserva.id }}"
+                    type="button"> 
+                {% if reserva.confirmado == 'Confirmado' %}
+                    <i class="fas fa-times-circle"></i> Marcar Pendiente
+                {% else %}
+                    <i class="fas fa-check-circle"></i> Confirmar Reserva
+                {% endif %}
+            </button>
         </div>
     </div>
+    {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No hay reservas para mostrar. Puedes crear una <a href="{% url 'reservar' %}">aquí</a>.</p> 
     {% endfor %}
--->
-<div class="reservations-grid" id="reservationsGrid">
-    <div class="reservation-card status-confirmed" data-status="confirmed" data-reserva-id="RSV-001" 
-         data-guest-name="Juan Pérez García" onclick="showReservationDetails('RSV-001', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#RSV-001</span>
-            <span class="reservation-status status-confirmed">Confirmada</span>
-        </div>
-        <div class="guest-name">Juan Pérez García</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>24 Oct - 27 Oct, 2025</span>
-        </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. 203</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>2 huéspedes</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>3 noches</span>
-            </div>
-        </div>
-    </div>
 
-    <div class="reservation-card status-pending" data-status="pending" data-reserva-id="RSV-002" 
-         data-guest-name="María López Ramírez" onclick="showReservationDetails('RSV-002', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#RSV-002</span>
-            <span class="reservation-status status-pending">Pendiente</span>
-        </div>
-        <div class="guest-name">María López Ramírez</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>25 Oct - 28 Oct, 2025</span>
-        </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. 210</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>1 huésped</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>3 noches</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="reservation-card status-checkedin" data-status="checkedin" data-reserva-id="RSV-003" 
-         data-guest-name="Carlos Rodríguez" onclick="showReservationDetails('RSV-003', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#RSV-003</span>
-            <span class="reservation-status status-checkedin">Check-in</span>
-        </div>
-        <div class="guest-name">Carlos Rodríguez</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>23 Oct - 30 Oct, 2025</span>
-        </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. 305</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>4 huéspedes</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>7 noches</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="reservation-card status-cancelled" data-status="cancelled" data-reserva-id="RSV-004" 
-         data-guest-name="Ana Martínez" onclick="showReservationDetails('RSV-004', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#RSV-004</span>
-            <span class="reservation-status status-cancelled">Cancelada</span>
-        </div>
-        <div class="guest-name">Ana Martínez</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>26 Oct - 29 Oct, 2025</span>
-        </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. 108</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>2 huéspedes</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>3 noches</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="reservation-card status-confirmed" data-status="confirmed" data-reserva-id="RSV-005" 
-         data-guest-name="Luis Hernández" onclick="showReservationDetails('RSV-005', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#RSV-005</span>
-            <span class="reservation-status status-confirmed">Confirmada</span>
-        </div>
-        <div class="guest-name">Luis Hernández</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>27 Oct - 31 Oct, 2025</span>
-        </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. 401</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>3 huéspedes</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>4 noches</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="reservation-card status-pending" data-status="pending" data-reserva-id="RSV-006" 
-         data-guest-name="Sofia González" onclick="showReservationDetails('RSV-006', this)">
-        <div class="reservation-header">
-            <span class="reservation-id">#RSV-006</span>
-            <span class="reservation-status status-pending">Pendiente</span>
-        </div>
-        <div class="guest-name">Sofia González</div>
-        <div class="reservation-dates">
-            <i class="fas fa-calendar"></i>
-            <span>28 Oct - 02 Nov, 2025</span>
-        </div>
-        <div class="reservation-info">
-            <div class="info-item">
-                <i class="fas fa-door-open"></i>
-                <span>Hab. 215</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-users"></i>
-                <span>2 huéspedes</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-moon"></i>
-                <span>5 noches</span>
-            </div>
-        </div>
-    </div>
 </div>
 
-<!-- Modal de Detalles -->
 <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="reservationModalLabel">
-                    <i class="fas fa-file-invoice"></i> Detalles de la Reserva <span id="modalReservaId">#RSV-000</span>
+                    Detalles Reserva <span class="reserva-id-modal" id="modalReservaId">#</span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modalBodyContent">
-                <p>Cargando detalles...</p>
+                <p>Cargando detalles...</p> 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-warning"><i class="fas fa-edit"></i> Editar</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ============================================
-    // FUNCIONALIDAD: Búsqueda y Filtrado
-    // ============================================
+    // === JAVASCRIPT CORREGIDO Y COMPLETO ===
 
-    const searchInput = document.getElementById('searchReservations');
-    const filterStatus = document.getElementById('filterStatus');
-    const filterDate = document.getElementById('filterDate');
-    const reservationCards = document.querySelectorAll('.reservation-card');
-    
-    // Función central para aplicar búsqueda y filtros
-    function applyFilters() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const statusFilter = filterStatus.value;
-        const dateFilter = filterDate.value;
-
-        let visibleCount = 0;
-
-        reservationCards.forEach(card => {
-            const guestName = card.getAttribute('data-guest-name')?.toLowerCase() || '';
-            const reservationId = card.getAttribute('data-reserva-id')?.toLowerCase() || '';
-            const cardStatus = card.getAttribute('data-status');
-
-            // 1. Búsqueda (Nombre o ID)
-            const matchesSearch = guestName.includes(searchTerm) || reservationId.includes(searchTerm);
-
-            // 2. Filtro por Estado
-            const matchesStatus = statusFilter === 'all' || cardStatus === statusFilter;
-
-            // 3. Filtro por Fecha (simulado por ahora)
-            const matchesDate = dateFilter === 'all'; 
-
-            if (matchesSearch && matchesStatus && matchesDate) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Mostrar mensaje si no hay resultados
-        const grid = document.getElementById('reservationsGrid');
-        let emptyState = document.getElementById('emptyState');
-        
-        if (visibleCount === 0) {
-            if (!emptyState) {
-                emptyState = document.createElement('div');
-                emptyState.id = 'emptyState';
-                emptyState.className = 'empty-state';
-                emptyState.innerHTML = `
-                    <i class="fas fa-search"></i>
-                    <h3>No se encontraron reservas</h3>
-                    <p>Intenta ajustar los filtros de búsqueda</p>
-                `;
-                grid.parentNode.insertBefore(emptyState, grid.nextSibling);
-            }
-            emptyState.style.display = 'block';
-        } else {
-            if (emptyState) {
-                emptyState.style.display = 'none';
+    // --- Funciones de Utilidad ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
+    const csrftoken = getCookie('csrftoken');
 
-    // Event Listeners para aplicar los filtros
-    if (searchInput) {
-        searchInput.addEventListener('input', applyFilters);
-    }
-    if (filterStatus) {
-        filterStatus.addEventListener('change', applyFilters);
-    }
-    if (filterDate) {
-        filterDate.addEventListener('change', applyFilters);
-    }
+    // Función auxiliar para generar un item de detalle con valores fallback
+    const createDetailItem = (label, value, isFullWidth = false) => {
+        const displayValue = value || 'N/A';
+        const fullWidthClass = isFullWidth ? 'full-width' : '';
 
-    // ============================================
-    // FUNCIONALIDAD: Modal de Detalles
-    // ============================================
+        return `
+            <div class="detail-item ${fullWidthClass}">
+                <span class="detail-label">${label}</span>
+                <span class="detail-value">${displayValue}</span>
+            </div>
+        `;
+    };
 
-    /* 
-        NOTA: En producción, esta función haría un fetch a Django:
+    // --- Función 1: Generación de HTML del Modal (Incluye lógica Compañía) ---
+    function generateModalHTML(reservaData) {
+        // La información del data-attribute se accede como camelCase (ej: telefonoDomicilio)
         
-        async function loadDetails(reservaId) {
-            try {
-                const response = await fetch(`/api/reservas/${reservaId}/`);
-                const data = await response.json();
-                return generateDetailsHTML(data);
-            } catch (error) {
-                console.error('Error:', error);
-                return '<p>Error al cargar los detalles</p>';
-            }
+        // Determinar si la sección de compañía debe mostrarse
+        const mostrarCompania = reservaData.nombreCompania && reservaData.nombreCompania.trim() !== '';
+
+        let companySectionHTML = '';
+        if (mostrarCompania) {
+            companySectionHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title"><i class="fas fa-building"></i> Datos de Compañía</div>
+                    <div class="detail-grid">
+                        ${createDetailItem('Nombre Compañía', reservaData.nombreCompania)}
+                        ${createDetailItem('Email Compañía', reservaData.emailCompania)}
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Domicilio Compañía</span>
+                            <span class="detail-value">${reservaData.domicilioCompania || 'N/A'}, ${reservaData.ciudadCompania || ''}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
-    */
 
-    function loadDetails(reservaId, cardElement) {
-        const guestName = cardElement.querySelector('.guest-name').textContent;
-        const statusSpan = cardElement.querySelector('.reservation-status');
-        const statusText = statusSpan.textContent;
-        const statusClass = Array.from(statusSpan.classList).find(c => c.startsWith('status-'));
-
-        const detailsHTML = `
+        return `
             <div class="detail-section">
-                <div class="detail-section-title">
-                    <i class="fas fa-user"></i> Información del Huésped
-                </div>
-                <div class="detail-row">
-                    <div class="detail-item">
-                        <span class="detail-label">Nombre Completo</span>
-                        <span class="detail-value">${guestName}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Cédula/NIT</span>
-                        <span class="detail-value">1234567890</span>
-                    </div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-item">
-                        <span class="detail-label">Email</span>
-                        <span class="detail-value">${guestName.replace(/ /g, '.').toLowerCase()}@email.com</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Teléfono</span>
-                        <span class="detail-value">+57 300 123 4567</span>
-                    </div>
+                <div class="detail-section-title"><i class="fas fa-user"></i> Datos del Huésped</div>
+                <div class="detail-grid">
+                    ${createDetailItem('Nombre Completo', reservaData.nombre)}
+                    ${createDetailItem('Identificación', reservaData.identificacion)}
+                    ${createDetailItem('Email', reservaData.email)}
+                    ${createDetailItem('Tel. Domicilio', reservaData.telefonoDomicilio)}
+                    ${createDetailItem('Tel. Oficina', reservaData.telefonoOficina)}
+                    <div class="detail-item full-width"><span class="detail-label">Domicilio</span><span class="detail-value">${reservaData.domicilio || 'N/A'}, ${reservaData.ciudad || ''}, ${reservaData.departamento || ''}</span></div>
                 </div>
             </div>
 
             <div class="detail-section">
-                <div class="detail-section-title">
-                    <i class="fas fa-calendar-alt"></i> Detalles de la Estancia
-                </div>
-                <div class="detail-row">
-                    <div class="detail-item">
-                        <span class="detail-label">Check-in</span>
-                        <span class="detail-value">24 de Octubre, 2025 - 3:00 PM</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Check-out</span>
-                        <span class="detail-value">27 de Octubre, 2025 - 12:00 PM</span>
-                    </div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-item">
-                        <span class="detail-label">Habitación</span>
-                        <span class="detail-value">203 - Doble</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">N° de Huéspedes</span>
-                        <span class="detail-value">2 personas</span>
-                    </div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-item">
-                        <span class="detail-label">Estado</span>
-                        <span class="detail-value"><span class="reservation-status ${statusClass}">${statusText}</span></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Fuente de Reserva</span>
-                        <span class="detail-value">Booking.com</span>
-                    </div>
+                <div class="detail-section-title"><i class="fas fa-calendar-alt"></i> Detalles de la Estancia</div>
+                <div class="detail-grid">
+                    ${createDetailItem('Check-in', reservaData.checkin)}
+                    ${createDetailItem('Check-out', reservaData.checkout)}
+                    ${createDetailItem('Nº Huéspedes', reservaData.huespedes)}
+                    ${createDetailItem('Nº Habitaciones', reservaData.habitaciones)}
+                    ${createDetailItem('Hospedaje Deseado', reservaData.hospedajeDeseado)}
+                    <div class="detail-item"><span class="detail-label">Estado</span><span class="detail-value">${reservaData.confirmado || 'N/A'}</span></div>
                 </div>
             </div>
-
-            <div class="detail-section mb-0">
-                <div class="detail-section-title">
-                    <i class="fas fa-clipboard-list"></i> Notas y Pagos
-                </div>
-                <div class="detail-item" style="grid-column: 1 / -1;">
-                    <span class="detail-label">Total de Pago</span>
-                    <span class="detail-value">$450.000 (Depósito de $150.000)</span>
-                </div>
-                <div class="detail-item" style="grid-column: 1 / -1;">
-                    <span class="detail-label">Solicitudes Especiales</span>
-                    <span class="detail-value">Cama extra para niño, piso alto con vista.</span>
+            
+            ${companySectionHTML} <div class="detail-section mb-0">
+                <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> Notas y Pagos</div>
+                <div class="detail-grid">
+                    ${createDetailItem('Forma de Pago', reservaData.formaPago)}
+                    ${createDetailItem('Tarifa Cotizada', '$ ' + (reservaData.cotizado || 'N/A'))}
+                    ${createDetailItem('Depósito Solicitado', '$ ' + (reservaData.solicitado || 'N/A'))}
+                    ${createDetailItem('Solicitudes Especiales', reservaData.solicitud, true)}
+                    ${createDetailItem('Observaciones', reservaData.observaciones, true)}
+                    ${createDetailItem('Reserva Hecha por', `${reservaData.empleado || 'N/A'} (Tel: ${reservaData.telefonoEmpleado || 'N/A'})`)}
                 </div>
             </div>
         `;
-        return detailsHTML;
     }
 
-    function showReservationDetails(id, cardElement) {
-        const modalElement = document.getElementById('reservationModal');
-        const modalTitle = document.getElementById('modalReservaId');
-        const modalBody = document.getElementById('modalBodyContent');
+    // --- Función 2: Lógica Principal del Modal ---
+    const modalElement = document.getElementById('reservationModal');
+    if (modalElement) {
+        modalElement.addEventListener('show.bs.modal', function (event) {
+            const card = event.relatedTarget;
+            
+            // Prevenir modal si se clickea el botón de confirmar
+            if (event.target && event.target.closest('.btn-confirmar')) {
+                event.preventDefault();
+                return;
+            }
+            if (!card || !card.classList.contains('reservation-card')) return;
 
-        modalTitle.textContent = `#${id}`;
-        modalBody.innerHTML = loadDetails(id, cardElement);
-        
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
+            const reservaData = card.dataset;
+            const modalTitleId = modalElement.querySelector('#modalReservaId');
+            const modalBody = modalElement.querySelector('#modalBodyContent');
+
+            // Generar el cuerpo del modal con los datos que existen
+            modalTitleId.textContent = `#${reservaData.id || 'N/A'}`; 
+            modalBody.innerHTML = generateModalHTML(reservaData);
+
+            console.log("Datos leídos de la card (Para Depuración):", reservaData);
+        });
     }
+
+    // --- Función 3: Lógica del Botón AJAX (Se mantiene) ---
+    const gridContainer = document.querySelector('.reservation-grid');
+    if (gridContainer) {
+        gridContainer.addEventListener('click', function(event) {
+            const confirmButton = event.target.closest('.btn-confirmar');
+            if (confirmButton) {
+                event.stopPropagation();
+                const reservaId = confirmButton.dataset.reservaId;
+                const url = `/reservas/confirmar/${reservaId}/`;
+
+                confirmButton.disabled = true;
+                confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                })
+                .then(response => {
+                    if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'ok') {
+                        const cardElement = document.getElementById(`reserva-card-${reservaId}`);
+                        const statusBadge = document.getElementById(`status-badge-${reservaId}`);
+
+                        statusBadge.textContent = data.nuevo_estado;
+                        statusBadge.classList.remove('status-confirmado', 'status-pendiente');
+                        statusBadge.classList.add(data.nuevo_estado === 'Confirmado' ? 'status-confirmado' : 'status-pendiente');
+
+                        confirmButton.classList.remove('btn-confirmar-confirmado', 'btn-confirmar-pendiente');
+                         if (data.nuevo_estado === 'Confirmado') {
+                            confirmButton.classList.add('btn-confirmar-confirmado');
+                            confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente';
+                            cardElement.classList.remove('card-pendiente');
+                            cardElement.classList.add('card-confirmada');
+                         } else {
+                            confirmButton.classList.add('btn-confirmar-pendiente');
+                            confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva';
+                            cardElement.classList.remove('card-confirmada');
+                            cardElement.classList.add('card-pendiente');
+                         }
+                         cardElement.dataset.confirmado = data.nuevo_estado; 
+                    } else {
+                         console.error('Error al confirmar:', data.message);
+                         alert(`Error al actualizar: ${data.message}`);
+                         const cardElement = document.getElementById(`reserva-card-${reservaId}`);
+                         const currentStatus = cardElement.dataset.confirmado;
+                         if (currentStatus === 'Confirmado') { confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente'; } 
+                         else { confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva'; }
+                    }
+                })
+                .catch(error => {
+                     console.error('Error fetch:', error);
+                     alert('Error de red.');
+                     const cardElement = document.getElementById(`reserva-card-${reservaId}`);
+                     const currentStatus = cardElement.dataset.confirmado;
+                      if (currentStatus === 'Confirmado') { confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente'; } 
+                      else { confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva'; }
+                 })
+                .finally(() => { confirmButton.disabled = false; });
+            }
+        });
+    }
+
+    // --- Parte 4: Lógica del Buscador en Tiempo Real ---
+    const searchInput = document.getElementById('searchInput');
+    const gridContainerForSearch = document.querySelector('.reservation-grid'); // Asegúrate que esta clase sea correcta
+    const allCards = gridContainerForSearch ? gridContainerForSearch.querySelectorAll('.reservation-card') : [];
+
+    if (searchInput && allCards.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase().trim(); // Término de búsqueda en minúsculas
+
+            allCards.forEach(card => {
+                // Extraer texto relevante de la card para buscar
+                // Usamos los data-* attributes que ya tenemos, más seguro que el innerText
+                const reservaId = card.dataset.id || '';
+                const nombreCompleto = card.dataset.nombre ? card.dataset.nombre.toLowerCase() : '';
+                const estado = card.dataset.confirmado ? card.dataset.confirmado.toLowerCase() : '';
+
+                // Combinar los textos donde buscar
+                const cardText = `${reservaId} ${nombreCompleto} ${estado}`;
+
+                // Comprobar si el texto de la card incluye el término de búsqueda
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = ''; // Mostrar la card si coincide
+                } else {
+                    card.style.display = 'none'; // Ocultar la card si no coincide
+                }
+            });
+        });
+    } else {
+        if (!searchInput) console.error("Elemento #searchInput no encontrado.");
+        if (allCards.length === 0) console.warn("No se encontraron cards .reservation-card para filtrar.");
+    }
+
 </script>
 
 {% include 'inc/footer.html'%}

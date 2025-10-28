@@ -1,5 +1,10 @@
 from django.shortcuts import render, redirect
 from django.db import connection
+from django.http import JsonResponse, HttpResponseBadRequest
+
+# ---- MODELS ---- #
+from hotel.models import Reservas
+
 
 # ---- FORMS ---- # 
 from hotel.forms import ReservarForm
@@ -46,4 +51,35 @@ def Reservar(request):
     return render(request, 'reservas/reservar.html', {'form': form})
 
 def ListarReservas(request):
-    return render(request, 'reservas/reservas.html')
+    # Obtiene todas las reservas ordenadas por ID descendente (más nuevas primero)
+    reservas = Reservas.objects.all().order_by('-id') 
+    
+    # Prepara el contexto para enviar al template
+    context = {
+        'reservas': reservas
+    }
+    
+    # Renderiza el template pasándole el contexto
+    return render(request, 'reservas/reservas.html', context)
+
+def ConfirmarReserva(request, reserva_id):
+    # Solo permitimos POST
+    if request.method == 'POST':
+        try:
+            reserva = get_object_or_404(Reservas, pk=reserva_id)
+
+            # Cambia el estado
+            if reserva.confirmado == 'Confirmado':
+                reserva.confirmado = 'Pendiente'
+            else:
+                reserva.confirmado = 'Confirmado'
+            
+            reserva.save()
+
+            return JsonResponse({'status': 'ok', 'nuevo_estado': reserva.confirmado})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        # Si alguien intenta acceder vía GET, devuelve un error
+        return HttpResponseBadRequest("Método no permitido")
