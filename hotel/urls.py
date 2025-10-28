@@ -29,6 +29,7 @@ from hotel.views import RegistroHabitaciones
 # ---- RESERVAS ---- # 
 from hotel.views import Reservar
 from hotel.views import ListarReservas
+from hotel.views import ConfirmarReserva
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,4 +38,5 @@ urlpatterns = [
     path('registrohabitaciones', RegistroHabitaciones, name='registrohabitaciones'),
     path('reservar', Reservar, name='reservar'),
     path('listarreservas', ListarReservas, name='reservas'),
+    path('reservas/confirmar/<int:reserva_id>/', ConfirmarReserva, name='confirmarreserva'),
 ]
