@@ -1,7 +1,7 @@
 {% load static %}
 {% include 'inc/header.html'%}
 
-<style>
+<style xmlns="http://www.w3.org/1999/html">
     /* Page Header */
     .page-header {
         background: var(--white);
@@ -414,7 +414,7 @@
 <!-- Page Header -->
 <div class="page-header">
     <h1><i class="fas fa-calendar-plus"></i> Nueva Reserva</h1>
-    <a href="#" class="btn-back">
+    <a href="{% url 'reservas' %}" class="btn-back">
         <i class="fas fa-arrow-left"></i> Volver
     </a>
 </div>
@@ -436,7 +436,7 @@
                         Apellidos <span class="required">*</span>
                     </label>
                     <input type="text" 
-                            name="apellidos" 
+                            name="apellido" 
                             class="form-input" 
                             placeholder="Apellidos del huésped"
                             required>
@@ -447,7 +447,7 @@
                         Nombres <span class="required">*</span>
                     </label>
                     <input type="text" 
-                            name="nombres" 
+                            name="nombre" 
                             class="form-input" 
                             placeholder="Nombres del huésped"
                             required>
@@ -460,7 +460,7 @@
                         Cédula/NIT <span class="required">*</span>
                     </label>
                     <input type="text" 
-                            name="cedula_nit" 
+                            name="identificacion" 
                             class="form-input" 
                             placeholder="Documento de identidad"
                             required>
@@ -549,7 +549,7 @@
                         Fecha de Llegada <span class="required">*</span>
                     </label>
                     <input type="date" 
-                            name="fecha_llegada" 
+                            name="check_in" 
                             class="form-input"
                             required>
                 </div>
@@ -559,7 +559,7 @@
                         Fecha de Salida <span class="required">*</span>
                     </label>
                     <input type="date" 
-                            name="fecha_salida" 
+                            name="check_out" 
                             class="form-input"
                             required>
                 </div>
@@ -571,7 +571,7 @@
                         N° de Huéspedes <span class="required">*</span>
                     </label>
                     <input type="number" 
-                            name="num_huespedes" 
+                            name="num_hues" 
                             class="form-input" 
                             placeholder="Cantidad de personas"
                             min="1"
@@ -583,40 +583,51 @@
                         N° de Habitaciones <span class="required">*</span>
                     </label>
                     <input type="number" 
-                            name="num_habitaciones" 
+                            name="num_habt" 
                             class="form-input" 
                             placeholder="Cantidad de habitaciones"
-                            min="1"
-                            required>
+                            min="1">
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">
-                    Hospedaje Deseado
-                </label>
-                <select name="hospedaje_deseado" class="form-select">
-                    <option value="">Seleccionar tipo de habitación</option>
-                    <option value="sencilla">Sencilla</option>
-                    <option value="doble">Doble</option>
-                    <option value="triple">Triple</option>
-                    <option value="suite">Suite</option>
-                    <option value="suite_deluxe">Suite Deluxe</option>
-                </select>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">
-                        Tarifa Cotizada <span class="required">*</span>
+                        N° de Acompañantes
                     </label>
                     <input type="number" 
-                            name="tarifa_cotizada" 
+                            name="companion" 
+                            class="form-input" 
+                            placeholder="Cantidad de acompañantes"
+                            min="0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Hospedaje Deseado
+                    </label>
+                    <select name="hospedaje_deseado" class="form-select">
+                        <option value="">Seleccionar tipo de habitación</option>
+                        <option value="sencilla">Sencilla</option>
+                        <option value="doble">Doble</option>
+                        <option value="triple">Triple</option>
+                        <option value="suite">Suite</option>
+                        <option value="suite_deluxe">Suite Deluxe</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        Tarifa Cotizada
+                    </label>
+                    <input type="number" 
+                            name="cotizado" 
                             class="form-input" 
                             placeholder="$ 0.00"
-                            step="0.01"
-                            min="0"
-                            required>
+                            step="1"
+                            min="0">
                 </div>
 
                 <div class="form-group">
@@ -624,10 +635,10 @@
                         Depósito Solicitado
                     </label>
                     <input type="number" 
-                            name="deposito_solicitado" 
+                            name="solicitado" 
                             class="form-input" 
-                            placeholder="$ 0.00"
-                            step="0.01"
+                            placeholder="% 0"
+                            step="1"
                             min="0">
                 </div>
             </div>
@@ -640,47 +651,17 @@
             </h2>
 
             <div class="form-group">
-                <label class="form-label">¿Quién paga?</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-option">
-                        <input type="checkbox" 
-                                id="cliente_paga" 
-                                name="cliente_paga"
-                                onchange="toggleCompanyFields(this)">
-                        <label for="cliente_paga">Cliente Paga</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" 
-                                id="cobrar_compania" 
-                                name="cobrar_compania"
-                                onchange="toggleCompanyFields(this)">
-                        <label for="cobrar_compania">Cobrar Compañía</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Método de Pago</label>
-                <div class="payment-options">
-                    <div class="checkbox-option">
-                        <input type="checkbox" 
-                                id="pago_efectivo" 
-                                name="pago_efectivo">
-                        <label for="pago_efectivo">Efectivo</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" 
-                                id="pago_tc" 
-                                name="pago_tc">
-                        <label for="pago_tc">Tarjeta de Crédito (TC)</label>
-                    </div>
-                    <div class="checkbox-option">
-                        <input type="checkbox" 
-                                id="pago_td" 
-                                name="pago_td">
-                        <label for="pago_td">Tarjeta de Débito (TD)</label>
-                    </div>
-                </div>
+                <label class="form-label">
+                    Forma de Pago <span class="required">*</span>
+                </label>
+                <select name="formadepago" class="form-select" id="formadepago-select" onchange="toggleCompanyFields()" required>
+                    <option value="">Seleccionar forma de pago</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                    <option value="tarjeta_debito">Tarjeta de Débito</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="cobrar_compania">Cobrar a Compañía</option>
+                </select>
             </div>
         </div>
 
@@ -709,30 +690,20 @@
                     Domicilio de la Compañía
                 </label>
                 <input type="text" 
-                        name="domicilio_compania" 
+                        name="compania_domicilio" 
                         class="form-input" 
                         placeholder="Dirección de la empresa">
             </div>
 
-            <div class="form-row-3">
+            <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">
                         Ciudad
                     </label>
                     <input type="text" 
-                            name="ciudad_compania" 
+                            name="compania_ciudad" 
                             class="form-input" 
                             placeholder="Ciudad">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">
-                        Departamento
-                    </label>
-                    <input type="text" 
-                            name="departamento_compania" 
-                            class="form-input" 
-                            placeholder="Departamento">
                 </div>
 
                 <div class="form-group">
@@ -740,7 +711,7 @@
                         E-mail Compañía
                     </label>
                     <input type="email" 
-                            name="email_compania" 
+                            name="compania_email" 
                             class="form-input" 
                             placeholder="empresa@ejemplo.com">
                 </div>
@@ -756,12 +727,12 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">
-                        Hecha por <span class="required">*</span>
+                        Registrado por (Empleado) <span class="required">*</span>
                     </label>
                     <input type="text" 
-                            name="hecha_por" 
+                            name="empleados" 
                             class="form-input" 
-                            placeholder="Nombre de quien registra"
+                            placeholder="Nombre del empleado"
                             required>
                 </div>
 
@@ -770,9 +741,9 @@
                         Teléfono de Contacto <span class="required">*</span>
                     </label>
                     <input type="tel" 
-                            name="telefono_contacto" 
+                            name="telefono" 
                             class="form-input" 
-                            placeholder="Teléfono de quien registra"
+                            placeholder="Teléfono del empleado"
                             required>
                 </div>
             </div>
@@ -781,7 +752,7 @@
                 <label class="form-label">
                     Solicitudes Especiales
                 </label>
-                <textarea name="solicitudes_especiales" 
+                <textarea name="solicitud" 
                             class="form-textarea" 
                             placeholder="Ej: Cama extra, cuna para bebé, piso alto, vista específica, etc."></textarea>
             </div>
@@ -790,7 +761,7 @@
                 <label class="form-label">
                     Observaciones Especiales
                 </label>
-                <textarea name="observaciones_especiales" 
+                <textarea name="observaciones" 
                             class="form-textarea" 
                             placeholder="Notas internas, alergias, restricciones alimenticias, etc."></textarea>
             </div>
@@ -798,7 +769,7 @@
 
         <!-- Botones de Acción -->
         <div class="form-actions">
-            <a href="#" class="btn btn-secondary">
+            <a href="{% url 'reservas' %}" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Cancelar
             </a>
             <button type="submit" class="btn btn-primary">
@@ -810,20 +781,13 @@
 
 <script>
     // Función para mostrar/ocultar campos de compañía
-    function toggleCompanyFields(checkbox) {
+    function toggleCompanyFields() {
         const companySection = document.getElementById('company-section');
-        const cobrarCompania = document.getElementById('cobrar_compania');
-        const clientePaga = document.getElementById('cliente_paga');
+        const formaPagoSelect = document.getElementById('formadepago-select');
         
-        if (checkbox.id === 'cobrar_compania' && checkbox.checked) {
+        if (formaPagoSelect.value === 'cobrar_compania') {
             companySection.style.display = 'block';
-            clientePaga.checked = false;
-        } else if (checkbox.id === 'cliente_paga' && checkbox.checked) {
-            companySection.style.display = 'none';
-            cobrarCompania.checked = false;
-        }
-        
-        if (!cobrarCompania.checked) {
+        } else {
             companySection.style.display = 'none';
         }
     }

@@ -1,16 +1,5 @@
 from django.db import models
 
-
-class Hab_Categorias(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100, null=False)
-    descripcion = models.CharField(max_length=255, null=False)
-    vistas = models.CharField(max_length=50, null=False)
-
-    class Meta:
-        db_table = 'hab_categorias'
-
-
 class Registro_Huespedes(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, null=False)
@@ -26,21 +15,12 @@ class Registro_Huespedes(models.Model):
         db_table = 'registro_huespedes'
 
 
-class Habitaciones(models.Model):
-    ESTADO_CHOICES = [
-        ('A', 'A'),
-        ('B', 'B'),
-        ('C', 'C'),
-    ]
-
+class Categorias(models.Model):
     id = models.AutoField(primary_key=True)
-    estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, null=False)
-    precio = models.IntegerField(null=False)
-    piso = models.IntegerField(null=False, default=1)
-    categoria_id = models.ForeignKey(Hab_Categorias, on_delete=models.CASCADE)
+    tipo_hab = models.CharField(max_length=100, null=False)
 
     class Meta:
-        db_table = 'habitaciones'
+        db_table = 'categorias'
 
 
 class Reservas(models.Model):
@@ -48,7 +28,8 @@ class Reservas(models.Model):
     nombre = models.CharField(null=False, max_length=50)
     apellido = models.CharField(null=False, max_length=50)
     ciudad = models.CharField(null=False, max_length=50)
-    telefono_domicilio = models.IntegerField(null=False)
+    identificacion = models.IntegerField(blank=True, null=False, default=0)
+    telefono_domicilio = models.CharField(null=False, max_length=10, blank=True)
     email = models.CharField(null=False, max_length=50)
     domicilio = models.CharField(null=False, max_length=255)
     departamento = models.CharField(null=False, max_length=50)
@@ -63,7 +44,7 @@ class Reservas(models.Model):
     compania_domicilio = models.CharField(null=True, max_length=50)
     compania_ciudad = models.CharField(null=True, max_length=50)
     compania_email = models.CharField(null=True, max_length=50)
-    
+
     # HUESPEDES #
     hospedaje_deseado = models.CharField(null=True, max_length=50)
     cotizado = models.IntegerField(null=True)
@@ -73,11 +54,24 @@ class Reservas(models.Model):
     
     # DATOS EMPLEADO # 
     empleados = models.CharField(null=False, max_length=50)
-    telefono = models.IntegerField(null=False)
+    telefono = models.CharField(null=False, max_length=10, blank=True)
     
     # EXTRA # 
-    solicitud = models.CharField(null=False, max_length=50)
-    observaciones = models.CharField(null=False, max_length=50)
+    solicitud = models.CharField(null=True, max_length=50)
+    observaciones = models.CharField(null=True, max_length=50)
+    confirmado = models.CharField(null=True, max_length=50)
 
     class Meta:
-        db_table = 'reserva' 
+        db_table = 'reserva'
+
+
+class Habitaciones(models.Model):
+    id = models.AutoField(primary_key=True)
+    estado = models.CharField(max_length=20, null=False)
+    tipo = models.ForeignKey(Categorias, on_delete=models.CASCADE, null=False, blank=True)
+    precio = models.IntegerField(null=False)
+    piso = models.IntegerField(null=False, default=1)
+    reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE, null=False, blank=True)
+
+    class Meta:
+        db_table = 'habitaciones'
