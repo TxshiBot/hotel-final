@@ -1,69 +1,85 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import connection
-from django.db.models import Q
+from django.db.models import Q, Count, F
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
+from django.utils import timezone
 import json 
+
 
 # ---- MODELS ---- #
 from hotel.models import Reservas
 from hotel.models import Categorias
 from hotel.models import Habitaciones
+from hotel.models import Registro_Huespedes
+# --------------- #
 
 # ---- FORMS ---- # 
 from hotel.forms import ReservarForm
 from hotel.forms import CategoriaForm
 from hotel.forms import HabitacionForm
+from hotel.forms import HuespedForm
+# --------------- #
+
+# ---- FACTURA ---- #
+from hotel.models import Factura
+# ----------------- #
 
 def Dashboard(request):
     return render(request, 'dashboard.html')
 
-
+#region ------ HABITACIONES ------ #
 def ListarHabitaciones(request):
-    habitaciones_list = Habitaciones.objects.select_related('tipo', 'reserva').order_by('numero')
-    todas_categorias = Categorias.objects.all().order_by('tipo_hab') # Obtener todas las categorías
+    habitaciones_list = Habitaciones.objects.select_related('tipo').order_by('numero')
+    todas_categorias = Categorias.objects.all().order_by('tipo_hab')
 
-    # --- Lógica de Búsqueda (Mantenemos la lógica anterior por ahora) ---
+    # --- Lógica de Búsqueda ---
     query = request.GET.get('q', '').strip()
-    selected_categoria_id = request.GET.get('categoria_id', '').strip() # NUEVO: Leer filtro categoría
-    status_filter = request.GET.get('status', 'all').strip().lower() # Usar minúsculas para comparar con data-filter
+    selected_categoria_id = request.GET.get('categoria_id', '').strip()
+    status_filter = request.GET.get('status', 'all').strip().lower()
 
     if query:
-        try:
-            query_num = int(query)
-            q_filter = Q(reserva__id=query_num) | Q(numero__icontains=query)
-        except ValueError:
-            q_filter = (
-                Q(tipo__tipo_hab__icontains=query) |
-                Q(estado__icontains=query) |
-                Q(reserva__nombre__icontains=query)|
-                Q(reserva__apellido__icontains=query)
-            )
-        habitaciones_list = habitaciones_list.filter(q_filter).distinct()
+         habitaciones_list = habitaciones_list.filter(
+            Q(numero__icontains=query) |
+            Q(tipo__tipo_hab__icontains=query) |
+            Q(estado__icontains=query)
+        )
 
-    # --- NUEVO: Filtrado por Categoría ---
-    if selected_categoria_id.isdigit(): # Asegurarse que sea un número
+    # --- Filtrado por Categoría ---
+    if selected_categoria_id.isdigit():
         habitaciones_list = habitaciones_list.filter(tipo_id=int(selected_categoria_id))
 
     # --- Lógica de Filtrado por Estado ---
-    valid_statuses = [choice[0].lower() for choice in Habitaciones.ESTADO_CHOICES] # Comparar en minúsculas
+    valid_statuses = [choice[0].lower() for choice in Habitaciones.ESTADO_CHOICES]
     if status_filter != 'all' and status_filter in valid_statuses:
         habitaciones_list = habitaciones_list.filter(estado__iexact=status_filter)
-        active_filter = status_filter # Guardar filtro activo (minúsculas)
+        active_filter = status_filter
     else:
         active_filter = 'all'
 
-    # --- Obtener Reservas Asignables (SIN CAMBIOS) ---
-    reservas_asignables = Reservas.objects.filter(habitaciones__isnull=True).order_by('-id')
-    habitacion_form = HabitacionForm() # Para choices de estado
+    # --- OBTENER RESERVAS ASIGNABLES (CORREGIDO) ---
+    # Lógica: Reservas que necesitan habitaciones (num_habt > 0)
+    # y que AÚN NO tienen suficientes habitaciones asignadas.
+    reservas_asignables = Reservas.objects.annotate(
+        num_asignadas=Count('habitaciones_asignadas') # Contar cuántas tienen
+    ).filter(
+        # ---- ESTA ES LA LÍNEA CORREGIDA ----
+        Q(num_habt__gt=F('num_asignadas')) | # Necesita más de las que tiene
+        Q(num_habt__isnull=True, num_asignadas=0) # O necesita (implícitamente 1) y no tiene
+    ).filter(
+        confirmado='Confirmado', # Solo asignar reservas confirmadas
+        check_out__gt=timezone.now() # Solo asignar reservas activas o futuras
+    ).distinct().order_by('-id')
+    
+    habitacion_form = HabitacionForm()
 
     context = {
         'habitaciones': habitaciones_list,
         'reservas_asignables': reservas_asignables,
         'habitacion_form': habitacion_form,
-        'todas_categorias': todas_categorias, # NUEVO: Pasar categorías al template
-        'selected_categoria_id': selected_categoria_id, # NUEVO: Pasar ID seleccionado
-        'active_filter': active_filter, # Filtro de estado activo
+        'todas_categorias': todas_categorias,
+        'selected_categoria_id': selected_categoria_id,
+        'active_filter': active_filter,
         'search_query': query,
     }
     return render(request, 'habitaciones/listarhabitaciones.html', context)
@@ -71,76 +87,102 @@ def ListarHabitaciones(request):
 
 # --- VISTA AJAX PARA ACTUALIZAR ESTADO/RESERVA (SIMPLIFICADA) ---
 def ActualizarHabitacionAJAX(request):
-    if request.method == 'POST': # Verificación simple con if
+    if request.method == 'POST':
         try:
-            # Leer datos JSON del cuerpo de la petición
             data = json.loads(request.body)
             habitacion_id = data.get('habitacion_id')
             nuevo_estado = data.get('estado')
-            reserva_id = data.get('reserva_id') # Puede ser un ID numérico o ""/"None"
+            reserva_id_str = data.get('reserva_id')
 
-            # Validar datos básicos
             if not habitacion_id or not nuevo_estado:
-                return JsonResponse({'status': 'error', 'message': 'Faltan datos requeridos (ID o estado).'}, status=400)
+                return JsonResponse({'status': 'error', 'message': 'Faltan datos requeridos.'}, status=400)
 
             habitacion = get_object_or_404(Habitaciones, pk=habitacion_id)
-
-            # Validar y actualizar estado
-            valid_statuses = [choice[0] for choice in Habitaciones.ESTADO_CHOICES]
-            if nuevo_estado in valid_statuses:
-                habitacion.estado = nuevo_estado
-            else:
-                 return JsonResponse({'status': 'error', 'message': 'Estado no válido.'}, status=400)
-
-            # Actualizar/Asignar/Desasignar reserva
-            if reserva_id: # Si se envió un ID de reserva
+            reserva_a_asignar = None
+            
+            # --- VALIDACIÓN Y ASIGNACIÓN ---
+            if reserva_id_str: 
                 try:
-                    # Intenta obtener la reserva seleccionada
-                    reserva_asignada = Reservas.objects.get(pk=int(reserva_id))
-                    habitacion.reserva = reserva_asignada
-                    # Considera cambiar estado a 'Ocupada' automáticamente si asignas reserva?
-                    # if nuevo_estado == 'Disponible': # Solo si estaba disponible
-                    #    habitacion.estado = 'Ocupada'
+                    # Usamos prefetch_related para cargar las habitaciones ya asignadas a esta reserva
+                    reserva_a_asignar = Reservas.objects.prefetch_related('habitaciones_asignadas').get(pk=int(reserva_id_str))
                 except (Reservas.DoesNotExist, ValueError):
-                    return JsonResponse({'status': 'error', 'message': 'Reserva seleccionada no encontrada o ID inválido.'}, status=404)
-            else: # Si reserva_id está vacío o nulo, se desasigna
-                habitacion.reserva = None
-                # Considera cambiar estado a 'Disponible' o 'Limpieza' si se desasigna?
-                # if habitacion.estado == 'Ocupada':
-                #    habitacion.estado = 'Limpieza' # O 'Disponible'
+                    return JsonResponse({'status': 'error', 'message': 'Reserva seleccionada no encontrada.'}, status=404)
+            
+                # --- VALIDACIÓN 1: LÍMITE (num_habt) ---
+                limite = reserva_a_asignar.num_habt if reserva_a_asignar.num_habt is not None and reserva_a_asignar.num_habt > 0 else 1
+                asignadas_actualmente = reserva_a_asignar.habitaciones_asignadas.count()
+                esta_ya_asignada = habitacion in reserva_a_asignar.habitaciones_asignadas.all()
 
+                if not esta_ya_asignada and asignadas_actualmente >= limite:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f"Límite alcanzado. La Reserva #{reserva_a_asignar.id} solo permite {limite} hab. y ya tiene {asignadas_actualmente} asignada(s)."
+                    }, status=400)
+
+                # --- VALIDACIÓN 2: CONFLICTO DE FECHAS ---
+                nueva_llegada = reserva_a_asignar.check_in
+                nueva_salida = reserva_a_asignar.check_out
+
+                reservas_en_conflicto = habitacion.reservas_asignadas.filter(
+                    check_in__lt=nueva_salida, 
+                    check_out__gt=nueva_llegada
+                ).exclude(pk=reserva_a_asignar.id)
+
+                if reservas_en_conflicto.exists():
+                    conflicto = reservas_en_conflicto.first()
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f"Conflicto de fechas. Habitación {habitacion.numero} ya asignada a Reserva #{conflicto.id} ({conflicto.check_in.strftime('%d/%m/%y')} - {conflicto.check_out.strftime('%d/%m/%y')})."
+                    }, status=400)
+                
+                # --- SIN CONFLICTO: ASIGNAR ---
+                reserva_a_asignar.habitaciones_asignadas.add(habitacion)
+                # Si se asigna una reserva, el estado debe ser 'Ocupada'
+                habitacion.estado = 'Ocupada'
+            
+            # --- LÓGICA DE DESASIGNACIÓN/CAMBIO DE ESTADO ---
+            else: # reserva_id_str es "" (Ninguna)
+                habitacion.estado = nuevo_estado
+                
+                if habitacion.estado == 'Disponible' or habitacion.estado == 'Limpieza':
+                    # Desasignar de reservas activas/futuras
+                    reservas_a_quitar = habitacion.reservas_asignadas.filter(
+                        check_out__gt=timezone.now()
+                    )
+                    for res in reservas_a_quitar:
+                        res.habitaciones_asignadas.remove(habitacion)
+            
             habitacion.save()
 
             # Preparamos la respuesta
             response_data = {
                 'status': 'ok',
-                'nuevo_estado': habitacion.get_estado_display(), # Usamos get_..._display() para el label
+                'nuevo_estado': habitacion.get_estado_display(),
                 'reserva_asignada': {
-                    'id': habitacion.reserva.id,
-                    'nombre_huesped': f"{habitacion.reserva.nombre} {habitacion.reserva.apellido}"
-                } if habitacion.reserva else None
+                    'id': reserva_a_asignar.id,
+                    'nombre_huesped': f"{reserva_a_asignar.nombre} {reserva_a_asignar.apellido}"
+                } if reserva_a_asignar else None
             }
             return JsonResponse(response_data)
 
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Formato de datos inválido.'}, status=400)
         except Exception as e:
-            # Captura genérica para otros posibles errores
             return JsonResponse({'status': 'error', 'message': f'Error interno: {str(e)}'}, status=500)
     else:
-        # Si no es POST, devolver error
         return HttpResponseBadRequest("Método no permitido. Solo POST.")
 
 
 # --- VISTA AJAX PARA DETALLES DE RESERVA (CONTEO) ---
 def GetReservaDetallesAJAX(request, reserva_id):
-    if request.method == 'GET': # Esta vista sí usa GET
+    if request.method == 'GET':
         try:
-            reserva = get_object_or_404(Reservas.objects.prefetch_related('habitaciones_set'), pk=reserva_id) # Optimizamos un poco
+            # prefetch_related es mejor para ManyToManyField
+            reserva = get_object_or_404(Reservas.objects.prefetch_related('habitaciones_asignadas'), pk=reserva_id) 
 
-            num_necesarias = reserva.num_habt if reserva.num_habt is not None else 1 # Asume 1 si num_habt es None
+            num_necesarias = reserva.num_habt if reserva.num_habt is not None and reserva.num_habt > 0 else 1
             # Contamos las habitaciones REALMENTE asignadas a esta reserva
-            num_asignadas = reserva.habitaciones_set.count()
+            num_asignadas = reserva.habitaciones_asignadas.count() # Usamos la relación M2M
 
             return JsonResponse({
                 'status': 'ok',
@@ -151,7 +193,6 @@ def GetReservaDetallesAJAX(request, reserva_id):
              return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     else:
         return HttpResponseBadRequest("Método no permitido. Solo GET.")
-
 
 def RegistrarHabitaciones(request):
     if request.method == 'POST':
@@ -181,8 +222,10 @@ def RegistrarHabitaciones(request):
     context = {'form': form}
     # Renderiza el template del formulario
     return render(request, 'habitaciones/registrarhabitaciones.html', context)
+#endregion
 
-
+#region ------ RESERVAS ------ #
+# En views.py
 def Reservar(request):
     
     if request.method == 'POST':
@@ -190,26 +233,21 @@ def Reservar(request):
         
         if form.is_valid():
             # ** Bloque de éxito **
-            print("XXXXXXXXXXXXX - VÁLIDO. Guardando reserva...")
             reservar = form.save()
+            messages.success(request, f"Reserva para {reservar.nombre} guardada con éxito.")
             # La redirección debe ser con 'return' para finalizar la vista
-            return redirect('reservas')
+            return redirect('reservas') # <--- DEBE HABER UN RETURN AQUÍ
         
         else:
-            # ** Bloque de fallo de validación **
-            # ** ESTE ES EL PASO CLAVE QUE YA HICISTE: Muestra el error en tu terminal **
-            print("Formulario NO VÁLIDO. Errores detallados:")
-            print(form.errors) 
-            # El código sigue su curso hasta el final, retornando el formulario con errores
+            messages.error(request, "Por favor corrige los errores en el formulario.")
             
     else:
         # ** Bloque de petición GET (primera carga de la página) **
         form = ReservarForm()
     
-    # Renderiza el template. Si el método fue POST y form.is_valid() fue False,
-    # el template recibe 'form' con todos los mensajes de error de Django.
-    # Si fue GET, el template recibe 'form' vacío.
+    # Renderiza el template. Si el método fue POST y falló, el template recibe 'form' con errores.
     return render(request, 'reservas/reservar.html', {'form': form})
+
 
 def ListarReservas(request):
     # Obtiene todas las reservas ordenadas por ID descendente (más nuevas primero)
@@ -246,6 +284,42 @@ def ConfirmarReserva(request, reserva_id):
         return HttpResponseBadRequest("Método no permitido")
 
 
+def EditarReserva(request, reserva_id): 
+    """
+    Vista para editar una reserva existente, enfocada en la información de Huésped y Facturación.
+    """
+    # 1. Obtener la instancia de la reserva
+    reserva = get_object_or_404(Reservas, pk=reserva_id)
+
+    if request.method == 'POST':
+        # 2. Rellenar el formulario con los datos enviados Y la instancia
+        # Usamos ReservarForm para mantener la validación de fechas
+        form = ReservarForm(request.POST, instance=reserva) 
+        if form.is_valid():
+            try:
+                # La validación de fechas y campos opcionales ya está en el form
+                form.save()
+                messages.success(request, f"Reserva #{reserva.id} actualizada con éxito.")
+                return redirect('reservas') # Redirigir a la lista
+            except Exception as e:
+                 messages.error(request, f"Error al actualizar la reserva: {e}")
+        else:
+            messages.error(request, "Por favor corrige los errores en el formulario.")
+            
+    else: # Método GET
+        # 3. Si es GET, rellenar el formulario solo con la instancia
+        form = ReservarForm(instance=reserva)
+
+    context = {
+        'form': form,
+        'reserva': reserva # Pasamos la reserva por si queremos mostrar el nombre en el título
+    }
+    
+    # 4. Renderiza un template que crearemos: editarreserva.html
+    return render(request, 'reservas/editarreserva.html', context)
+#endregion
+
+#region ------ CATEGORIAS ------ #
 def RegistroCategorias(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
@@ -268,3 +342,232 @@ def RegistroCategorias(request):
     context = {'form': form}
     # Asegúrate de tener una carpeta 'categorias' dentro de 'templates'
     return render(request, 'habitaciones/registrarcategoria.html', context)
+#endregion
+
+#region ------ HUESPEDES ------ #
+
+def RegistrarHuesped(request):
+    """
+    Vista para crear un nuevo perfil de huésped.
+    """
+    if request.method == 'POST':
+        form = HuespedForm(request.POST)
+        if form.is_valid():
+            try:
+                # Verificar unicidad de identificación manualmente (si no es unique=True en el modelo)
+                identificacion = form.cleaned_data['identificacion']
+                if Registro_Huespedes.objects.filter(identificacion=identificacion).exists():
+                    messages.error(request, f"El número de identificación '{identificacion}' ya existe en la base de datos.")
+                else:
+                    huesped = form.save()
+                    messages.success(request, f"Huésped '{huesped.nombre} {huesped.apellido}' registrado con éxito.")
+                    # Redirige a la futura lista de huéspedes
+                    # Si aún no existe, redirige al dashboard
+                    return redirect('dashboard') # Cambia 'dashboard' por 'listar_huespedes' cuando la crees
+            
+            except Exception as e:
+                 # Captura otros errores (como fallos de DB)
+                 messages.error(request, f"Error al guardar: {e}")
+        else:
+            # Si el formulario no es válido, se mostrará con errores
+            messages.error(request, "Por favor corrige los errores en el formulario.")
+            
+    else: # Método GET
+        form = HuespedForm()
+
+    context = {
+        'form': form
+    }
+    # Asegúrate de crear este template en la siguiente ruta
+    return render(request, 'huespedes/registrarhuesped.html', context)
+
+
+def ListarHuespedes(request):
+    # Obtiene TODOS los huéspedes
+    huespedes_queryset = Registro_Huespedes.objects.all().order_by('apellido', 'nombre')
+    
+    # *** Punto de Depuración ***
+    print(f"Número de huéspedes encontrados: {huespedes_queryset.count()}") # Añade esto
+    
+    context = {
+        'huespedes': huespedes_queryset # La clave es 'huespedes'
+    }
+    return render(request, 'huespedes/listarhuespedes.html', context)
+
+
+def EditarHuesped(request, huesped_id): 
+    """
+    Vista para editar un perfil de huésped existente.
+    """
+    # 1. Obtener la instancia del huésped que queremos editar
+    huesped = get_object_or_404(Registro_Huespedes, pk=huesped_id)
+
+    if request.method == 'POST':
+        # 2. Si es POST, rellenar el formulario con los datos enviados Y la instancia
+        form = HuespedForm(request.POST, instance=huesped)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, f"Huésped '{huesped.nombre} {huesped.apellido}' actualizado con éxito.")
+                return redirect('listarhuespedes') # Redirigir a la lista
+            except Exception as e:
+                 messages.error(request, f"Error al actualizar: {e}")
+        else:
+            messages.error(request, "Por favor corrige los errores en el formulario.")
+            
+    else: # Método GET
+        # 3. Si es GET, rellenar el formulario solo con la instancia
+        form = HuespedForm(instance=huesped)
+
+    context = {
+        'form': form,
+        'huesped': huesped # Pasamos el huésped por si queremos mostrar el nombre en el título
+    }
+    # 4. Reutilizar el template de registro
+    return render(request, 'huespedes/editarhuespedes.html', context)
+
+
+def EliminarHuesped(request, huesped_id):
+    """
+    Vista para eliminar un huésped vía AJAX (solo POST).
+    """
+    # Usamos 'if' para verificar el método
+    if request.method == 'POST': 
+        try:
+            huesped = get_object_or_404(Registro_Huespedes, pk=huesped_id)
+            
+            # Opcional: Comprobar si tiene reservas activas si quieres prevenirlo
+            # if huesped.reservas_como_principal.filter(check_out__gte=timezone.now()).exists():
+            #    return JsonResponse({'status': 'error', 'message': 'Huésped tiene reservas activas.'}, status=400)
+            
+            huesped_nombre = f"{huesped.nombre} {huesped.apellido}" # Guardar nombre para mensaje
+            huesped.delete()
+            
+            # Devolver respuesta JSON de éxito
+            return JsonResponse({'status': 'ok', 'message': f"Huésped '{huesped_nombre}' eliminado con éxito."})
+
+        except Exception as e:
+            # Devolver respuesta JSON de error
+            return JsonResponse({'status': 'error', 'message': f'Error al eliminar: {str(e)}'}, status=500)
+    else:
+            # Si no es POST, devolver error
+        return HttpResponseBadRequest("Método no permitido. Solo POST.")
+
+
+def GetHuespedDetallesAJAX(request, huesped_id):
+    """
+    Vista AJAX para obtener los detalles de un huésped
+    y autocompletar el formulario de reserva.
+    """
+    # Solo respondemos a peticiones GET
+    if request.method == 'GET':
+        try:
+            # 1. Buscar el huésped por su ID
+            huesped = get_object_or_404(Registro_Huespedes, pk=huesped_id)
+            
+            # 2. Preparar los datos que el formulario necesita
+            # (Usamos .get('campo', '') para evitar errores si un campo es None)
+            data = {
+                'status': 'ok',
+                'apellido': huesped.apellido,
+                'nombre': huesped.nombre,
+                'identificacion': huesped.identificacion,
+                'email': huesped.email,
+                'domicilio': huesped.procedencia, # Asumimos procedencia como domicilio
+                'telefono_domicilio': huesped.telefono,
+                # Puedes añadir más campos si quieres autocompletar más
+                # 'ciudad': huesped.ciudad, # (Necesitarías añadir 'ciudad' al modelo Huesped)
+            }
+            
+            # 3. Devolver los datos como JSON
+            return JsonResponse(data)
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+#endregion
+
+#region ------ FACTURA ------ # 
+def GenerarFactura(request, reserva_id):
+    """
+    Vista AJAX para calcular el costo de la estadía y generar la factura.
+    """
+    # Solo permitimos peticiones POST (para crear la factura)
+    if request.method != 'POST':
+        return HttpResponseBadRequest("Método no permitido. Solo POST.")
+
+    try:
+        # 1. Obtener la Reserva con las habitaciones asignadas
+        reserva = get_object_or_404(
+            Reservas.objects.prefetch_related('habitaciones_asignadas'), 
+            pk=reserva_id
+        )
+
+        # 2. Verificar precondiciones
+
+        # A) ¿Ya existe factura?
+        if hasattr(reserva, 'factura'):
+            return JsonResponse({'status': 'error', 'message': f'La Reserva #{reserva_id} ya tiene una Factura (ID: {reserva.factura.id}) emitida.'}, status=400)
+
+        # B) ¿Tiene habitaciones asignadas?
+        if not reserva.habitaciones_asignadas.exists():
+            return JsonResponse({'status': 'error', 'message': 'No se puede facturar: la reserva no tiene habitaciones asignadas.'}, status=400)
+        
+        # C) ¿Tiene huésped principal ligado? (Opcional, pero ideal para la factura)
+        if not reserva.huesped_principal:
+             return JsonResponse({'status': 'error', 'message': 'No se puede facturar: la reserva debe tener un Huésped Titular asignado.'}, status=400)
+
+
+        # 3. Lógica de Cálculo
+        
+        # 3.1. Calcular Noches
+        check_in_date = reserva.check_in.date()
+        check_out_date = reserva.check_out.date()
+        total_noches = (check_out_date - check_in_date).days
+        
+        # Si la reserva dura menos de 1 día (check-in y check-out el mismo día), se factura 1 noche.
+        if total_noches == 0:
+            total_noches = 1 
+
+        # 3.2. Calcular Subtotal Alojamiento
+        # Sumar el precio de CADA habitación asignada y multiplicar por las noches
+        subtotal_alojamiento = sum(
+            h.precio for h in reserva.habitaciones_asignadas.all()
+        ) * total_noches
+
+        # Convertir a Decimal para precisión de factura
+        subtotal_alojamiento_d = decimal.Decimal(subtotal_alojamiento)
+        
+        # 3.3. Calcular Impuestos (19%)
+        IMPUESTO_PORCENTAJE = decimal.Decimal('0.19') # Definido aquí para el cálculo
+        valor_impuestos = subtotal_alojamiento_d * IMPUESTO_PORCENTAJE
+        
+        # 3.4. Calcular Total Final
+        total_facturado = subtotal_alojamiento_d + valor_impuestos
+
+
+        # 4. Crear la Factura
+        factura = Factura.objects.create(
+            reserva=reserva,
+            huesped=reserva.huesped_principal, # Usamos el FK que ligamos
+            total_noches=total_noches,
+            subtotal_alojamiento=round(subtotal_alojamiento_d, 2),
+            impuestos_porcentaje=IMPUESTO_PORCENTAJE,
+            valor_impuestos=round(valor_impuestos, 2),
+            total_facturado=round(total_facturado, 2),
+            estado='Pendiente' # Estado inicial
+        )
+
+        # 5. Respuesta de éxito
+        return JsonResponse({
+            'status': 'ok',
+            'message': f'Factura #{factura.id} generada con éxito.',
+            'factura_id': factura.id,
+            'total': str(factura.total_facturado) # Devolver como string para el JS
+        })
+
+    except Exception as e:
+        # Esto captura errores de la base de datos o lógica no prevista
+        return JsonResponse({'status': 'error', 'message': f'Error al generar factura: {str(e)}'}, status=500)
+#endregion

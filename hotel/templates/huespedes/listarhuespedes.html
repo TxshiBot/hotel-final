@@ -1,0 +1,474 @@
+{% load static %}
+{% include 'inc/header.html'%}
+
+<style>
+    /* === ESTILOS GENERALES === */
+    .page-header {
+        background: var(--white); padding: 25px; border-radius: 8px; margin-bottom: 25px;
+        border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
+    }
+    body.dark-mode .page-header { background: var(--dark-card); border-color: var(--dark-border); }
+    .page-header h1 { font-size: 1.75rem; color: var(--dark-slate); font-weight: 600; margin: 0; }
+    body.dark-mode .page-header h1 { color: var(--dark-text); }
+    .btn-new, .btn-back {
+        padding: 10px 20px; background: var(--steel-blue); color: var(--white);
+        border: none; border-radius: 6px; font-weight: 500; cursor: pointer;
+        transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none;
+    }
+    .btn-new:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-new { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-new:hover { background: var(--steel-blue); }
+    .btn-back { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
+    body.dark-mode .btn-back { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+
+    /* === ESTILOS HUESPED GRID & CARD === */
+    .huesped-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Cards un poco más anchas */
+        gap: 20px;
+    }
+    .huesped-card {
+        background: var(--white);
+        border-radius: 8px;
+        border: 1px solid var(--border-gray);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    body.dark-mode .huesped-card { background: var(--dark-card); border-color: var(--dark-border); }
+    .huesped-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    body.dark-mode .huesped-card:hover { box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05); }
+
+    .card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-gray);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    body.dark-mode .card-header { border-bottom-color: var(--dark-border); }
+    
+    .huesped-avatar {
+        width: 45px; height: 45px; border-radius: 50%;
+        background: var(--steel-blue);
+        color: var(--white);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        flex-shrink: 0; /* Evita que el avatar se encoja */
+    }
+    body.dark-mode .huesped-avatar { background: var(--steel-blue-dark); }
+    
+    .huesped-info {
+        flex-grow: 1;
+        overflow: hidden; /* Evita que texto largo rompa el layout */
+    }
+    .huesped-nombre {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--dark-slate);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Añade ... si el nombre es muy largo */
+    }
+    body.dark-mode .huesped-nombre { color: var(--dark-text); }
+    .huesped-id {
+        font-size: 0.85rem;
+        color: var(--medium-gray);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    body.dark-mode .huesped-id { color: var(--dark-text-secondary); }
+
+    .card-body {
+        padding: 20px;
+        font-size: 0.9rem;
+        color: var(--dark-slate);
+        display: flex;
+        flex-direction: column;
+        gap: 12px; /* Espacio entre items */
+    }
+    body.dark-mode .card-body { color: var(--dark-text-secondary); }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .info-item i {
+        width: 16px;
+        text-align: center;
+        color: var(--steel-blue);
+        opacity: 0.8;
+    }
+    body.dark-mode .info-item i { color: var(--steel-blue-dark); }
+    
+    /* === ESTILOS DEL MODAL (Similares a los anteriores) === */
+    .modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
+    body.dark-mode .modal-content { background-color: var(--dark-card); border-color: var(--dark-border); color: var(--dark-text); }
+    .modal-header { padding: 1rem 1.5rem; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); }
+    body.dark-mode .modal-header { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
+    .modal-title { color: var(--dark-slate); font-weight: 600; }
+    body.dark-mode .modal-title { color: var(--dark-text); }
+    .modal-header .btn-close { filter: none; opacity: 0.6; }
+    body.dark-mode .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); opacity: 0.8; }
+    .modal-body { padding: 25px; }
+    body.dark-mode .modal-body { background-color: var(--dark-card); }
+    .detail-section { margin-bottom: 25px; }
+    .detail-section:last-child { margin-bottom: 0; }
+    .detail-section-title { font-size: 1.1rem; font-weight: 600; color: var(--steel-blue); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--ice-blue); display: flex; align-items: center; gap: 10px; }
+    body.dark-mode .detail-section-title { color: var(--steel-blue-dark); border-bottom-color: var(--dark-border); }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px 20px; }
+    .detail-item { display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; }
+    .detail-item.full-width { grid-column: 1 / -1; }
+    .detail-label { font-weight: 500; color: var(--steel-blue); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    body.dark-mode .detail-label { color: var(--steel-blue-dark); }
+    .detail-value { color: var(--dark-slate); word-wrap: break-word; }
+    body.dark-mode .detail-value { color: var(--dark-text); }
+    .modal-footer { padding: 1rem 1.5rem; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); }
+    body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
+    
+    .btn { padding: 10px 25px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn-primary { background: var(--steel-blue); color: var(--white); }
+    .btn-primary:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-primary { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-primary:hover { background: var(--steel-blue); }
+    .btn-secondary { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
+    .btn-secondary:hover { background: var(--ice-blue); }
+    body.dark-mode .btn-secondary { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+    body.dark-mode .btn-secondary:hover { background: var(--dark-bg); }
+    .btn-danger { background: #DC3545; color: var(--white); border: 1px solid #DC3545; }
+    .btn-danger:hover { background: #c82333; }
+    body.dark-mode .btn-danger { background: #E74C3C; border-color: #E74C3C; }
+    body.dark-mode .btn-danger:hover { background: #c0392b; }
+
+</style>
+
+<div class="page-header">
+    <h1><i class="fas fa-users"></i> Registro de Huéspedes</h1>
+    <a href="{% url 'registrarhuesped' %}" class="btn-new">
+        <i class="fas fa-user-plus"></i> Registrar Nuevo
+    </a>
+</div>
+
+<div class="huesped-grid">
+
+    {% for huesped in huespedes %}
+    <div class="huesped-card" 
+         data-bs-toggle="modal" 
+         data-bs-target="#huespedDetailModal"
+         
+         data-huesped-id="{{ huesped.id }}"
+         data-nombre="{{ huesped.nombre }}"
+         data-apellido="{{ huesped.apellido }}"
+         data-tipo-documento="{{ huesped.tipo_documento }}"
+         data-identificacion="{{ huesped.identificacion }}"
+         data-procedencia="{{ huesped.procedencia }}"
+         data-razon="{{ huesped.razon }}"
+         data-telefono="{{ huesped.telefono|default:'N/A' }}"
+         data-email="{{ huesped.email|default:'N/A' }}"
+         data-fecha-nacimiento="{{ huesped.fecha_nacimiento|date:'Y-m-d'|default:'N/A' }}"
+         data-nacionalidad="{{ huesped.nacionalidad|default:'N/A' }}"
+         data-genero="{{ huesped.get_genero_display|default:'N/A' }}" {# Usa get_..._display para el label #}
+         data-preferencias="{{ huesped.preferencias|default:'Ninguna' }}"
+         data-fecha-registro="{{ huesped.fecha_registro|date:'d M Y' }}"
+         >
+        
+        <div class="card-header">
+            <div class="huesped-avatar">
+                {{ huesped.nombre|first|upper }}{{ huesped.apellido|first|upper }} {# Iniciales #}
+            </div>
+            <div class="huesped-info">
+                <div class="huesped-nombre">{{ huesped.nombre }} {{ huesped.apellido }}</div>
+                <div class="huesped-id">{{ huesped.tipo_documento }}: {{ huesped.identificacion }}</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="info-item">
+                <i class="fas fa-phone-alt"></i>
+                <span>{{ huesped.telefono|default:'No registrado' }}</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <span>{{ huesped.email|default:'No registrado' }}</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Procedencia: {{ huesped.procedencia }}</span>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No hay huéspedes registrados. <a href="{% url 'registrarhuesped' %}">Registrar uno nuevo</a>.</p>
+    {% endfor %}
+    
+</div>
+
+<div class="modal fade" id="huespedDetailModal" tabindex="-1" aria-labelledby="huespedDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="huespedDetailModalLabel">Perfil del Huésped</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBodyContent">
+                <p>Cargando detalles...</p>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <div>
+                    <button type="button" class="btn btn-danger" id="btnEliminarHuesped">
+                        <i class="fas fa-trash-alt"></i> Eliminar
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnEditarHuesped">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: var(--occupied); color: var(--white);">
+                <h5 class="modal-title" id="confirmDeleteModalLabel"><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar permanentemente a este huésped?</p>
+                <p><strong id="huespedDeleteInfo"></strong></p>
+                <p class="text-muted" style="font-size: 0.85em;"><small>Esta acción no se puede deshacer. Las reservas asociadas (si existen) quedarán sin huésped principal asignado.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminacion">Sí, Eliminar</button> {# Botón que activa el AJAX #}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+
+<script>
+// Espera a que todo el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+
+    // === JAVASCRIPT ===
+
+    // --- Utilidad CSRF ---
+    function getCookie(name) { /* ... (Función getCookie sin cambios) ... */
+        let cookieValue = null; if (document.cookie && document.cookie !== '') { const cookies = document.cookie.split(';'); for (let i = 0; i < cookies.length; i++) { const cookie = cookies[i].trim(); if (cookie.substring(0, name.length + 1) === (name + '=')) { cookieValue = decodeURIComponent(cookie.substring(name.length + 1)); break; } } } return cookieValue;
+     }
+    const csrftoken = getCookie('csrftoken');
+
+    // --- Elementos del DOM ---
+    const huespedModalElement = document.getElementById('huespedDetailModal');
+    const confirmDeleteModalElement = document.getElementById('confirmDeleteModal');
+    const btnEditarGlobal = document.getElementById('btnEditarHuesped');
+    const btnEliminarGlobal = document.getElementById('btnEliminarHuesped');
+    const btnConfirmarEliminacion = document.getElementById('btnConfirmarEliminacion');
+    const huespedDeleteInfo = document.getElementById('huespedDeleteInfo');
+
+    let huespedIdParaAccion = null;
+    let bootstrapConfirmDeleteModal = null;
+    let bootstrapDetailModal = null;
+
+    // --- Inicializar Instancias de Modales (VERIFICANDO BOOTSTRAP) ---
+    if (typeof bootstrap === 'undefined') {
+        console.error("¡ERROR CRÍTICO! La librería Bootstrap JS no está cargada o no se cargó antes de este script.");
+        // Opcional: Mostrar un mensaje al usuario
+        // alert("Error al cargar componentes de la página. Por favor, recargue.");
+    } else {
+        // Intentar inicializar modales solo si Bootstrap está definido
+        if (confirmDeleteModalElement) {
+             try {
+                 bootstrapConfirmDeleteModal = new bootstrap.Modal(confirmDeleteModalElement);
+                 console.log("Modal de confirmación inicializado.");
+             } catch (e) { console.error("Error inicializando modal de confirmación:", e); }
+        } else {
+            console.error("Elemento del modal #confirmDeleteModal NO encontrado.");
+        }
+
+        if (huespedModalElement) {
+             try {
+                 bootstrapDetailModal = bootstrap.Modal.getInstance(huespedModalElement) || new bootstrap.Modal(huespedModalElement);
+                 console.log("Modal de detalles inicializado.");
+             } catch (e) { console.error("Error inicializando modal de detalles:", e); }
+        } else {
+            console.error("Elemento del modal #huespedDetailModal NO encontrado.");
+        }
+    }
+
+
+    // --- 1. Lógica para Poblar Modal de Detalles ---
+    if (huespedModalElement) {
+        huespedModalElement.addEventListener('show.bs.modal', function (event) {
+            console.log("Abriendo modal de detalles...");
+            const card = event.relatedTarget;
+            if (!card || !card.classList.contains('huesped-card')) {
+                console.warn("Disparador inválido."); return;
+            }
+            const data = card.dataset;
+            const modalBody = huespedModalElement.querySelector('#modalBodyContent');
+            const huespedId = data.huespedId;
+
+            if (!modalBody || !huespedId) {
+                console.error("Falta #modalBodyContent o data-huesped-id.");
+                if(modalBody) modalBody.innerHTML = '<p class="text-danger">Error al cargar.</p>';
+                return;
+            }
+
+            console.log("Datos para modal detalles:", data); // Verifica los datos
+
+            // Guardar ID en botones
+            if (btnEditarGlobal) btnEditarGlobal.dataset.huespedId = huespedId;
+            if (btnEliminarGlobal) btnEliminarGlobal.dataset.huespedId = huespedId;
+
+            // Generar HTML
+             try {
+                modalBody.innerHTML = generateDetailModalHTML(data);
+             } catch (e) {
+                 console.error("Error generando HTML del modal:", e);
+                 modalBody.innerHTML = '<p class="text-danger">Error al mostrar detalles.</p>';
+             }
+        });
+    }
+
+    // --- Función Auxiliar generateDetailModalHTML (sin cambios) ---
+    function generateDetailModalHTML(data){
+        return `
+            <div class="detail-section"> <div class="detail-section-title"><i class="fas fa-user-circle"></i> Info Personal</div> <div class="detail-grid"> <div class="detail-item"><span class="detail-label">Nombre</span><span class="detail-value">${data.nombre || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Apellido</span><span class="detail-value">${data.apellido || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Tipo Doc</span><span class="detail-value">${data.tipoDocumento || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Nº Doc</span><span class="detail-value">${data.identificacion || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">F. Nacim.</span><span class="detail-value">${data.fechaNacimiento || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Nacionalidad</span><span class="detail-value">${data.nacionalidad || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Género</span><span class="detail-value">${data.genero || 'N/A'}</span></div> </div> </div>
+            <div class="detail-section"> <div class="detail-section-title"><i class="fas fa-address-book"></i> Contacto y Viaje</div> <div class="detail-grid"> <div class="detail-item"><span class="detail-label">Teléfono</span><span class="detail-value">${data.telefono || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">${data.email || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Procedencia</span><span class="detail-value">${data.procedencia || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Razón Viaje</span><span class="detail-value">${data.razon || 'N/A'}</span></div> </div> </div>
+            <div class="detail-section mb-0"> <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> Notas</div> <div class="detail-grid"> <div class="detail-item full-width"><span class="detail-label">Preferencias</span><span class="detail-value">${data.preferencias || 'N/A'}</span></div> <div class="detail-item"><span class="detail-label">Registro</span><span class="detail-value">${data.fechaRegistro || 'N/A'}</span></div> </div> </div>
+        `;
+    }
+
+    // --- 2. Lógica Botón Editar (sin cambios) ---
+    if (btnEditarGlobal) { /* ... listener ... */
+        btnEditarGlobal.addEventListener('click', function() {
+            const huespedId = this.dataset.huespedId;
+            if (huespedId) { window.location.href = `/huespedes/editar/${huespedId}/`; }
+            else { console.error("ID Editar no encontrado."); alert("Error: No se pudo identificar al huésped para editar."); }
+        });
+     } else { console.warn("Botón Editar (#btnEditarHuesped) no encontrado."); }
+
+    // --- 3. Lógica Botón Eliminar (Abre Modal Confirmación) ---
+    if (btnEliminarGlobal) {
+        btnEliminarGlobal.addEventListener('click', function() {
+            huespedIdParaAccion = this.dataset.huespedId;
+            if (!huespedIdParaAccion) { console.error("ID Eliminar no encontrado."); return; }
+
+            const activeCard = document.querySelector(`.huesped-card[data-huesped-id="${huespedIdParaAccion}"]`);
+            const nombreHuesped = activeCard ? `${activeCard.dataset.nombre || ''} ${activeCard.dataset.apellido || ''}`.trim() : `ID: ${huespedIdParaAccion}`;
+
+            if (huespedDeleteInfo) huespedDeleteInfo.textContent = nombreHuesped || `ID: ${huespedIdParaAccion}`;
+            else console.error("#huespedDeleteInfo no encontrado.");
+
+            // Intenta cerrar detalles y abrir confirmación
+            // Necesitamos obtener la instancia ACTUAL de Bootstrap
+            if (huespedModalElement) {
+                const detailModalInstance = bootstrap.Modal.getInstance(huespedModalElement);
+                if(detailModalInstance) detailModalInstance.hide();
+                else console.warn("No se pudo obtener instancia del modal de detalles para cerrar.");
+            }
+
+            if (bootstrapConfirmDeleteModal) {
+                 console.log("Mostrando modal de confirmación...");
+                 bootstrapConfirmDeleteModal.show();
+            } else {
+                 console.error("Instancia del modal de confirmación es nula o Bootstrap no está listo.");
+                 alert("Error al abrir la confirmación. Revisa la consola (F12).");
+            }
+        });
+    } else { console.warn("Botón Eliminar (#btnEliminarHuesped) no encontrado."); }
+
+// --- 4. Lógica Botón Confirmar Eliminación (AJAX POST - Revisado) ---
+    if (btnConfirmarEliminacion) {
+        btnConfirmarEliminacion.addEventListener('click', function(event) { // Añadir 'event'
+            event.preventDefault(); // <-- AÑADIDO: Prevenir cualquier acción por defecto
+
+            if (!huespedIdParaAccion) {
+                 console.error("No hay ID de huésped seleccionado para eliminar.");
+                 alert("Error interno: No se encontró el ID del huésped a eliminar.");
+                 return;
+            }
+
+            const url = `/huespedes/eliminar/${huespedIdParaAccion}/`;
+            console.log(`Intentando eliminar huésped ID: ${huespedIdParaAccion} con POST a ${url}`); // Log
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+
+            fetch(url, {
+                method: 'POST', // Asegurarse que es POST
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log("Respuesta recibida del servidor. Status:", response.status); // Log
+                if (!response.ok) {
+                    // Intenta leer el error del JSON
+                    return response.json().then(err => {
+                        console.error("Error en respuesta:", err); // Log
+                        throw new Error(err.message || `Error del servidor: ${response.status}`);
+                    });
+                }
+                return response.json(); // Si la respuesta es OK
+            })
+            .then(data => {
+                console.log("Datos de respuesta (éxito):", data); // Log
+                if (data.status === 'ok') {
+                    const cardToRemove = document.getElementById(`huesped-card-${huespedIdParaAccion}`);
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'opacity 0.5s ease';
+                        cardToRemove.style.opacity = '0';
+                        setTimeout(() => cardToRemove.remove(), 500);
+                    }
+                    if(bootstrapConfirmDeleteModal) bootstrapConfirmDeleteModal.hide();
+                    // showGlobalMessage(data.message, 'success'); // Mejor que alert
+                    alert(data.message);
+                }
+                // Los errores ya se manejan antes
+            })
+            .catch(error => {
+                console.error('Error durante fetch o procesamiento:', error); // Log
+                alert(`Error al eliminar: ${error.message}`);
+            })
+            .finally(() => {
+                console.log("Fetch finalizado."); // Log
+                this.disabled = false;
+                this.innerHTML = 'Sí, Eliminar';
+                huespedIdParaAccion = null;
+                if(bootstrapConfirmDeleteModal && bootstrapConfirmDeleteModal._isShown) {
+                    bootstrapConfirmDeleteModal.hide();
+                }
+            });
+        });
+    } else {
+        console.warn("Botón Confirmar Eliminación (#btnConfirmarEliminacion) no encontrado.");
+    }
+
+// ... (Resto del script, dentro de DOMContentLoaded) ...
+
+}); // <-- FIN DE DOMContentLoaded
+
+</script>
+{% endblock %}
+
+{% include 'inc/footer.html'%}

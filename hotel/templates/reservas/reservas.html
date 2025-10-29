@@ -103,126 +103,84 @@ body.dark-mode .card-footer { background-color: var(--dark-bg-secondary); border
     align-items: center; justify-content: center; gap: 8px;
 }
 /* Estilo botón pendiente */
-.btn-confirmar-pendiente { background-color: var(--steel-blue); color: var(--white); }
-.btn-confirmar-pendiente:hover { background-color: #3a7c8e; }
-body.dark-mode .btn-confirmar-pendiente { background-color: var(--steel-blue-dark); }
-body.dark-mode .btn-confirmar-pendiente:hover { background-color: var(--steel-blue); }
+.btn-confirmar-pendiente { background-color: var(--reserved); color: var(--white); }
+.btn-confirmar-pendiente:hover { background-color: #c95151; }
+body.dark-mode .btn-confirmar-pendiente { background-color: var(--reserved); }
+body.dark-mode .btn-confirmar-pendiente:hover { background-color: var(--reserved); }
 /* Estilo botón confirmado */
 .btn-confirmar-confirmado { background-color: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
 .btn-confirmar-confirmado:hover { background-color: var(--ice-blue); }
 body.dark-mode .btn-confirmar-confirmado { background-color: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
 body.dark-mode .btn-confirmar-confirmado:hover { background-color: var(--dark-bg); }
 
-/* === ESTILOS DEL MODAL (INCLUYE CORRECCIONES DARK MODE) === */
-.modal-content { /* Contenedor principal del modal */
-    background-color: var(--white); /* Fondo blanco por defecto */
+/* Botón de Factura Personalizado (NUEVO ESTILO) */
+.btn-factura-custom {
+    width: 100%;
+    padding: 10px 15px;
+    margin-top: 5px; /* Pequeña separación del botón de arriba */
     border: 1px solid var(--border-gray);
-    border-radius: 8px; /* Redondear esquinas */
+    border-radius: 6px; 
+    font-weight: 500;
+    cursor: pointer;
+    background-color: var(--steel-blue); /* Color base del sistema */
+    color: var(--white);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
-body.dark-mode .modal-content {
-    background-color: var(--dark-card); /* Fondo oscuro principal */
+.btn-factura-custom:hover {
+    background-color: var(--dark-slate); /* Gris oscuro al pasar el ratón */
+}
+body.dark-mode .btn-factura-custom {
+    background-color: var(--steel-blue-dark);
     border-color: var(--dark-border);
 }
+body.dark-mode .btn-factura-custom:hover {
+    background-color: var(--steel-blue);
+}
 
-.modal-header {
-    padding: 1rem 1.5rem;
-    background-color: var(--light-gray);
-    border-bottom: 1px solid var(--border-gray);
-    border-top-left-radius: 8px; /* Redondear esquinas superiores */
-    border-top-right-radius: 8px;
-}
-body.dark-mode .modal-header {
-    background-color: var(--dark-bg-secondary);
-    border-bottom-color: var(--dark-border);
-}
-.modal-title {
-    color: var(--dark-slate);
-    font-weight: 600;
-}
-body.dark-mode .modal-title {
-    color: var(--dark-text); /* Título claro */
-}
+/* === ESTILOS DEL MODAL (EXISTENTE) === */
+.modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
+body.dark-mode .modal-content { background-color: var(--dark-card); border-color: var(--dark-border); }
+.modal-header { padding: 1rem 1.5rem; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); border-top-left-radius: 8px; border-top-right-radius: 8px; }
+body.dark-mode .modal-header { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
+.modal-title { color: var(--dark-slate); font-weight: 600; }
+body.dark-mode .modal-title { color: var(--dark-text); }
 .reserva-id-modal { font-weight: bold; color: var(--steel-blue); }
 body.dark-mode .reserva-id-modal { color: var(--steel-blue-dark); }
-
-/* Botón de cerrar 'X' */
-.modal-header .btn-close {
-    background-color: transparent; /* Fondo transparente */
-    border: none;
-    opacity: 0.6;
-}
-body.dark-mode .modal-header .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%); /* Hace el ícono blanco */
-    opacity: 0.8;
-}
-.modal-header .btn-close:hover { opacity: 1; }
-
-.modal-body {
-    padding: 25px;
-    background-color: var(--white); /* Fondo del cuerpo */
-}
-body.dark-mode .modal-body {
-    background-color: var(--dark-card); /* Fondo oscuro del cuerpo */
-}
-
-/* Secciones dentro del modal */
+.modal-header .btn-close { background-color: transparent; border: none; opacity: 0.6; }
+body.dark-mode .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); opacity: 0.8; }
+.modal-body { padding: 25px; background-color: var(--white); }
+body.dark-mode .modal-body { background-color: var(--dark-card); }
 .detail-section { margin-bottom: 25px; }
 .detail-section:last-child { margin-bottom: 0; }
-.detail-section-title {
-    font-size: 1.1rem; font-weight: 600; color: var(--steel-blue); margin-bottom: 15px;
-    padding-bottom: 8px; border-bottom: 2px solid var(--ice-blue); display: flex; align-items: center; gap: 10px;
-}
+.detail-section-title { font-size: 1.1rem; font-weight: 600; color: var(--steel-blue); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--ice-blue); display: flex; align-items: center; gap: 10px; }
 body.dark-mode .detail-section-title { color: var(--steel-blue-dark); border-bottom-color: var(--dark-border); }
-
-/* Grid para detalles */
 .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px 20px; }
 .detail-item { display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; }
 .detail-item.full-width { grid-column: 1 / -1; }
-
-/* Etiquetas y Valores */
 .detail-label { font-weight: 500; color: var(--steel-blue); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-body.dark-mode .detail-label { color: var(--steel-blue-dark); } /* Color de acento oscuro */
-
+body.dark-mode .detail-label { color: var(--steel-blue-dark); }
 .detail-value { color: var(--dark-slate); word-wrap: break-word; }
-body.dark-mode .detail-value { color: var(--dark-text); } /* Texto claro */
-
-/* Footer del modal */
-.modal-footer {
-    padding: 1rem 1.5rem;
-    background-color: var(--light-gray);
-    border-top: 1px solid var(--border-gray);
-    border-bottom-left-radius: 8px; /* Redondear esquinas inferiores */
-    border-bottom-right-radius: 8px;
-}
-body.dark-mode .modal-footer {
-    background-color: var(--dark-bg-secondary);
-    border-top-color: var(--dark-border);
-}
-/* Estilo del botón Cerrar del footer si es necesario */
-body.dark-mode .modal-footer .btn-secondary {
-    /* Puedes ajustar colores si el botón default no se ve bien */
-    background-color: var(--dark-bg);
-    border-color: var(--dark-border);
-    color: var(--dark-text);
-}
-body.dark-mode .modal-footer .btn-secondary:hover {
-    background-color: var(--dark-bg-secondary);
-}
+body.dark-mode .detail-value { color: var(--dark-text); }
+.modal-footer { padding: 1rem 1.5rem; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
 </style>
 
 <div class="top-bar">
     <div class="top-bar-left">
         <h1><i class="fas fa-calendar-check"></i> Listado de Reservas</h1>
         
-        <form method="GET" action="{% url 'reservas' %}" class="search-form" onsubmit="return false;"> {# Añadido onsubmit="return false;" para prevenir envío tradicional #}
+        <form method="GET" action="{% url 'reservas' %}" class="search-form" onsubmit="return false;">
             <input type="text" 
                 name="q" 
-                id="searchInput" {# AÑADIDO ID #}
+                id="searchInput" 
                 class="search-input" 
                 placeholder="Buscar por ID, nombre o estado..." 
                 value="{{ request.GET.q|default:'' }}">
-            {# Puedes eliminar este botón si quieres #}
-            <button type="submit" class="btn-search" style="display: none;"> {# Oculto en lugar de eliminarlo #}
+            <button type="submit" class="btn-search" style="display: none;">
                 <i class="fas fa-search"></i>
             </button>
         </form>
@@ -240,94 +198,109 @@ body.dark-mode .modal-footer .btn-secondary:hover {
     {% csrf_token %}
 
     {% for reserva in reservas %}
-<div class="reservation-card 
-     {% if reserva.confirmado == 'Confirmado' %}card-confirmada{% else %}card-pendiente{% endif %}" 
-     id="reserva-card-{{ reserva.id }}"
-     
-     data-bs-toggle="modal" 
-     data-bs-target="#reservationModal"
-     
-     data-id="{{ reserva.id }}"
-     data-nombre="{{ reserva.nombre }} {{ reserva.apellido }}"
-     data-identificacion="{{ reserva.identificacion|default:'N/A' }}"
-     data-email="{{ reserva.email }}"
-     
-     data-telefono-domicilio="{{ reserva.telefono_domicilio|default:'' }}"
-     data-telefono-oficina="{{ reserva.telefono_oficina|default:'' }}"
-     
-     data-domicilio="{{ reserva.domicilio }}"
-     data-ciudad="{{ reserva.ciudad }}"
-     data-departamento="{{ reserva.departamento }}"
-     data-checkin="{{ reserva.check_in|date:'d M Y, H:i' }}"
-     data-checkout="{{ reserva.check_out|date:'d M Y, H:i' }}"
-     data-huespedes="{{ reserva.companion }}"
-     
-     data-habitaciones="{{ reserva.num_habt|default:'' }}"
-     data-hospedaje-deseado="{{ reserva.hospedaje_deseado|default:'' }}"
-     data-cotizado="{{ reserva.cotizado|default:'' }}"
-     data-solicitado="{{ reserva.solicitado|default:'' }}"
-     
-     data-empleado="{{ reserva.empleados|default:'N/A' }}"
-     data-telefono-empleado="{{ reserva.telefono|default:'N/A' }}"
-     data-confirmado="{{ reserva.confirmado|default:'Pendiente' }}"
-     data-forma-pago="{{ reserva.formadepago|default:'N/A' }}"
-     
-     data-solicitud="{{ reserva.solicitud|default:'' }}"
-     data-observaciones="{{ reserva.observaciones|default:'' }}"
-     
-     data-nombre-compania="{{ reserva.nombre_compania|default:'' }}"
-     data-domicilio-compania="{{ reserva.compania_domicilio|default:'' }}"
-     data-ciudad-compania="{{ reserva.compania_ciudad|default:'' }}"
-     data-email-compania="{{ reserva.compania_email|default:'' }}"
-     >
         
-        <div class="card-header">
-            <span class="reserva-id">#{{ reserva.id }}</span>
-            <span class="status-badge 
-                {% if reserva.confirmado == 'Confirmado' %}status-confirmado
-                {% else %}status-pendiente{% endif %}"
-                id="status-badge-{{ reserva.id }}">
-                {{ reserva.confirmado|default:'Pendiente' }}
-            </span>
-        </div>
-        
-        <div class="card-body">
-            <div class="guest-name">
-                <i class="fas fa-user"></i>
-                <span class="value"><span class="label">Huésped:</span> {{ reserva.nombre }} {{ reserva.apellido }}</span>
+        <div class="reservation-card 
+             {% if reserva.confirmado == 'Confirmado' %}card-confirmada{% else %}card-pendiente{% endif %}" 
+             id="reserva-card-{{ reserva.id }}"
+             
+             data-bs-toggle="modal" 
+             data-bs-target="#reservationModal"
+             
+             data-id="{{ reserva.id }}"
+             data-nombre="{{ reserva.nombre }} {{ reserva.apellido }}"
+             data-identificacion="{{ reserva.identificacion|default:'N/A' }}"
+             data-email="{{ reserva.email }}"
+             
+             data-telefono-domicilio="{{ reserva.telefono_domicilio|default:'' }}"
+             data-telefono-oficina="{{ reserva.telefono_oficina|default:'' }}"
+             
+             data-domicilio="{{ reserva.domicilio }}"
+             data-ciudad="{{ reserva.ciudad }}"
+             data-departamento="{{ reserva.departamento }}"
+             data-checkin="{{ reserva.check_in|date:'d M Y, H:i' }}"
+             data-checkout="{{ reserva.check_out|date:'d M Y, H:i' }}"
+             data-huespedes="{{ reserva.companion }}"
+             
+             data-habitaciones="{{ reserva.num_habt|default:'' }}"
+             data-hospedaje-deseado="{{ reserva.hospedaje_deseado|default:'' }}"
+             data-cotizado="{{ reserva.cotizado|default:'' }}"
+             data-solicitado="{{ reserva.solicitado|default:'' }}"
+             
+             data-empleado="{{ reserva.empleados|default:'N/A' }}"
+             data-telefono-empleado="{{ reserva.telefono|default:'N/A' }}"
+             data-confirmado="{{ reserva.confirmado|default:'Pendiente' }}"
+             data-forma-pago="{{ reserva.formadepago|default:'N/A' }}"
+             
+             data-solicitud="{{ reserva.solicitud|default:'' }}"
+             data-observaciones="{{ reserva.observaciones|default:'' }}"
+             
+             data-nombre-compania="{{ reserva.nombre_compania|default:'' }}"
+             data-domicilio-compania="{{ reserva.compania_domicilio|default:'' }}"
+             data-ciudad-compania="{{ reserva.compania_ciudad|default:'' }}"
+             data-email-compania="{{ reserva.compania_email|default:'' }}"
+             >
+            
+            <div class="card-header">
+                <span class="reserva-id">#{{ reserva.id }}</span>
+                <span class="status-badge 
+                    {% if reserva.confirmado == 'Confirmado' %}status-confirmado
+                    {% else %}status-pendiente{% endif %}"
+                    id="status-badge-{{ reserva.id }}">
+                    {{ reserva.confirmado|default:'Pendiente' }}
+                </span>
             </div>
-            <div class="date-item">
-                <i class="fas fa-calendar-day"></i>
-                <div><span class="label">Check-in:</span> {{ reserva.check_in|date:"d/m/Y" }}</div>
+            
+            <div class="card-body">
+                <div class="guest-name">
+                    <i class="fas fa-user"></i>
+                    <span class="value"><span class="label">Huésped:</span> {{ reserva.nombre }} {{ reserva.apellido }}</span>
+                </div>
+                <div class="date-item">
+                    <i class="fas fa-calendar-day"></i>
+                    <div><span class="label">Check-in:</span> {{ reserva.check_in|date:"d/m/Y" }}</div>
+                </div>
+                <div class="date-item">
+                    <i class="fas fa-calendar-day"></i>
+                    <div><span class="label">Check-out:</span> {{ reserva.check_out|date:"d/m/Y" }}</div>
+                </div>
+                    <div class="room-info">
+                        <i class="fas fa-door-open"></i>
+                        <div><span class="label">Tipo:</span> {{ reserva.hospedaje_deseado|default:'N/E' }} ({{ reserva.num_habt|default:'?' }} Hab.)</div>
+                    </div>
             </div>
-            <div class="date-item">
-                <i class="fas fa-calendar-day"></i>
-                <div><span class="label">Check-out:</span> {{ reserva.check_out|date:"d/m/Y" }}</div>
-            </div>
-             <div class="room-info">
-                 <i class="fas fa-door-open"></i>
-                 <div><span class="label">Tipo:</span> {{ reserva.hospedaje_deseado|default:'N/E' }} ({{ reserva.num_habt|default:'?' }} Hab.)</div>
-            </div>
-        </div>
 
-        <div class="card-footer">
-             <div class="guest-count">
-                 <i class="fas fa-users"></i> {{ reserva.companion }} Huésped(es)
-             </div>
-            <button class="btn-confirmar 
-                    {% if reserva.confirmado == 'Confirmado' %}btn-confirmar-confirmado{% else %}btn-confirmar-pendiente{% endif %}"
-                    data-reserva-id="{{ reserva.id }}" 
-                    id="btn-confirmar-{{ reserva.id }}"
-                    type="button"> 
-                {% if reserva.confirmado == 'Confirmado' %}
-                    <i class="fas fa-times-circle"></i> Marcar Pendiente
-                {% else %}
-                    <i class="fas fa-check-circle"></i> Confirmar Reserva
-                {% endif %}
-            </button>
-        </div>
-    </div>
-    {% empty %}
+            <div class="card-footer">
+                <div class="guest-count">
+                    <i class="fas fa-users"></i> {{ reserva.companion }} Huésped(es)
+                </div>
+            
+                <button class="btn-confirmar 
+                        {% if reserva.confirmado == 'Confirmado' %}btn-confirmar-confirmado{% else %}btn-confirmar-pendiente{% endif %}"
+                        data-reserva-id="{{ reserva.id }}" 
+                        id="btn-confirmar-{{ reserva.id }}"
+                        type="button"> 
+                    {% if reserva.confirmado == 'Confirmado' %}
+                        <i class="fas fa-times-circle"></i> Marcar Pendiente
+                    {% else %}
+                        <i class="fas fa-check-circle"></i> Confirmar Reserva
+                    {% endif %}
+                </button>
+                
+                <button class="btn-facturar btn-factura-custom" 
+                        data-reserva-id="{{ reserva.id }}" 
+                        data-facturado="{{ reserva.factura.id|default:'' }}"
+                        id="btn-factura-{{ reserva.id }}"
+                        type="button"> 
+                    {% if reserva.factura %}
+                    <i class="fas fa-file-invoice"></i> Factura #{{ reserva.factura.id }} ({{ reserva.factura.estado }})
+                    {% else %}
+                    <i class="fas fa-calculator"></i> Generar Factura
+                    {% endif %}
+                </button>
+                
+            </div>
+            
+        </div> {% empty %}
         <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No hay reservas para mostrar. Puedes crear una <a href="{% url 'reservar' %}">aquí</a>.</p> 
     {% endfor %}
 
@@ -346,6 +319,9 @@ body.dark-mode .modal-footer .btn-secondary:hover {
                 <p>Cargando detalles...</p> 
             </div>
             <div class="modal-footer">
+                <a href="#" id="btn-edit-reserva" class="btn btn-primary" style="background-color: var(--reserved);" data-bs-dismiss="modal">
+                    <i class="fas fa-edit"></i> Editar Reserva
+                </a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
@@ -353,223 +329,286 @@ body.dark-mode .modal-footer .btn-secondary:hover {
 </div>
 
 <script>
-    // === JAVASCRIPT CORREGIDO Y COMPLETO ===
+// === JAVASCRIPT CORREGIDO Y COMPLETO ===
 
-    // --- Funciones de Utilidad ---
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+// --- Funciones de Utilidad ---
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
     }
-    const csrftoken = getCookie('csrftoken');
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
 
-    // Función auxiliar para generar un item de detalle con valores fallback
-    const createDetailItem = (label, value, isFullWidth = false) => {
-        const displayValue = value || 'N/A';
-        const fullWidthClass = isFullWidth ? 'full-width' : '';
+// Función auxiliar para generar un item de detalle con valores fallback
+const createDetailItem = (label, value, isFullWidth = false) => {
+    const displayValue = value || 'N/A';
+    const fullWidthClass = isFullWidth ? 'full-width' : '';
 
-        return `
-            <div class="detail-item ${fullWidthClass}">
-                <span class="detail-label">${label}</span>
-                <span class="detail-value">${displayValue}</span>
-            </div>
-        `;
-    };
+    return `
+        <div class="detail-item ${fullWidthClass}">
+            <span class="detail-label">${label}</span>
+            <span class="detail-value">${displayValue}</span>
+        </div>
+    `;
+};
 
-    // --- Función 1: Generación de HTML del Modal (Incluye lógica Compañía) ---
-    function generateModalHTML(reservaData) {
-        // La información del data-attribute se accede como camelCase (ej: telefonoDomicilio)
-        
-        // Determinar si la sección de compañía debe mostrarse
-        const mostrarCompania = reservaData.nombreCompania && reservaData.nombreCompania.trim() !== '';
+// --- Lógica extra para el botón de Edición del Modal (FUERA DE OTRA FUNCIÓN) ---
+const btnEditReserva = document.getElementById('btn-edit-reserva');
+const editUrlTemplate = "{% url 'editarreserva' 0 %}"; 
+const modalElement = document.getElementById('reservationModal'); // Definición global
 
-        let companySectionHTML = '';
-        if (mostrarCompania) {
-            companySectionHTML = `
-                <div class="detail-section">
-                    <div class="detail-section-title"><i class="fas fa-building"></i> Datos de Compañía</div>
-                    <div class="detail-grid">
-                        ${createDetailItem('Nombre Compañía', reservaData.nombreCompania)}
-                        ${createDetailItem('Email Compañía', reservaData.emailCompania)}
-                        <div class="detail-item full-width">
-                            <span class="detail-label">Domicilio Compañía</span>
-                            <span class="detail-value">${reservaData.domicilioCompania || 'N/A'}, ${reservaData.ciudadCompania || ''}</span>
-                        </div>
+// --- Función 1: Generación de HTML del Modal ---
+function generateModalHTML(reservaData) {
+    
+    const mostrarCompania = reservaData.nombreCompania && reservaData.nombreCompania.trim() !== '';
+
+    let companySectionHTML = '';
+    if (mostrarCompania) {
+        companySectionHTML = `
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="fas fa-building"></i> Datos de Compañía</div>
+                <div class="detail-grid">
+                    ${createDetailItem('Nombre Compañía', reservaData.nombreCompania)}
+                    ${createDetailItem('Email Compañía', reservaData.emailCompania)}
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Domicilio Compañía</span>
+                        <span class="detail-value">${reservaData.domicilioCompania || 'N/A'}, ${reservaData.ciudadCompania || ''}</span>
                     </div>
                 </div>
-            `;
-        }
-
-        return `
-            <div class="detail-section">
-                <div class="detail-section-title"><i class="fas fa-user"></i> Datos del Huésped</div>
-                <div class="detail-grid">
-                    ${createDetailItem('Nombre Completo', reservaData.nombre)}
-                    ${createDetailItem('Identificación', reservaData.identificacion)}
-                    ${createDetailItem('Email', reservaData.email)}
-                    ${createDetailItem('Tel. Domicilio', reservaData.telefonoDomicilio)}
-                    ${createDetailItem('Tel. Oficina', reservaData.telefonoOficina)}
-                    <div class="detail-item full-width"><span class="detail-label">Domicilio</span><span class="detail-value">${reservaData.domicilio || 'N/A'}, ${reservaData.ciudad || ''}, ${reservaData.departamento || ''}</span></div>
-                </div>
-            </div>
-
-            <div class="detail-section">
-                <div class="detail-section-title"><i class="fas fa-calendar-alt"></i> Detalles de la Estancia</div>
-                <div class="detail-grid">
-                    ${createDetailItem('Check-in', reservaData.checkin)}
-                    ${createDetailItem('Check-out', reservaData.checkout)}
-                    ${createDetailItem('Nº Huéspedes', reservaData.huespedes)}
-                    ${createDetailItem('Nº Habitaciones', reservaData.habitaciones)}
-                    ${createDetailItem('Hospedaje Deseado', reservaData.hospedajeDeseado)}
-                    <div class="detail-item"><span class="detail-label">Estado</span><span class="detail-value">${reservaData.confirmado || 'N/A'}</span></div>
-                </div>
-            </div>
-            
-            ${companySectionHTML} <div class="detail-section mb-0">
-                <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> Notas y Pagos</div>
-                <div class="detail-grid">
-                    ${createDetailItem('Forma de Pago', reservaData.formaPago)}
-                    ${createDetailItem('Tarifa Cotizada', '$ ' + (reservaData.cotizado || 'N/A'))}
-                    ${createDetailItem('Depósito Solicitado', '$ ' + (reservaData.solicitado || 'N/A'))}
-                    ${createDetailItem('Solicitudes Especiales', reservaData.solicitud, true)}
-                    ${createDetailItem('Observaciones', reservaData.observaciones, true)}
-                    ${createDetailItem('Reserva Hecha por', `${reservaData.empleado || 'N/A'} (Tel: ${reservaData.telefonoEmpleado || 'N/A'})`)}
-                </div>
             </div>
         `;
     }
 
-    // --- Función 2: Lógica Principal del Modal ---
-    const modalElement = document.getElementById('reservationModal');
-    if (modalElement) {
-        modalElement.addEventListener('show.bs.modal', function (event) {
-            const card = event.relatedTarget;
+    return `
+        <div class="detail-section">
+            <div class="detail-section-title"><i class="fas fa-user"></i> Datos del Huésped</div>
+            <div class="detail-grid">
+                ${createDetailItem('Nombre Completo', reservaData.nombre)}
+                ${createDetailItem('Identificación', reservaData.identificacion)}
+                ${createDetailItem('Email', reservaData.email)}
+                ${createDetailItem('Tel. Domicilio', reservaData.telefonoDomicilio)}
+                ${createDetailItem('Tel. Oficina', reservaData.telefonoOficina)}
+                <div class="detail-item full-width"><span class="detail-label">Domicilio</span><span class="detail-value">${reservaData.domicilio || 'N/A'}, ${reservaData.ciudad || ''}, ${reservaData.departamento || ''}</span></div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-section-title"><i class="fas fa-calendar-alt"></i> Detalles de la Estancia</div>
+            <div class="detail-grid">
+                ${createDetailItem('Check-in', reservaData.checkin)}
+                ${createDetailItem('Check-out', reservaData.checkout)}
+                ${createDetailItem('Nº Huéspedes', reservaData.huespedes)}
+                ${createDetailItem('Nº Habitaciones', reservaData.habitaciones)}
+                ${createDetailItem('Hospedaje Deseado', reservaData.hospedajeDeseado)}
+                <div class="detail-item"><span class="detail-label">Estado</span><span class="detail-value">${reservaData.confirmado || 'N/A'}</span></div>
+            </div>
+        </div>
+        
+        ${companySectionHTML} <div class="detail-section mb-0">
+            <div class="detail-section-title"><i class="fas fa-clipboard-list"></i> Notas y Pagos</div>
+            <div class="detail-grid">
+                ${createDetailItem('Forma de Pago', reservaData.formaPago)}
+                ${createDetailItem('Tarifa Cotizada', '$ ' + (reservaData.cotizado || 'N/A'))}
+                ${createDetailItem('Depósito Solicitado', '$ ' + (reservaData.solicitado || 'N/A'))}
+                ${createDetailItem('Solicitudes Especiales', reservaData.solicitud, true)}
+                ${createDetailItem('Observaciones', reservaData.observaciones, true)}
+                ${createDetailItem('Reserva Hecha por', `${reservaData.empleado || 'N/A'} (Tel: ${reservaData.telefonoEmpleado || 'N/A'})`)}
+            </div>
+        </div>
+    `;
+}
+
+// --- Función 2: Lógica Principal del Modal (Maneja el click en la card) ---
+if (modalElement) {
+    modalElement.addEventListener('show.bs.modal', function (event) {
+        const card = event.relatedTarget;
+        
+        // Evitar que el modal se abra si se clickea un botón dentro de la card
+        const clickedButton = event.relatedTarget.closest('.btn-confirmar, .btn-facturar');
+        if (clickedButton) {
+            event.preventDefault(); 
+            return;
+        }
+
+        if (!card || !card.classList.contains('reservation-card')) return;
+
+        const reservaData = card.dataset;
+        const modalTitleId = modalElement.querySelector('#modalReservaId');
+        const modalBody = modalElement.querySelector('#modalBodyContent');
+
+        modalTitleId.textContent = `#${reservaData.id || 'N/A'}`; 
+        
+        // CRÍTICO: LLAMADA A LA FUNCIÓN DE GENERACIÓN DE HTML (Solución al "undefined")
+        modalBody.innerHTML = generateModalHTML(reservaData); 
+        
+        // Actualizar el enlace de edición
+        if(btnEditReserva) {
+             const reservaId = card.dataset.id;
+             btnEditReserva.href = editUrlTemplate.replace('0', reservaId);
+        }
+    });
+}
+
+// --- Manejador ÚNICO de Clicks en Botones (Para Facturar y Confirmar) ---
+const gridContainer = document.querySelector('.reservation-grid');
+
+if (gridContainer) {
+    gridContainer.addEventListener('click', function(event) {
+        
+        // 1. Detección de Botón de Confirmar/Pendiente
+        const confirmButton = event.target.closest('.btn-confirmar');
+        if (confirmButton) {
+            event.stopPropagation(); // Evita que se abra el modal si se clickea un botón
             
-            // Prevenir modal si se clickea el botón de confirmar
-            if (event.target && event.target.closest('.btn-confirmar')) {
-                event.preventDefault();
-                return;
-            }
-            if (!card || !card.classList.contains('reservation-card')) return;
+            // --- Lógica de Confirmar Reserva (Función 3) ---
+            const reservaId = confirmButton.dataset.reservaId;
+            const url = `/reservas/confirmar/${reservaId}/`;
 
-            const reservaData = card.dataset;
-            const modalTitleId = modalElement.querySelector('#modalReservaId');
-            const modalBody = modalElement.querySelector('#modalBodyContent');
+            confirmButton.disabled = true;
+            confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
 
-            // Generar el cuerpo del modal con los datos que existen
-            modalTitleId.textContent = `#${reservaData.id || 'N/A'}`; 
-            modalBody.innerHTML = generateModalHTML(reservaData);
+            fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            })
+            .then(response => {
+                if (!response.ok) { return response.json().then(err => { throw new Error(err.message || `HTTP error! status: ${response.status}`); }); }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'ok') {
+                    const cardElement = document.getElementById(`reserva-card-${reservaId}`);
+                    const statusBadge = document.getElementById(`status-badge-${reservaId}`);
 
-            console.log("Datos leídos de la card (Para Depuración):", reservaData);
-        });
-    }
+                    // Actualizar Badge
+                    statusBadge.textContent = data.nuevo_estado;
+                    statusBadge.classList.remove('status-confirmado', 'status-pendiente');
+                    statusBadge.classList.add(data.nuevo_estado === 'Confirmado' ? 'status-confirmado' : 'status-pendiente');
 
-    // --- Función 3: Lógica del Botón AJAX (Se mantiene) ---
-    const gridContainer = document.querySelector('.reservation-grid');
-    if (gridContainer) {
-        gridContainer.addEventListener('click', function(event) {
-            const confirmButton = event.target.closest('.btn-confirmar');
-            if (confirmButton) {
-                event.stopPropagation();
-                const reservaId = confirmButton.dataset.reservaId;
-                const url = `/reservas/confirmar/${reservaId}/`;
-
-                confirmButton.disabled = true;
-                confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-
-                fetch(url, {
-                    method: 'POST',
-                    headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                })
-                .then(response => {
-                    if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'ok') {
-                        const cardElement = document.getElementById(`reserva-card-${reservaId}`);
-                        const statusBadge = document.getElementById(`status-badge-${reservaId}`);
-
-                        statusBadge.textContent = data.nuevo_estado;
-                        statusBadge.classList.remove('status-confirmado', 'status-pendiente');
-                        statusBadge.classList.add(data.nuevo_estado === 'Confirmado' ? 'status-confirmado' : 'status-pendiente');
-
-                        confirmButton.classList.remove('btn-confirmar-confirmado', 'btn-confirmar-pendiente');
-                         if (data.nuevo_estado === 'Confirmado') {
-                            confirmButton.classList.add('btn-confirmar-confirmado');
-                            confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente';
-                            cardElement.classList.remove('card-pendiente');
-                            cardElement.classList.add('card-confirmada');
-                         } else {
-                            confirmButton.classList.add('btn-confirmar-pendiente');
-                            confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva';
-                            cardElement.classList.remove('card-confirmada');
-                            cardElement.classList.add('card-pendiente');
-                         }
-                         cardElement.dataset.confirmado = data.nuevo_estado; 
-                    } else {
-                         console.error('Error al confirmar:', data.message);
-                         alert(`Error al actualizar: ${data.message}`);
-                         const cardElement = document.getElementById(`reserva-card-${reservaId}`);
-                         const currentStatus = cardElement.dataset.confirmado;
-                         if (currentStatus === 'Confirmado') { confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente'; } 
-                         else { confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva'; }
-                    }
-                })
-                .catch(error => {
-                     console.error('Error fetch:', error);
-                     alert('Error de red.');
-                     const cardElement = document.getElementById(`reserva-card-${reservaId}`);
-                     const currentStatus = cardElement.dataset.confirmado;
-                      if (currentStatus === 'Confirmado') { confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente'; } 
-                      else { confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva'; }
-                 })
-                .finally(() => { confirmButton.disabled = false; });
-            }
-        });
-    }
-
-    // --- Parte 4: Lógica del Buscador en Tiempo Real ---
-    const searchInput = document.getElementById('searchInput');
-    const gridContainerForSearch = document.querySelector('.reservation-grid'); // Asegúrate que esta clase sea correcta
-    const allCards = gridContainerForSearch ? gridContainerForSearch.querySelectorAll('.reservation-card') : [];
-
-    if (searchInput && allCards.length > 0) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = searchInput.value.toLowerCase().trim(); // Término de búsqueda en minúsculas
-
-            allCards.forEach(card => {
-                // Extraer texto relevante de la card para buscar
-                // Usamos los data-* attributes que ya tenemos, más seguro que el innerText
-                const reservaId = card.dataset.id || '';
-                const nombreCompleto = card.dataset.nombre ? card.dataset.nombre.toLowerCase() : '';
-                const estado = card.dataset.confirmado ? card.dataset.confirmado.toLowerCase() : '';
-
-                // Combinar los textos donde buscar
-                const cardText = `${reservaId} ${nombreCompleto} ${estado}`;
-
-                // Comprobar si el texto de la card incluye el término de búsqueda
-                if (cardText.includes(searchTerm)) {
-                    card.style.display = ''; // Mostrar la card si coincide
+                    // Actualizar Botón y Card
+                    confirmButton.classList.remove('btn-confirmar-confirmado', 'btn-confirmar-pendiente');
+                     if (data.nuevo_estado === 'Confirmado') {
+                        confirmButton.classList.add('btn-confirmar-confirmado');
+                        confirmButton.innerHTML = '<i class="fas fa-times-circle"></i> Marcar Pendiente';
+                        cardElement.classList.remove('card-pendiente');
+                        cardElement.classList.add('card-confirmada');
+                     } else {
+                        confirmButton.classList.add('btn-confirmar-pendiente');
+                        confirmButton.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar Reserva';
+                        cardElement.classList.remove('card-confirmada');
+                        cardElement.classList.add('card-pendiente');
+                     }
+                     cardElement.dataset.confirmado = data.nuevo_estado; 
                 } else {
-                    card.style.display = 'none'; // Ocultar la card si no coincide
+                     console.error('Error al confirmar:', data.message);
+                     alert(`Error al actualizar: ${data.message}`);
                 }
+            })
+            .catch(error => {
+                 console.error('Error fetch:', error);
+                 alert('Error de red al confirmar.');
+             })
+            .finally(() => { 
+                // Revertir el texto del botón si falla
+                 const currentStatus = document.getElementById(`reserva-card-${reservaId}`).dataset.confirmado;
+                 confirmButton.innerHTML = (currentStatus === 'Confirmado') ? '<i class="fas fa-times-circle"></i> Marcar Pendiente' : '<i class="fas fa-check-circle"></i> Confirmar Reserva';
+                 confirmButton.disabled = false;
             });
-        });
-    } else {
-        if (!searchInput) console.error("Elemento #searchInput no encontrado.");
-        if (allCards.length === 0) console.warn("No se encontraron cards .reservation-card para filtrar.");
-    }
+            return;
+        }
 
+
+        // 2. Detección de Botón de Facturar
+        const factButton = event.target.closest('.btn-facturar');
+        if (factButton) {
+            event.stopPropagation(); // Evita que se abra el modal
+            
+            // --- Lógica de Generar Factura (Función 4) ---
+            const reservaId = factButton.dataset.reservaId;
+            const yaFacturado = factButton.dataset.facturado;
+
+            if (yaFacturado) {
+                 alert(`La Reserva #${reservaId} ya está facturada. (ID: ${yaFacturado})`);
+                 return; 
+            }
+
+            const url = `/facturas/generar/${reservaId}/`; 
+            
+            factButton.disabled = true;
+            factButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': csrftoken, 
+                    'Content-Type': 'application/json', 
+                    'X-Requested-With': 'XMLHttpRequest' 
+                },
+            })
+            .then(response => {
+                if (!response.ok) { 
+                    return response.json().then(err => { throw new Error(err.message || 'Error del servidor al facturar'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert(`¡Factura generada! ID: ${data.factura_id}. Total: ${data.total}`);
+                    
+                    // Actualizar el botón en tiempo real
+                    factButton.dataset.facturado = data.factura_id;
+                    factButton.classList.remove('btn-factura-custom');
+                    factButton.style.backgroundColor = 'var(--dark-slate)';
+                    factButton.innerHTML = `<i class="fas fa-file-invoice"></i> Factura #${data.factura_id} (Pendiente)`;
+                } else {
+                     alert(`Fallo en la Facturación: ${data.message}`);
+                     factButton.innerHTML = '<i class="fas fa-calculator"></i> Generar Factura';
+                }
+            })
+            .catch(error => {
+                 console.error('Error fetch factura:', error);
+                 alert(`Error de conexión o validación: ${error.message}`);
+                 factButton.innerHTML = '<i class="fas fa-calculator"></i> Generar Factura';
+             })
+            .finally(() => { 
+                factButton.disabled = false;
+            });
+        }
+    });
+}
+
+
+// --- Parte 5: Lógica del Buscador en Tiempo Real ---
+const searchInput = document.getElementById('searchInput');
+const allCards = document.querySelectorAll('.reservation-card');
+
+if (searchInput && allCards.length > 0) {
+    searchInput.addEventListener('input', function() {
+        const searchTerm = searchInput.value.toLowerCase().trim(); 
+
+        allCards.forEach(card => {
+            const reservaId = card.dataset.id || '';
+            const nombreCompleto = card.dataset.nombre ? card.dataset.nombre.toLowerCase() : '';
+            const estado = card.dataset.confirmado ? card.dataset.confirmado.toLowerCase() : '';
+            const cardText = `${reservaId} ${nombreCompleto} ${estado}`;
+
+            if (cardText.includes(searchTerm)) {
+                card.style.display = ''; 
+            } else {
+                card.style.display = 'none'; 
+            }
+        });
+    });
+}
 </script>
 
 {% include 'inc/footer.html'%}

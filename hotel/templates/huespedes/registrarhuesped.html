@@ -1,0 +1,222 @@
+{% load static %}
+{% include 'inc/header.html'%}
+
+<style>
+    /* === ESTILOS GENERALES DEL FORMULARIO === */
+    /* (Copiados de tus otros formularios para consistencia) */
+    .page-header {
+        background: var(--white); padding: 25px; border-radius: 8px; margin-bottom: 25px;
+        border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
+    }
+    body.dark-mode .page-header { background: var(--dark-card); border-color: var(--dark-border); }
+    .page-header h1 { font-size: 1.75rem; color: var(--dark-slate); font-weight: 600; margin: 0; }
+    body.dark-mode .page-header h1 { color: var(--dark-text); }
+    .btn-back {
+        padding: 10px 20px; background: var(--light-gray); border: 1px solid var(--border-gray);
+        border-radius: 6px; color: var(--dark-slate); text-decoration: none;
+        transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+    }
+    body.dark-mode .btn-back { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+    .btn-back:hover { background: var(--ice-blue); border-color: var(--steel-blue); }
+    body.dark-mode .btn-back:hover { background: var(--dark-bg); border-color: var(--steel-blue-dark); }
+
+    .form-container {
+        background: var(--white); padding: 30px; border-radius: 8px;
+        border: 1px solid var(--border-gray); margin: 0 auto; max-width: 800px; /* Un poco más ancho */
+    }
+    body.dark-mode .form-container { background: var(--dark-card); border-color: var(--dark-border); }
+    .form-section { margin-bottom: 30px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--dark-slate); margin-bottom: 8px; }
+    body.dark-mode .form-label { color: var(--dark-text); }
+    .form-label .required { color: var(--occupied); }
+    .form-label .optional { color: var(--medium-gray); font-weight: 400; font-size: 0.85rem; }
+    .form-text, .form-helper { font-size: 0.85rem; color: var(--medium-gray); margin-top: 6px; }
+    body.dark-mode .form-text, body.dark-mode .form-helper { color: var(--dark-text-secondary); }
+
+    /* === ESTILOS PARA INPUTS, TEXTAREAS Y SELECTS === */
+    .form-input,
+    .form-textarea,
+    .form-select,
+    input[type="text"], input[type="number"], input[type="email"], input[type="date"],
+    textarea,
+    select {
+        width: 100%; padding: 12px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
+        font-size: 0.95rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; font-family: inherit;
+        background: var(--white); color: var(--dark-slate); line-height: 1.5; box-sizing: border-box;
+    }
+    .form-textarea, textarea { min-height: 80px; resize: vertical; }
+
+    /* === ESTILOS MODO OSCURO === */
+    body.dark-mode .form-input, body.dark-mode .form-textarea, body.dark-mode .form-select,
+    body.dark-mode input[type="text"], body.dark-mode input[type="number"], body.dark-mode input[type="email"], body.dark-mode input[type="date"],
+    body.dark-mode textarea, body.dark-mode select {
+        background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text);
+    }
+    body.dark-mode .form-input::placeholder, body.dark-mode .form-textarea::placeholder,
+    body.dark-mode input[type="text"]::placeholder, body.dark-mode input[type="number"]::placeholder, body.dark-mode input[type="email"]::placeholder,
+    body.dark-mode textarea::placeholder {
+        color: var(--dark-text-secondary); opacity: 0.8;
+    }
+    /* Arreglo para el selector de fecha en modo oscuro */
+    body.dark-mode input[type="date"] { color-scheme: dark; }
+
+    /* === ESTILOS DE FOCO === */
+    .form-input:focus, .form-textarea:focus, .form-select:focus,
+    input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="date"]:focus,
+    textarea:focus, select:focus {
+        outline: none; border-color: var(--steel-blue); box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1);
+    }
+    body.dark-mode .form-input:focus, body.dark-mode .form-textarea:focus, body.dark-mode .form-select:focus,
+    body.dark-mode input[type="text"]:focus, body.dark-mode input[type="number"]:focus, body.dark-mode input[type="email"]:focus, body.dark-mode input[type="date"]:focus,
+    body.dark-mode textarea:focus, body.dark-mode select:focus {
+        border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2);
+    }
+
+    /* === LAYOUT Y BOTONES === */
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    .form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-gray); }
+    body.dark-mode .form-actions { border-top-color: var(--dark-border); }
+    .btn { padding: 12px 30px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn-primary { background: var(--steel-blue); color: var(--white); }
+    .btn-primary:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-primary { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-primary:hover { background: var(--steel-blue); }
+    .btn-secondary { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
+    .btn-secondary:hover { background: var(--ice-blue); }
+    body.dark-mode .btn-secondary { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+    body.dark-mode .btn-secondary:hover { background: var(--dark-bg); }
+
+    /* Errores */
+    .invalid-feedback { color: #dc3545; font-size: 0.85em; margin-top: 4px; }
+    .d-block { display: block !important; }
+</style>
+
+<div class="page-header">
+    <h1><i class="fas fa-user-plus"></i> Registrar Nuevo Huésped</h1>
+    <a href="{% url 'dashboard' %}" class="btn-back"> {# Cambia 'dashboard' por 'listar_huespedes' cuando exista #}
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="form-container">
+    <form method="POST" action="">
+        {% csrf_token %}
+
+        {% if messages %}
+             <div style="margin-bottom: 20px;">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert"
+                         style="padding: 10px 15px; border-radius: 6px; border: 1px solid transparent;
+                                {% if message.tags == 'success' %} background-color: #d4edda; border-color: #c3e6cb; color: #155724;
+                                {% elif message.tags == 'error' %} background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;
+                                {% else %} background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if form.non_field_errors %}
+             <div class="alert alert-danger" role="alert" style="background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px;">
+                {% for error in form.non_field_errors %} <p style="margin: 0;">{{ error }}</p> {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-section">
+            <h2 class="form-section-title">Información Personal</h2>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }} <span class="required">*</span></label>
+                    {{ form.nombre }}
+                    {% if form.nombre.errors %}<div class="invalid-feedback d-block">{{ form.nombre.errors.as_text }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.apellido.id_for_label }}" class="form-label">{{ form.apellido.label }} <span class="required">*</span></label>
+                    {{ form.apellido }}
+                    {% if form.apellido.errors %}<div class="invalid-feedback d-block">{{ form.apellido.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="{{ form.tipo_documento.id_for_label }}" class="form-label">{{ form.tipo_documento.label }} <span class="required">*</span></label>
+                    {{ form.tipo_documento }} {# Renderiza el ChoiceField como select #}
+                    {% if form.tipo_documento.errors %}<div class="invalid-feedback d-block">{{ form.tipo_documento.errors.as_text }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.identificacion.id_for_label }}" class="form-label">{{ form.identificacion.label }} <span class="required">*</span></label>
+                    {{ form.identificacion }} {# Renderiza TextInput (ya que es CharField) #}
+                    {% if form.identificacion.errors %}<div class="invalid-feedback d-block">{{ form.identificacion.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">{{ form.fecha_nacimiento.label }} <span class="optional">(Opcional)</span></label>
+                    {{ form.fecha_nacimiento }} {# Renderiza input type="date" #}
+                    {% if form.fecha_nacimiento.errors %}<div class="invalid-feedback d-block">{{ form.fecha_nacimiento.errors.as_text }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.nacionalidad.id_for_label }}" class="form-label">{{ form.nacionalidad.label }} <span class="optional">(Opcional)</span></label>
+                    {{ form.nacionalidad }}
+                    {% if form.nacionalidad.errors %}<div class="invalid-feedback d-block">{{ form.nacionalidad.errors.as_text }}</div>{% endif %}
+                </div>
+                 <div class="form-group">
+                    <label for="{{ form.genero.id_for_label }}" class="form-label">{{ form.genero.label }} <span class="optional">(Opcional)</span></label>
+                    {{ form.genero }} {# Renderiza Select con choices del modelo #}
+                    {% if form.genero.errors %}<div class="invalid-feedback d-block">{{ form.genero.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Información de Contacto y Viaje</h2>
+            <div class="form-row-2">
+                 <div class="form-group">
+                    <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }} <span class="optional">(Opcional)</span></label>
+                    {{ form.telefono }}
+                    {% if form.telefono.errors %}<div class="invalid-feedback d-block">{{ form.telefono.errors.as_text }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }} <span class="optional">(Opcional)</span></label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+             <div class="form-row-2">
+                 <div class="form-group">
+                    <label for="{{ form.procedencia.id_for_label }}" class="form-label">{{ form.procedencia.label }} <span class="required">*</span></label>
+                    {{ form.procedencia }}
+                    {% if form.procedencia.errors %}<div class="invalid-feedback d-block">{{ form.procedencia.errors.as_text }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.razon.id_for_label }}" class="form-label">{{ form.razon.label }} <span class="required">*</span></label>
+                    {{ form.razon }} {# Renderiza el ChoiceField como select #}
+                    {% if form.razon.errors %}<div class="invalid-feedback d-block">{{ form.razon.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+             <h2 class="form-section-title">Información Adicional</h2>
+             <div class="form-group">
+                <label for="{{ form.preferencias.id_for_label }}" class="form-label">{{ form.preferencias.label }} <span class="optional">(Opcional)</span></label>
+                {{ form.preferencias }}
+                {% if form.preferencias.errors %}<div class="invalid-feedback d-block">{{ form.preferencias.errors.as_text }}</div>{% endif %}
+            </div>
+        </div>
+
+
+        <div class="form-actions">
+            <a href="{% url 'listarhuespedes' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Registrar Huésped
+            </button>
+        </div>
+    </form>
+</div>
+{% include 'inc/footer.html'%}

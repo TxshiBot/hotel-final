@@ -1,54 +1,87 @@
 from django import forms 
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 # ---- MODELS ---- #
 from hotel.models import Reservas
 from hotel.models import Categorias
 from hotel.models import Habitaciones
+from hotel.models import Registro_Huespedes
 
 class ReservarForm(forms.ModelForm):
-    
-# Contenido de la clase Meta en forms.py
-    class Meta:
-        model = Reservas
-        fields = (
-            # Campos obligatorios (ajustados a los nombres EXACTOS del modelo)
-            'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
-            'ciudad', 'departamento', 'telefono_domicilio',
-            'check_in', 'check_out', 'companion', 'formadepago',
-            # Nota: Los campos 'num_hues' y 'num_habt' son NULLABLE en el modelo, 
-            # pero están en tu lista de "obligatorios". Los movemos al final por ser NULLABLE.
-            'empleados', 'telefono',
-            
-            # Campos Opcionales/NULLABLE (ajustados a los nombres EXACTOS del modelo)
-            'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
-            'num_hues', 'num_habt',
-            'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
-            'compania_email', 
-            # NOTA: Los campos 'cliente_paga', 'cobrar_compania', 'pago_efectivo', 'pago_tc', 'pago_td'
-            #       y 'departamento_compania' NO EXISTEN en tu modelo, por lo que NO se incluyen.
-        )
 
-    # Contenido del método __init__ en forms.py
     def __init__(self, *args, **kwargs):
+        # 1. Ejecutar el constructor original (Crea los campos de Meta.fields)
         super().__init__(*args, **kwargs)
-
-        # Campos opcionales (ajustados a los nombres EXACTOS del modelo)
+        
         opcionales = (
             'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
-            'compania_email', 'solicitud', 'observaciones'
+            'compania_email', 'solicitud', 'observaciones',
+            'huesped_principal' # <-- ¡AQUÍ ESTÁ!
         )
-        
-        # Adicionalmente, los campos marcados como obligatorios en tu formulario original
-        # (pero que son null=True en el modelo) DEBERÍAN ser opcionales:
-        # 'solicitud' y 'observaciones' no tienen null=True/blank=True en tu modelo,
-        # por lo que el formulario los marcará como 'required=True' por defecto.
         
         for campo in opcionales:
             if campo in self.fields:
                 self.fields[campo].required = False
+        
+        # --- Lógica extra para el campo de huésped ---
+        if 'huesped_principal' in self.fields: # <--- Verificación robusta (ya no es crítica, pero es buena práctica)
+            # Personalizamos cómo se ve el campo en el select
+            self.fields['huesped_principal'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.identificacion})"
+            # Ordenamos la lista de huéspedes
+            self.fields['huesped_principal'].queryset = Registro_Huespedes.objects.order_by('apellido', 'nombre')
+    
+
+    class Meta:
+        model = Reservas
+        fields = (
+            # 1. CAMPO LIGADO A HUESPED (AÑADIDO)
+            'huesped_principal', 
+            
+            # Campos obligatorios/facturación
+            'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
+            'ciudad', 'departamento', 'telefono_domicilio',
+            
+            # Fechas y detalles
+            'check_in', 'check_out', 'companion', 'formadepago',
+            'empleados', 'telefono',
+            
+            # Campos Opcionales/NULLABLE 
+            'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
+            'num_hues', 'num_habt',
+            'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
+            'compania_email', 
+            'solicitud', 'observaciones' 
+        )
+
+        # 2. WIDGETS Y LABELS AÑADIDOS
+        widgets = {
+            'huesped_principal': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'huesped_principal': 'Buscar Huésped Registrado (Opcional)',
+        }
+
+# --- VERIFICA QUE ESTA FUNCIÓN ESTÉ PRESENTE Y CORRECTA ---
+    def clean(self):
+        cleaned_data = super().clean()
+        check_in = cleaned_data.get("check_in")
+        check_out = cleaned_data.get("check_out")
+        
+        if check_in and check_out:
+            # 1. Chequear que la fecha de salida sea posterior a la entrada
+            if check_out <= check_in:
+                # Lanza el error en el campo específico
+                self.add_error('check_out', "La fecha de salida debe ser posterior a la fecha de llegada.")
+            
+            # 2. Chequear que la reserva no sea en el pasado
+            if check_in.date() < timezone.now().date():
+                self.add_error('check_in', "No se pueden registrar reservas para fechas pasadas.")
+                
+        return cleaned_data
 
 
 class CategoriaForm(forms.ModelForm):
@@ -121,3 +154,86 @@ class HabitacionForm(forms.ModelForm):
         field_classes = {
             'tipo': forms.ModelChoiceField, 
         }
+
+
+class HuespedForm(forms.ModelForm):
+    # Definir choices para tipo_documento y razon (opcional pero recomendado)
+    TIPO_DOCUMENTO_CHOICES = [
+        ('', 'Seleccionar...'), # Opción vacía
+        ('CC', 'Cédula de Ciudadanía'),
+        ('PPT', 'Cédula de Extranjería'),
+        ('PA', 'Pasaporte'),
+        ('TI', 'Tarjeta de Identidad'),
+        ('NIT', 'NIT (Empresa)'),
+        ('Otro', 'Otro'),
+    ]
+    RAZON_VIAJE_CHOICES = [
+         ('', 'Seleccionar...'),
+        ('Turismo', 'Turismo'),
+        ('Negocios', 'Negocios'),
+        ('Evento', 'Evento/Conferencia'),
+        ('Familiar', 'Visita Familiar'),
+        ('Otro', 'Otro'),
+    ]
+
+    # Sobrescribir campos para usar choices o widgets específicos
+    tipo_documento = forms.ChoiceField(choices=TIPO_DOCUMENTO_CHOICES, required=True, widget=forms.Select(attrs={'class': 'form-select'}))
+    razon = forms.ChoiceField(choices=RAZON_VIAJE_CHOICES, required=True, label="Razón del Viaje", widget=forms.Select(attrs={'class': 'form-select'}))
+    # Usar widget de fecha para fecha_nacimiento
+    fecha_nacimiento = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}), required=False)
+    # Cambiar 'contacto' por campos específicos (más robusto)
+    telefono = forms.CharField(max_length=20, required=False, label="Teléfono de Contacto", widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: 3001234567'}))
+    email = forms.EmailField(max_length=254, required=False, label="Email de Contacto", widget=forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'correo@ejemplo.com'}))
+
+
+    class Meta:
+        model = Registro_Huespedes
+        # Lista de campos a incluir en el formulario
+        fields = [
+            'nombre', 'apellido', 'tipo_documento', 'identificacion',
+            'procedencia', 'razon',
+            'telefono', 'email', # Usar los campos separados en lugar de 'contacto'
+            'fecha_nacimiento', 'nacionalidad', 'genero',
+            'preferencias',
+        ]
+        # Excluir campos automáticos
+        exclude = ['fecha_registro', 'ultima_actualizacion', 'contacto'] # Excluimos 'contacto' original
+
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Nombres completos'}),
+            'apellido': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Apellidos completos'}),
+            # 'tipo_documento': forms.Select(attrs={'class': 'form-select'}), # Redefinido arriba con choices
+            'identificacion': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Número de documento'}), # Mantenido como NumberInput por ahora
+            'procedencia': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ciudad y/o País'}),
+            # 'razon': forms.Select(attrs={'class': 'form-select'}), # Redefinido arriba con choices
+            'nacionalidad': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej: Colombiana'}),
+            'genero': forms.Select(attrs={'class': 'form-select'}), # Django usa los choices del modelo
+            'preferencias': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3, 'placeholder': 'Alergias, piso preferido, etc.'}),
+        }
+        labels = {
+            'tipo_hab': 'Nombre de la Categoría',
+            'tipo_documento': 'Tipo de Documento',
+            'identificacion': 'Número de Documento',
+            'procedencia': 'Lugar de Procedencia',
+            'razon': 'Razón del Viaje',
+            'fecha_nacimiento': 'Fecha de Nacimiento',
+            'nacionalidad': 'Nacionalidad',
+            'genero': 'Género',
+            'preferencias': 'Preferencias / Notas',
+        }
+
+    # Limpieza/Validación adicional (opcional)
+    def clean_identificacion(self):
+        identificacion = self.cleaned_data.get('identificacion')
+        # Aquí podrías añadir validaciones, como asegurar que sea numérico si se mantiene IntegerField
+        # O verificar unicidad si no lo pusiste en el modelo
+        return identificacion
+
+    # Lógica para manejar 'contacto' si decides NO separarlo (menos recomendado)
+    # def save(self, commit=True):
+    #     instance = super().save(commit=False)
+    #     # Combinar teléfono y email en el campo 'contacto' si fuera necesario
+    #     # instance.contacto = f"Tel: {self.cleaned_data.get('telefono', '')} / Email: {self.cleaned_data.get('email', '')}"
+    #     if commit:
+    #         instance.save()
+    #     return instance

@@ -34,31 +34,27 @@
     body.dark-mode .search-input:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
     .btn-search {
         padding: 10px 15px; background: var(--ice-blue); color: var(--steel-blue);
-        border: 1px solid var(--border-gray); border-radius: 6px; cursor: pointer;
+        border: 1px solid var(--border-gray); border-radius: 6px; cursor: pointer; height: 38px; /* Alinear altura */
     }
     body.dark-mode .btn-search { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--steel-blue-dark); }
     .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
-    .form-select.filter-select { /* Estilo para el select de categoría */
-        width: auto; /* Ajustar ancho al contenido */
-        min-width: 180px;
-        padding: 8px 12px;
-        font-size: 0.85rem;
-        height: 38px; /* Alinear altura con botones */
-        line-height: 1.5;
-        background-color: var(--light-gray);
-        border: 1px solid var(--border-gray);
-        border-radius: 20px;
+    .form-select.filter-select {
+        width: auto; min-width: 180px; padding: 8px 12px; font-size: 0.85rem; height: 38px;
+        line-height: 1.5; background-color: var(--light-gray); border: 1px solid var(--border-gray);
+        border-radius: 20px; appearance: none; -webkit-appearance: none; -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
+        padding-right: 2.5rem; box-sizing: border-box; /* Incluir padding en altura */
     }
     body.dark-mode .form-select.filter-select {
-        background-color: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
+        background-color: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
     }
     .filter-btn {
         padding: 8px 14px; background: var(--light-gray); border: 1px solid var(--border-gray);
         border-radius: 20px; color: var(--dark-slate); cursor: pointer; font-size: 0.85rem;
         transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
-        height: 38px; /* Alinear altura */
+        height: 38px; box-sizing: border-box; /* Incluir padding en altura */
     }
     .filter-btn:hover { background: var(--ice-blue); border-color: var(--steel-blue); }
     .filter-btn.active { background: var(--steel-blue); color: var(--white); border-color: var(--steel-blue); }
@@ -83,12 +79,11 @@
     .room-card:hover { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
     body.dark-mode .room-card:hover { box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05); }
 
-    /* Colores de Estado (Borde Superior) - Asegúrate que los nombres coincidan con los values/clases */
+    /* Clases de Estado (Borde Superior) */
     .room-card.disponible { border-top-color: var(--available); }
     .room-card.ocupada { border-top-color: var(--occupied); }
     .room-card.limpieza { border-top-color: var(--cleaning); }
     .room-card.mantenimiento { border-top-color: var(--maintenance); }
-    /* Modo Oscuro */
     body.dark-mode .room-card.disponible { border-top-color: var(--available-dark); }
     body.dark-mode .room-card.ocupada { border-top-color: var(--occupied-dark); }
     body.dark-mode .room-card.limpieza { border-top-color: var(--cleaning-dark); }
@@ -100,13 +95,14 @@
     .room-type { font-size: 0.8rem; color: var(--medium-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;}
     body.dark-mode .room-type { color: var(--dark-text-secondary); }
 
-    .room-details { padding: 0 15px 15px; font-size: 0.85rem; color: var(--medium-gray); display: flex; flex-direction: column; gap: 8px; }
+    .room-details { padding: 0 15px 15px; font-size: 0.85rem; color: var(--medium-gray); display: flex; flex-direction: column; gap: 8px; margin-top: auto; /* Empuja detalles hacia abajo */ }
     body.dark-mode .room-details { color: var(--dark-text-secondary); }
     .room-details > div { display: flex; align-items: center; gap: 6px; }
     .room-details i { width: 14px; text-align: center; opacity: 0.7; }
 
     /* Status dentro de details */
     .room-status-text { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
+    /* Colores texto estado */
     .room-card.disponible .room-status-text { color: var(--available); }
     .room-card.ocupada .room-status-text { color: var(--occupied); }
     .room-card.limpieza .room-status-text { color: var(--cleaning); }
@@ -116,6 +112,7 @@
     body.dark-mode .room-card.ocupada .room-status-text { color: var(--occupied-dark); }
     body.dark-mode .room-card.limpieza .room-status-text { color: var(--cleaning-dark); }
     body.dark-mode .room-card.mantenimiento .room-status-text { color: var(--maintenance-dark); }
+
     /* Info de reserva */
     .room-reserva-info { font-size: 0.8rem; color: var(--medium-gray); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
     body.dark-mode .room-reserva-info { color: var(--dark-text-secondary); }
@@ -135,17 +132,27 @@
     .form-group { margin-bottom: 20px; }
     .form-label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--dark-slate); margin-bottom: 8px; }
     body.dark-mode .form-label { color: var(--dark-text); }
-    .form-select { width: 100%; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px; font-size: 0.95rem; background: var(--white); color: var(--dark-slate); box-sizing: border-box; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;}
-    body.dark-mode .form-select { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");}
+    .form-select {
+        width: 100%; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
+        font-size: 0.95rem; background: var(--white); color: var(--dark-slate); box-sizing: border-box;
+        appearance: none; -webkit-appearance: none; -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
+        padding-right: 2.5rem; /* Espacio para flecha */
+    }
+    body.dark-mode .form-select {
+        background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
     .form-select:focus { outline: none; border-color: var(--steel-blue); box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1); }
     body.dark-mode .form-select:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
-    #info-conteo-habitaciones { font-size: 0.85rem; color: var(--medium-gray); margin-top: 5px; height: 1.5em; /* Espacio reservado */}
+    #info-conteo-habitaciones { font-size: 0.85rem; color: var(--medium-gray); margin-top: 5px; height: 1.5em; }
     body.dark-mode #info-conteo-habitaciones { color: var(--dark-text-secondary); }
     #info-reserva-actual { font-size: 0.9rem; color: var(--medium-gray); margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-gray); min-height: 1.5em;}
     body.dark-mode #info-reserva-actual { color: var(--dark-text-secondary); border-top-color: var(--dark-border); }
     .modal-footer { padding: 1rem 1.5rem; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); }
     body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
-    .btn { padding: 10px 25px; /* Ajuste padding botones */ border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn { padding: 10px 25px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
      .btn-primary { background: var(--steel-blue); color: var(--white); }
     .btn-primary:hover { background: var(--dark-slate); }
     body.dark-mode .btn-primary { background: var(--steel-blue-dark); }
@@ -157,10 +164,7 @@
 
     /* Mensajes */
     .alert { padding: 10px 15px; border-radius: 6px; border: 1px solid transparent; margin-bottom: 15px;}
-    .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
-    .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
-    .alert-info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
-    /* Mensajes modo oscuro */
+    /* ... (colores alert como antes) ... */
     body.dark-mode .alert-success { background-color: rgba(40, 167, 69, 0.2); border-color: rgba(40, 167, 69, 0.5); color: #a3e9b7; }
     body.dark-mode .alert-danger { background-color: rgba(220, 53, 69, 0.2); border-color: rgba(220, 53, 69, 0.5); color: #f5a9b0; }
     body.dark-mode .alert-info { background-color: rgba(23, 162, 184, 0.2); border-color: rgba(23, 162, 184, 0.5); color: #9eeaf9; }
@@ -178,7 +182,7 @@
                    value="{{ search_query|default:'' }}"
                    id="searchInput">
 
-            {# Campos ocultos para mantener filtros al buscar/paginar #}
+            {# Campos ocultos para mantener filtros #}
             <input type="hidden" name="status" value="{{ active_filter|default:'all' }}" id="hiddenStatusInput">
             <input type="hidden" name="categoria_id" value="{{ selected_categoria_id|default:'' }}" id="hiddenCategoriaInput">
 
@@ -260,7 +264,7 @@
         </div>
     </div>
     {% empty %}
-        <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No se encontraron habitaciones. <a href="{% url 'registrar_habitacion' %}">Registrar nueva</a>.</p>
+        <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No se encontraron habitaciones. <a href="{% url 'registrohabitaciones' %}">Registrar nueva</a>.</p>
     {% endfor %}
 </div>
 
@@ -315,13 +319,11 @@
 <script>
     // === JAVASCRIPT ===
     const searchForm = document.getElementById('searchAndFilterForm');
-    const searchInputClient = document.getElementById('searchInput'); // Para JS Client-side
+    const searchInput = document.getElementById('searchInput'); // Usado por Server-side
     const categoriaSelect = document.getElementById('categoriaFilterSelect');
     const statusButtons = document.querySelectorAll('.filter-group .filter-btn[data-filter]');
     const hiddenStatusInput = document.getElementById('hiddenStatusInput');
     const hiddenCategoriaInput = document.getElementById('hiddenCategoriaInput');
-    const roomsGridClient = document.getElementById('roomsGrid'); // Para JS Client-side
-    const roomCardsClient = roomsGridClient ? Array.from(roomsGridClient.querySelectorAll('.room-card')) : []; // Para JS Client-side
 
     // --- Lógica para FILTRADO SERVER-SIDE (Recarga de página) ---
     function submitFilterForm() {
@@ -340,13 +342,16 @@
     // Al hacer clic en un botón de filtro de estado
     statusButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // No necesitamos marcar/desmarcar active aquí, Django lo hará al recargar
-            hiddenStatusInput.value = this.dataset.filter; // Solo actualiza el hidden
+            // Actualiza el botón activo visualmente ANTES de enviar
+            statusButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            // Actualiza hidden input y envía
+            hiddenStatusInput.value = this.dataset.filter;
             submitFilterForm();
         });
     });
 
-    // --- Lógica del MODAL y AJAX (Revisada) ---
+    // --- Lógica del MODAL y AJAX ---
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -361,7 +366,7 @@
         }
         return cookieValue;
     }
-    const csrftoken = getCookie('csrftoken'); // Obtener CSRF token globalmente
+    const csrftoken = getCookie('csrftoken');
 
     const editModalElement = document.getElementById('editHabitacionModal');
     const editForm = document.getElementById('editHabitacionForm');
@@ -380,13 +385,13 @@
 
             const habitacionId = card.dataset.habitacionId;
             const numero = card.dataset.numero;
-            const estadoActual = card.dataset.estadoActual; // Valor original del choice
+            const estadoActual = card.dataset.estadoActual; // Valor: 'Disponible', 'Ocupada', etc.
             const reservaIdActual = card.dataset.reservaIdActual;
             const reservaActualInfo = card.dataset.reservaActualInfo;
 
             modalHabitacionNumero.textContent = numero;
             modalHabitacionIdInput.value = habitacionId;
-            modalEstadoSelect.value = estadoActual;
+            modalEstadoSelect.value = estadoActual; // Preseleccionar usando el VALOR
 
             infoReservaActualDiv.textContent = '';
             infoConteoHabitacionesDiv.textContent = '';
@@ -394,6 +399,7 @@
             if (reservaIdActual) {
                 const optionExists = modalReservaSelect.querySelector(`option[value="${reservaIdActual}"]`);
                 if(optionExists){ modalReservaSelect.value = reservaIdActual; }
+                else { console.warn(`La reserva ${reservaIdActual} asignada no está en la lista de asignables.`); } // Advertencia
                 infoReservaActualDiv.textContent = `Actual: ${reservaActualInfo || 'Asignada'}`;
                 modalReservaSelect.dispatchEvent(new Event('change')); // Cargar conteo
             } else {
@@ -409,10 +415,10 @@
             const formData = new FormData(editForm);
             const dataToSend = {
                 habitacion_id: formData.get('habitacion_id'),
-                estado: formData.get('estado'),
+                estado: formData.get('estado'), // Valor: 'Disponible', 'Ocupada', etc.
                 reserva_id: formData.get('reserva_id') || null
             };
-            const url = "{% url 'actualizarhabitacionajax' %}"; // Usar name de la URL
+            const url = "{% url 'actualizarhabitacionajax' %}"; // Usar name de URL
             const submitButton = editForm.querySelector('button[type="submit"]');
 
             submitButton.disabled = true;
@@ -431,22 +437,21 @@
                 if (data.status === 'ok') {
                     const cardElement = document.getElementById(`habitacion-card-${dataToSend.habitacion_id}`);
                     if (cardElement) {
-                        // Actualizar clase, data-status y data-estado-actual
-                        const nuevoEstadoLabel = data.nuevo_estado; // Label legible: "Disponible"
-                        const nuevoEstadoValue = modalEstadoSelect.value; // Valor del choice: "Disponible" o "disponible"
-                        const nuevoEstadoClass = nuevoEstadoValue.toLowerCase().replace(/\s+/g, '-');
+                        const nuevoEstadoLabel = data.nuevo_estado; // Label: "Disponible"
+                        const nuevoEstadoValue = dataToSend.estado; // Valor: "Disponible"
+                        const nuevoEstadoClass = nuevoEstadoValue.toLowerCase().replace(/\s+/g, '-'); // Clase: "disponible"
 
-                        // Limpiar clases de estado antiguas antes de añadir la nueva
+                        // Actualizar clases y data-*
                         cardElement.classList.remove('disponible', 'ocupada', 'limpieza', 'mantenimiento');
                         cardElement.classList.add(nuevoEstadoClass);
                         cardElement.dataset.status = nuevoEstadoClass;
-                        cardElement.dataset.estadoActual = nuevoEstadoValue; // Guardar el value
+                        cardElement.dataset.estadoActual = nuevoEstadoValue; // Guardar valor
 
                         // Actualizar texto del estado visible
                         const statusTextElement = cardElement.querySelector('.room-status-text');
                         if (statusTextElement) {
                             const dotSpan = '<span class="status-dot"></span>';
-                            statusTextElement.innerHTML = dotSpan + ` ${nuevoEstadoLabel}`; // Usar el label
+                            statusTextElement.innerHTML = dotSpan + ` ${nuevoEstadoLabel}`; // Usar label
                         }
 
                         // Actualizar info de reserva en la card y data-*
@@ -461,20 +466,23 @@
                                 cardElement.querySelector('.room-details').appendChild(newInfoDiv);
                             } else {
                                 reservaInfoDiv.innerHTML = `<i class="fas fa-user-tag" title="${reservaTooltip}"></i> ${reservaInfoText}`;
-                                reservaInfoDiv.style.display = ''; // Asegurar visibilidad
+                                reservaInfoDiv.style.display = '';
                             }
                             cardElement.dataset.reservaIdActual = data.reserva_asignada.id;
                             cardElement.dataset.reservaActualInfo = `#${data.reserva_asignada.id} - ${data.reserva_asignada.nombre_huesped}`;
                         } else {
-                            if (reservaInfoDiv) reservaInfoDiv.style.display = 'none'; // Ocultar
+                            if (reservaInfoDiv) reservaInfoDiv.style.display = 'none';
                             cardElement.dataset.reservaIdActual = '';
                             cardElement.dataset.reservaActualInfo = '';
                         }
                     }
                     const modalInstance = bootstrap.Modal.getInstance(editModalElement);
                     modalInstance.hide();
+                    // Opcional: Mostrar mensaje global de éxito
+                     // Ejemplo: Añadir un div#global-message y actualizarlo
+                     // showGlobalMessage('Habitación actualizada con éxito.', 'success');
                 } else {
-                    alert(`Error: ${data.message || 'Error desconocido'}`);
+                    alert(`Error al actualizar: ${data.message || 'Error desconocido'}`);
                 }
             })
             .catch(error => {
@@ -496,7 +504,7 @@
             if (!reservaId) return;
 
             infoConteoHabitacionesDiv.textContent = 'Cargando conteo...';
-            // Usa el name de la URL para construirla dinámicamente
+            // Usa el name= de la URL para construirla dinámicamente
             const urlDetalles = "{% url 'reservadetallesajax' 0 %}".replace('0', reservaId);
 
             fetch(urlDetalles)
@@ -519,16 +527,9 @@
         });
     }
 
-    // --- FILTRADO CLIENT-SIDE (Opcional, si no usas Server-Side) ---
-    /*
-    function applyFiltersClientSide() {
-        // ... (Tu función de filtrado JS si la prefieres) ...
-    }
-    // Añadir listeners para input, select, botones si usas filtrado client-side
-    // if (searchInputClient) searchInputClient.addEventListener('input', applyFiltersClientSide);
-    // if (categoriaSelect) categoriaSelect.addEventListener('change', applyFiltersClientSide);
-    // statusButtons.forEach(button => button.addEventListener('click', function() { ... applyFiltersClientSide(); }));
-    // document.addEventListener('DOMContentLoaded', applyFiltersClientSide); // Aplicar al cargar
+    /* --- FILTRADO CLIENT-SIDE (Opcional - Comentado por defecto) ---
+    const searchInputClientSide = document.getElementById('searchInput'); // ID del input
+    // ... resto de la lógica de applyFiltersClientSide si la descomentas ...
     */
 
 </script>
