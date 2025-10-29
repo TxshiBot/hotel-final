@@ -23,8 +23,10 @@ from hotel.views import Dashboard
 
 # ---- HABITACIONES ---- #
 from hotel.views import ListarHabitaciones
-from hotel.views import RegistroHabitaciones
-
+from hotel.views import RegistrarHabitaciones
+from hotel.views import RegistroCategorias
+from hotel.views import ActualizarHabitacionAJAX
+from hotel.views import GetReservaDetallesAJAX
 
 # ---- RESERVAS ---- # 
 from hotel.views import Reservar
@@ -35,8 +37,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Dashboard, name='dashboard'),
     path('listahabitaciones', ListarHabitaciones, name='habitaciones'),
-    path('registrohabitaciones', RegistroHabitaciones, name='registrohabitaciones'),
+    path('registrohabitaciones', RegistrarHabitaciones, name='registrohabitaciones'),
     path('reservar', Reservar, name='reservar'),
     path('listarreservas', ListarReservas, name='reservas'),
     path('reservas/confirmar/<int:reserva_id>/', ConfirmarReserva, name='confirmarreserva'),
+    path('registrocategorias', RegistroCategorias, name='registrocategorias'),
+    path('actualizarajax', ActualizarHabitacionAJAX, name='actualizarhabitacionajax'),
+    path('reservas/detallesajax/<int:reserva_id>/', GetReservaDetallesAJAX, name='reservadetallesajax'),
 ]

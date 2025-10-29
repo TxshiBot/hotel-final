@@ -17,10 +17,18 @@ class Registro_Huespedes(models.Model):
 
 class Categorias(models.Model):
     id = models.AutoField(primary_key=True)
-    tipo_hab = models.CharField(max_length=100, null=False)
+    tipo_hab = models.CharField(max_length=100, null=False, unique=True) # Este es el nombre que queremos mostrar
+    descripcion = models.TextField(blank=True, null=True)
+    camas_matrimoniales = models.PositiveIntegerField(default=0)
+    camas_individuales = models.PositiveIntegerField(default=0)
+    especiales = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'categorias'
+        verbose_name_plural = "Categorias" # Opcional, para el admin
+
+    def __str__(self):
+        return self.tipo_hab # Devuelve el valor del campo 'tipo_hab' como representación
 
 
 class Reservas(models.Model):
@@ -67,10 +75,16 @@ class Reservas(models.Model):
 
 class Habitaciones(models.Model):
     id = models.AutoField(primary_key=True)
-    estado = models.CharField(max_length=20, null=False)
+    ESTADO_CHOICES = [
+        ('Disponible', 'Disponible'),
+        ('Ocupada', 'Ocupada'),
+        ('Limpieza', 'Limpieza'),
+        ('Mantenimiento', 'Mantenimiento'),
+    ]
+    numero = models.CharField(max_length=10, null=False, blank=True)
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Disponible')
     tipo = models.ForeignKey(Categorias, on_delete=models.CASCADE, null=False, blank=True)
     precio = models.IntegerField(null=False)
-    piso = models.IntegerField(null=False, default=1)
     reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:

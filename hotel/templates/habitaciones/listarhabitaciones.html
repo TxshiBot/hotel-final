@@ -2,852 +2,535 @@
 {% include 'inc/header.html'%}
 
 <style>
-    :root {
-        /* Paleta Fría - Modo Claro */
-        --ice-blue: #E8F4F8;
-        --steel-blue: #4A90A4;
-        --dark-slate: #2C3E50;
-        --light-gray: #F8F9FA;
-        --medium-gray: #6C757D;
-        --border-gray: #DEE2E6;
-        --white: #FFFFFF;
-
-        /* Estados de Habitaciones - Modo Claro */
-        --available: #28A745;
-        --occupied: #DC3545;
-        --cleaning: #FD7E14;
-        --maintenance: #6C757D;
-        --reserved: #007BFF;
-
-        /* Paleta Fría - Modo Oscuro */
-        --dark-bg: #1A1D29;
-        --dark-bg-secondary: #252836;
-        --dark-card: #2D3142;
-        --dark-text: #E8EAED;
-        --dark-text-secondary: #9CA3AF;
-        --dark-border: #3F4252;
-        --steel-blue-dark: #5AA3B8;
-
-        /* Estados de Habitaciones - Modo Oscuro */
-        --available-dark: #2ECC71;
-        --occupied-dark: #E74C3C;
-        --cleaning-dark: #F39C12;
-        --maintenance-dark: #95A5A6;
-        --reserved-dark: #3498DB;
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        background: var(--ice-blue);
-        min-height: 100vh;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: var(--dark-slate);
-        transition: all 0.3s ease;
-    }
-
-    /* Modo Oscuro - Estilos Generales */
-    body.dark-mode {
-        background: var(--dark-bg);
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .sidebar-nav {
-        background: var(--dark-card);
-        border-right-color: var(--dark-border);
-    }
-
-    body.dark-mode .sidebar-brand {
-        color: var(--steel-blue-dark);
-    }
-
-    body.dark-mode .sidebar-link {
-        color: var(--dark-text-secondary);
-    }
-
-    body.dark-mode .sidebar-link:hover {
-        background: var(--dark-bg-secondary);
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .sidebar-link.active {
-        background: var(--steel-blue);
-        color: var(--white);
-    }
-
-    body.dark-mode .theme-toggle {
-        background: var(--dark-bg-secondary);
-    }
-
-    body.dark-mode .theme-switch {
-        background: var(--dark-border);
-    }
-
-    body.dark-mode .top-bar {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    body.dark-mode .top-bar h1 {
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .search-bar input {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .filter-btn {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .filter-btn:hover,
-    body.dark-mode .filter-btn.active {
-        background: var(--steel-blue);
-        color: var(--white);
-    }
-
-    body.dark-mode .room-card {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    body.dark-mode .room-number {
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .room-type {
-        color: var(--dark-text-secondary);
-    }
-
-    body.dark-mode .room-info {
-        color: var(--dark-text-secondary);
-    }
-
-    body.dark-mode .legend {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    body.dark-mode .legend-item {
-        color: var(--dark-text);
-    }
-
-    /* Sidebar */
-    .sidebar-nav {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 250px;
-        height: 100vh;
-        background: var(--white);
-        padding: 30px 0;
-        border-right: 1px solid var(--border-gray);
-        overflow-y: auto;
-        z-index: 1000;
-    }
-
-    .sidebar-brand {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--steel-blue);
-        margin-bottom: 40px;
-        display: block;
-        text-align: center;
-        text-decoration: none;
-    }
-
-    .sidebar-menu {
-        list-style: none;
-        padding: 0 15px;
-    }
-
-    .sidebar-menu li {
-        margin-bottom: 5px;
-    }
-
-    .sidebar-link {
-        display: flex;
-        align-items: center;
-        padding: 12px 15px;
-        color: var(--medium-gray);
-        text-decoration: none;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-        font-size: 0.95rem;
-    }
-
-    .sidebar-link i {
-        margin-right: 12px;
-        font-size: 1.1rem;
-        width: 20px;
-    }
-
-    .sidebar-link:hover {
-        background: var(--ice-blue);
-        color: var(--dark-slate);
-    }
-
-    .sidebar-link.active {
-        background: var(--steel-blue);
-        color: var(--white);
-    }
-
-    /* Theme Toggle */
-    .theme-toggle {
-        margin: 30px 15px 0;
-        padding: 15px;
-        background: var(--light-gray);
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    .theme-toggle-label {
-        font-size: 0.85rem;
-        color: var(--medium-gray);
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    .theme-switch {
-        width: 50px;
-        height: 26px;
-        background: var(--border-gray);
-        border-radius: 13px;
-        cursor: pointer;
-        position: relative;
-        margin: 0 auto;
-    }
-
-    .theme-switch::before {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--steel-blue);
-        top: 3px;
-        left: 3px;
-        transition: all 0.2s ease;
-    }
-
-    body.dark-mode .theme-switch::before {
-        transform: translateX(24px);
-        background: var(--steel-blue-dark);
-    }
-
-    /* Main Content */
-    .main-content {
-        margin-left: 250px;
-        padding: 25px;
-        min-height: 100vh;
-    }
-
-    /* Top Bar */
+    /* === ESTILOS GENERALES === */
     .top-bar {
-        background: var(--white);
-        padding: 20px 25px;
-        border-radius: 8px;
-        margin-bottom: 25px;
+        background: var(--white); padding: 20px 25px; border-radius: 8px; margin-bottom: 25px;
+        border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 15px;
+    }
+    body.dark-mode .top-bar { background: var(--dark-card); border-color: var(--dark-border); }
+    .top-bar-left, .controls-bar { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .top-bar h1 { font-size: 1.75rem; color: var(--dark-slate); font-weight: 600; margin: 0; }
+    body.dark-mode .top-bar h1 { color: var(--dark-text); }
+    .btn-new {
+        padding: 10px 20px; background: var(--steel-blue); color: var(--white);
+        border: none; border-radius: 6px; font-weight: 500; cursor: pointer;
+        transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; font-size: 0.9rem;
+    }
+    .btn-new:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-new { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-new:hover { background: var(--steel-blue); }
+
+    /* Estilos Buscador y Filtros */
+    .search-form { display: flex; gap: 5px; }
+    .search-input {
+        padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
+        font-size: 0.9rem; background: var(--light-gray); color: var(--dark-slate);
+        transition: all 0.2s ease; width: 220px;
+    }
+    body.dark-mode .search-input { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+    .search-input:focus { outline: none; border-color: var(--steel-blue); box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1); }
+    body.dark-mode .search-input:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
+    .btn-search {
+        padding: 10px 15px; background: var(--ice-blue); color: var(--steel-blue);
+        border: 1px solid var(--border-gray); border-radius: 6px; cursor: pointer;
+    }
+    body.dark-mode .btn-search { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--steel-blue-dark); }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .form-select.filter-select { /* Estilo para el select de categoría */
+        width: auto; /* Ajustar ancho al contenido */
+        min-width: 180px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        height: 38px; /* Alinear altura con botones */
+        line-height: 1.5;
+        background-color: var(--light-gray);
         border: 1px solid var(--border-gray);
+        border-radius: 20px;
     }
-
-    body.dark-mode .top-bar {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    .top-bar h1 {
-        font-size: 1.75rem;
-        color: var(--dark-slate);
-        font-weight: 600;
-        margin: 0 0 20px 0;
-    }
-
-    body.dark-mode .top-bar h1 {
-        color: var(--dark-text);
-    }
-
-    /* Search and Filters */
-    .controls-bar {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 25px;
-    }
-
-    .search-bar {
-        flex: 1;
-        min-width: 250px;
-    }
-
-    .search-bar input {
-        width: 100%;
-        padding: 10px 15px;
-        border: 1px solid var(--border-gray);
-        border-radius: 6px;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-    }
-
-    .search-bar input:focus {
-        outline: none;
-        border-color: var(--steel-blue);
-    }
-
-    body.dark-mode .search-bar input {
-        background: var(--dark-bg-secondary);
+    body.dark-mode .form-select.filter-select {
+        background-color: var(--dark-bg-secondary);
         border-color: var(--dark-border);
         color: var(--dark-text);
     }
-
-    .filter-group {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
     .filter-btn {
-        padding: 10px 16px;
-        background: var(--light-gray);
-        border: 1px solid var(--border-gray);
-        border-radius: 6px;
-        color: var(--dark-slate);
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        padding: 8px 14px; background: var(--light-gray); border: 1px solid var(--border-gray);
+        border-radius: 20px; color: var(--dark-slate); cursor: pointer; font-size: 0.85rem;
+        transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+        height: 38px; /* Alinear altura */
     }
+    .filter-btn:hover { background: var(--ice-blue); border-color: var(--steel-blue); }
+    .filter-btn.active { background: var(--steel-blue); color: var(--white); border-color: var(--steel-blue); }
+    body.dark-mode .filter-btn { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+    body.dark-mode .filter-btn:hover, body.dark-mode .filter-btn.active { background: var(--steel-blue-dark); color: var(--white); border-color: var(--steel-blue-dark); }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-    .filter-btn:hover {
-        background: var(--ice-blue);
-        border-color: var(--steel-blue);
-    }
-
-    .filter-btn.active {
-        background: var(--steel-blue);
-        color: var(--white);
-        border-color: var(--steel-blue);
-    }
-
-    body.dark-mode .filter-btn {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
-    }
-
-    body.dark-mode .filter-btn:hover,
-    body.dark-mode .filter-btn.active {
-        background: var(--steel-blue);
-        color: var(--white);
-    }
-
-    .filter-btn .status-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-    }
-
-    /* Room Cards Grid */
+    /* === ESTILOS DE LA CARD HABITACIÓN === */
     .rooms-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
-        margin-bottom: 30px;
+        padding: 0 25px 25px;
     }
-
     .room-card {
-        background: var(--white);
-        border-radius: 8px;
-        padding: 20px;
-        border: 1px solid var(--border-gray);
-        transition: all 0.2s ease;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
-
-    body.dark-mode .room-card {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    .room-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        transition: all 0.2s ease;
-    }
-
-    /* Estados de Habitación */
-    .room-card.available::before {
-        background: var(--available);
-    }
-
-    .room-card.occupied::before {
-        background: var(--occupied);
-    }
-
-    .room-card.cleaning::before {
-        background: var(--cleaning);
-    }
-
-    .room-card.maintenance::before {
-        background: var(--maintenance);
-    }
-
-    .room-card.reserved::before {
-        background: var(--reserved);
-    }
-
-    body.dark-mode .room-card.available::before {
-        background: var(--available-dark);
-    }
-
-    body.dark-mode .room-card.occupied::before {
-        background: var(--occupied-dark);
-    }
-
-    body.dark-mode .room-card.cleaning::before {
-        background: var(--cleaning-dark);
-    }
-
-    body.dark-mode .room-card.maintenance::before {
-        background: var(--maintenance-dark);
-    }
-
-    body.dark-mode .room-card.reserved::before {
-        background: var(--reserved-dark);
-    }
-
-    .room-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transform: translateY(-3px);
-    }
-
-    .room-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-
-    .room-number {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--dark-slate);
-    }
-
-    body.dark-mode .room-number {
-        color: var(--dark-text);
-    }
-
-    .room-icon {
-        font-size: 1.8rem;
-        opacity: 0.3;
-    }
-
-    .room-floor {
-        font-size: 0.75rem;
-        color: var(--medium-gray);
-        background: var(--light-gray);
-        padding: 4px 10px;
-        border-radius: 12px;
-        display: inline-block;
-        margin-bottom: 8px;
-    }
-
-    body.dark-mode .room-floor {
-        background: var(--dark-bg-secondary);
-        color: var(--dark-text-secondary);
-    }
-
-    .room-type {
-        font-size: 0.85rem;
-        color: var(--medium-gray);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    body.dark-mode .room-type {
-        color: var(--dark-text-secondary);
-    }
-
-    .room-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        margin-bottom: 12px;
-    }
-
-    .room-card.available .room-status {
-        background: rgba(40, 167, 69, 0.1);
-        color: var(--available);
-    }
-
-    .room-card.occupied .room-status {
-        background: rgba(220, 53, 69, 0.1);
-        color: var(--occupied);
-    }
-
-    .room-card.cleaning .room-status {
-        background: rgba(253, 126, 20, 0.1);
-        color: var(--cleaning);
-    }
-
-    .room-card.maintenance .room-status {
-        background: rgba(108, 117, 125, 0.1);
-        color: var(--maintenance);
-    }
-
-    .room-card.reserved .room-status {
-        background: rgba(0, 123, 255, 0.1);
-        color: var(--reserved);
-    }
-
-    body.dark-mode .room-card.available .room-status {
-        background: rgba(46, 204, 113, 0.15);
-        color: var(--available-dark);
-    }
-
-    body.dark-mode .room-card.occupied .room-status {
-        background: rgba(231, 76, 60, 0.15);
-        color: var(--occupied-dark);
-    }
-
-    body.dark-mode .room-card.cleaning .room-status {
-        background: rgba(243, 156, 18, 0.15);
-        color: var(--cleaning-dark);
-    }
-
-    body.dark-mode .room-card.maintenance .room-status {
-        background: rgba(149, 165, 166, 0.15);
-        color: var(--maintenance-dark);
-    }
-
-    body.dark-mode .room-card.reserved .room-status {
-        background: rgba(52, 152, 219, 0.15);
-        color: var(--reserved-dark);
-    }
-
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    .room-card.available .status-dot {
-        background: var(--available);
-    }
-
-    .room-card.occupied .status-dot {
-        background: var(--occupied);
-    }
-
-    .room-card.cleaning .status-dot {
-        background: var(--cleaning);
-    }
-
-    .room-card.maintenance .status-dot {
-        background: var(--maintenance);
-    }
-
-    .room-card.reserved .status-dot {
-        background: var(--reserved);
-    }
-
-    body.dark-mode .room-card.available .status-dot {
-        background: var(--available-dark);
-    }
-
-    body.dark-mode .room-card.occupied .status-dot {
-        background: var(--occupied-dark);
-    }
-
-    body.dark-mode .room-card.cleaning .status-dot {
-        background: var(--cleaning-dark);
-    }
-
-    body.dark-mode .room-card.maintenance .status-dot {
-        background: var(--maintenance-dark);
-    }
-
-    body.dark-mode .room-card.reserved .status-dot {
-        background: var(--reserved-dark);
-    }
-
-    .room-time {
-        font-size: 0.8rem;
-        color: var(--medium-gray);
-        margin-top: 8px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    body.dark-mode .room-time {
-        color: var(--dark-text-secondary);
-    }
-
-    /* Legend */
-    .legend {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        padding: 20px;
-        background: var(--white);
-        border-radius: 8px;
-        border: 1px solid var(--border-gray);
-    }
-
-    body.dark-mode .legend {
-        background: var(--dark-card);
-        border-color: var(--dark-border);
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
-        color: var(--dark-slate);
-    }
-
-    body.dark-mode .legend-item {
-        color: var(--dark-text);
-    }
-
-    .legend-dot {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-    }
-
-    .legend-dot.available {
-        background: var(--available);
-    }
-
-    .legend-dot.occupied {
-        background: var(--occupied);
-    }
-
-    .legend-dot.cleaning {
-        background: var(--cleaning);
-    }
-
-    .legend-dot.maintenance {
-        background: var(--maintenance);
-    }
-
-    .legend-dot.reserved {
-        background: var(--reserved);
-    }
-
-    body.dark-mode .legend-dot.available {
-        background: var(--available-dark);
-    }
-
-    body.dark-mode .legend-dot.occupied {
-        background: var(--occupied-dark);
-    }
-
-    body.dark-mode .legend-dot.cleaning {
-        background: var(--cleaning-dark);
-    }
-
-    body.dark-mode .legend-dot.maintenance {
-        background: var(--maintenance-dark);
-    }
-
-    body.dark-mode .legend-dot.reserved {
-        background: var(--reserved-dark);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .rooms-grid {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        }
-
-        .controls-bar {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .search-bar {
-            width: 100%;
-        }
+        background: var(--white); border-radius: 8px; border: 1px solid var(--border-gray);
+        overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease;
+        border-top: 4px solid transparent; cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    body.dark-mode .room-card { background: var(--dark-card); border-color: var(--dark-border); box-shadow: none;}
+    .room-card:hover { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
+    body.dark-mode .room-card:hover { box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05); }
+
+    /* Colores de Estado (Borde Superior) - Asegúrate que los nombres coincidan con los values/clases */
+    .room-card.disponible { border-top-color: var(--available); }
+    .room-card.ocupada { border-top-color: var(--occupied); }
+    .room-card.limpieza { border-top-color: var(--cleaning); }
+    .room-card.mantenimiento { border-top-color: var(--maintenance); }
+    /* Modo Oscuro */
+    body.dark-mode .room-card.disponible { border-top-color: var(--available-dark); }
+    body.dark-mode .room-card.ocupada { border-top-color: var(--occupied-dark); }
+    body.dark-mode .room-card.limpieza { border-top-color: var(--cleaning-dark); }
+    body.dark-mode .room-card.mantenimiento { border-top-color: var(--maintenance-dark); }
+
+    .room-header { padding: 15px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .room-number { font-size: 1.6rem; font-weight: 600; color: var(--dark-slate); line-height: 1.1; }
+    body.dark-mode .room-number { color: var(--dark-text); }
+    .room-type { font-size: 0.8rem; color: var(--medium-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;}
+    body.dark-mode .room-type { color: var(--dark-text-secondary); }
+
+    .room-details { padding: 0 15px 15px; font-size: 0.85rem; color: var(--medium-gray); display: flex; flex-direction: column; gap: 8px; }
+    body.dark-mode .room-details { color: var(--dark-text-secondary); }
+    .room-details > div { display: flex; align-items: center; gap: 6px; }
+    .room-details i { width: 14px; text-align: center; opacity: 0.7; }
+
+    /* Status dentro de details */
+    .room-status-text { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
+    .room-card.disponible .room-status-text { color: var(--available); }
+    .room-card.ocupada .room-status-text { color: var(--occupied); }
+    .room-card.limpieza .room-status-text { color: var(--cleaning); }
+    .room-card.mantenimiento .room-status-text { color: var(--maintenance); }
+    /* Dark mode status text */
+    body.dark-mode .room-card.disponible .room-status-text { color: var(--available-dark); }
+    body.dark-mode .room-card.ocupada .room-status-text { color: var(--occupied-dark); }
+    body.dark-mode .room-card.limpieza .room-status-text { color: var(--cleaning-dark); }
+    body.dark-mode .room-card.mantenimiento .room-status-text { color: var(--maintenance-dark); }
+    /* Info de reserva */
+    .room-reserva-info { font-size: 0.8rem; color: var(--medium-gray); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+    body.dark-mode .room-reserva-info { color: var(--dark-text-secondary); }
+
+
+    /* === ESTILOS DEL MODAL DE EDICIÓN === */
+    .modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
+    body.dark-mode .modal-content { background-color: var(--dark-card); border-color: var(--dark-border); color: var(--dark-text); }
+    .modal-header { padding: 1rem 1.5rem; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); }
+    body.dark-mode .modal-header { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
+    .modal-title { color: var(--dark-slate); font-weight: 600; }
+    body.dark-mode .modal-title { color: var(--dark-text); }
+    .modal-header .btn-close { filter: none; opacity: 0.6; }
+    body.dark-mode .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); opacity: 0.8; }
+    .modal-body { padding: 25px; }
+    body.dark-mode .modal-body { background-color: var(--dark-card); }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--dark-slate); margin-bottom: 8px; }
+    body.dark-mode .form-label { color: var(--dark-text); }
+    .form-select { width: 100%; padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px; font-size: 0.95rem; background: var(--white); color: var(--dark-slate); box-sizing: border-box; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;}
+    body.dark-mode .form-select { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dee2e6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");}
+    .form-select:focus { outline: none; border-color: var(--steel-blue); box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1); }
+    body.dark-mode .form-select:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
+    #info-conteo-habitaciones { font-size: 0.85rem; color: var(--medium-gray); margin-top: 5px; height: 1.5em; /* Espacio reservado */}
+    body.dark-mode #info-conteo-habitaciones { color: var(--dark-text-secondary); }
+    #info-reserva-actual { font-size: 0.9rem; color: var(--medium-gray); margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-gray); min-height: 1.5em;}
+    body.dark-mode #info-reserva-actual { color: var(--dark-text-secondary); border-top-color: var(--dark-border); }
+    .modal-footer { padding: 1rem 1.5rem; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); }
+    body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
+    .btn { padding: 10px 25px; /* Ajuste padding botones */ border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+     .btn-primary { background: var(--steel-blue); color: var(--white); }
+    .btn-primary:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-primary { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-primary:hover { background: var(--steel-blue); }
+    .btn-secondary { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
+    .btn-secondary:hover { background: var(--ice-blue); }
+    body.dark-mode .btn-secondary { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
+    body.dark-mode .btn-secondary:hover { background: var(--dark-bg); }
+
+    /* Mensajes */
+    .alert { padding: 10px 15px; border-radius: 6px; border: 1px solid transparent; margin-bottom: 15px;}
+    .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+    .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+    .alert-info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+    /* Mensajes modo oscuro */
+    body.dark-mode .alert-success { background-color: rgba(40, 167, 69, 0.2); border-color: rgba(40, 167, 69, 0.5); color: #a3e9b7; }
+    body.dark-mode .alert-danger { background-color: rgba(220, 53, 69, 0.2); border-color: rgba(220, 53, 69, 0.5); color: #f5a9b0; }
+    body.dark-mode .alert-info { background-color: rgba(23, 162, 184, 0.2); border-color: rgba(23, 162, 184, 0.5); color: #9eeaf9; }
 
-        .filter-group {
-            width: 100%;
-        }
-    }
-
-    /* Animation */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .room-card {
-        animation: fadeInUp 0.3s ease forwards;
-    }
 </style>
 
-<!-- Top Bar -->
 <div class="top-bar">
-    <h1><i class="fas fa-door-open"></i> Vista General de Habitaciones</h1>
+    <div class="top-bar-left">
+        <h1><i class="fas fa-door-open"></i> Habitaciones</h1>
+        <form method="GET" action="{% url 'habitaciones' %}" class="search-form" id="searchAndFilterForm">
+            <input type="text"
+                   name="q"
+                   class="search-input"
+                   placeholder="Buscar por Nº, Cat, Huésped..."
+                   value="{{ search_query|default:'' }}"
+                   id="searchInput">
 
-    <!-- Search and Filters -->
+            {# Campos ocultos para mantener filtros al buscar/paginar #}
+            <input type="hidden" name="status" value="{{ active_filter|default:'all' }}" id="hiddenStatusInput">
+            <input type="hidden" name="categoria_id" value="{{ selected_categoria_id|default:'' }}" id="hiddenCategoriaInput">
+
+            <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
     <div class="controls-bar">
-        <div class="search-bar">
-            <input type="text" placeholder="Buscar habitación..." id="searchInput">
-        </div>
         <div class="filter-group">
-            <button class="filter-btn active" data-filter="all">
-                <i class="fas fa-th"></i> Todas
-            </button>
-            <button class="filter-btn" data-filter="available">
-                <span class="status-dot" style="background: var(--available);"></span> Disponibles
-            </button>
-            <button class="filter-btn" data-filter="occupied">
-                <span class="status-dot" style="background: var(--occupied);"></span> Ocupadas
-            </button>
-            <button class="filter-btn" data-filter="cleaning">
-                <span class="status-dot" style="background: var(--cleaning);"></span> Limpieza
-            </button>
-            <button class="filter-btn" data-filter="maintenance">
-                <span class="status-dot" style="background: var(--maintenance);"></span> Mantenimiento
-            </button>
+             <select name="categoria_id_select" id="categoriaFilterSelect" class="form-select filter-select">
+                <option value="">-- Todas las Categorías --</option>
+                {% for cat in todas_categorias %}
+                    <option value="{{ cat.id }}" {% if selected_categoria_id|stringformat:"s" == cat.id|stringformat:"s" %}selected{% endif %}>
+                        {{ cat.tipo_hab }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
+
+        <div class="filter-group">
+            <button type="button" class="filter-btn {% if active_filter == 'all' %}active{% endif %}" data-filter="all">Todas</button>
+            {% for value, label in habitacion_form.estado.field.choices %}
+                 <button type="button" class="filter-btn {% if active_filter == value|lower %}active{% endif %}" data-filter="{{ value|lower }}">
+                     <span class="status-dot" style="background-color:
+                        {% if label == 'Disponible' %}var(--available)
+                        {% elif label == 'Limpieza' %}var(--cleaning, var(--reserved))
+                        {% elif label == 'Mantenimiento' %}var(--maintenance, var(--medium-gray))
+                        {% elif label == 'Ocupada' %}var(--occupied)
+                        {% else %}var(--medium-gray){% endif %};"></span> {{ label }}
+                 </button>
+            {% endfor %}
+        </div>
+         <a href="{% url 'registrohabitaciones' %}" class="btn-new">
+            <i class="fas fa-plus"></i> Nueva Habitación
+        </a>
     </div>
 </div>
 
-<!-- Rooms Grid -->
 <div class="rooms-grid" id="roomsGrid">
-    <!-- EJEMPLO DE CARD CON DJANGO -->
-    <!--
+    {% csrf_token %} {# Para el AJAX del modal #}
+
     {% for habitacion in habitaciones %}
-    <div class="room-card {{ habitacion.estado }}" data-status="{{ habitacion.estado }}">
+    <div class="room-card {{ habitacion.estado|lower|slugify }}" {# Usar slugify para clases CSS seguras #}
+         data-status="{{ habitacion.estado|lower }}"
+         data-categoria-id="{{ habitacion.tipo.id }}"
+         data-bs-toggle="modal"
+         data-bs-target="#editHabitacionModal"
+         id="habitacion-card-{{ habitacion.id }}"
+
+         data-habitacion-id="{{ habitacion.id }}"
+         data-numero="{{ habitacion.numero }}"
+         data-estado-actual="{{ habitacion.estado }}" {# Valor original: 'Disponible', 'Ocupada', etc. #}
+         data-reserva-id-actual="{{ habitacion.reserva.id|default:'' }}"
+         data-reserva-actual-info="{% if habitacion.reserva %}#{{ habitacion.reserva.id }} - {{ habitacion.reserva.nombre }} {{ habitacion.reserva.apellido }}{% endif %}"
+         >
         <div class="room-header">
-            <div class="room-number">{{ habitacion.numero }}</div>
-            <i class="fas fa-bed room-icon"></i>
+            <div>
+                <div class="room-number">{{ habitacion.numero }}</div>
+                <div class="room-type">{{ habitacion.tipo.tipo_hab }}</div> {# Nombre Categoría #}
+            </div>
+            {# Icono opcional #}
         </div>
-        <div class="room-floor"><i class="fas fa-layer-group"></i> Piso {{ habitacion.piso }}</div>
-        <div class="room-type">{{ habitacion.tipo }}</div>
-        <div class="room-status">
-            <span class="status-dot"></span>
-            {{ habitacion.estado_display }}
+        <div class="room-details">
+             <div class="room-status-text">
+                <span class="status-dot"></span>
+                {{ habitacion.get_estado_display }} {# Label legible del estado #}
+             </div>
+             <div>
+                 <i class="fas fa-dollar-sign"></i> {{ habitacion.precio }} COP / Noche
+             </div>
+             {# Mostrar info de reserva si está asignada #}
+             {% if habitacion.reserva %}
+                 <div class="room-reserva-info">
+                     <i class="fas fa-user-tag" title="{{ habitacion.reserva.nombre }} {{ habitacion.reserva.apellido }}"></i> Reserva #{{ habitacion.reserva.id }}
+                 </div>
+             {% else %}
+                  {# Espacio reservado para mantener altura consistente #}
+                  <div class="room-reserva-info" style="visibility: hidden;"><i class="fas fa-user-tag"></i></div>
+             {% endif %}
         </div>
-        <div class="room-time"><i class="fas fa-clock"></i> 24hr</div>
     </div>
+    {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No se encontraron habitaciones. <a href="{% url 'registrar_habitacion' %}">Registrar nueva</a>.</p>
     {% endfor %}
-    -->
+</div>
 
-    <!-- EJEMPLOS ESTÁTICOS -->
-    <div class="room-card available" data-status="available">
-        <div class="room-header">
-            <div class="room-number">203</div>
-            <i class="fas fa-bed room-icon"></i>
-        </div>
-        <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 2</div>
-        <div class="room-type">Sencilla</div>
-        <div class="room-status">
-            <span class="status-dot"></span>
-            Disponible
-        </div>
-        <div class="room-time"><i class="fas fa-clock"></i> 24hr</div>
-    </div>
+<div class="modal fade" id="editHabitacionModal" tabindex="-1" aria-labelledby="editHabitacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="editHabitacionForm"> {# Formulario dentro del modal #}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editHabitacionModalLabel">Editar Habitación <span id="modalHabitacionNumero" style="font-weight: bold;"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="habitacion_id" id="modalHabitacionId">
 
-    <div class="room-card occupied" data-status="occupied">
-        <div class="room-header">
-            <div class="room-number">210</div>
-            <i class="fas fa-user-check room-icon"></i>
-        </div>
-        <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 2</div>
-        <div class="room-type">Doble</div>
-        <div class="room-status">
-            <span class="status-dot"></span>
-            Ocupada
-        </div>
-        <div class="room-time"><i class="fas fa-clock"></i> 24hr</div>
-    </div>
+                    <div class="form-group">
+                        <label for="modalEstadoHabitacion" class="form-label">Cambiar Estado <span style="color:red">*</span></label>
+                        <select name="estado" id="modalEstadoHabitacion" class="form-select" required>
+                             {# Usamos los choices pasados desde la vista #}
+                             {% for value, label in habitacion_form.estado.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                             {% endfor %}
+                        </select>
+                    </div>
 
-    <div class="room-card cleaning" data-status="cleaning">
-        <div class="room-header">
-            <div class="room-number">207</div>
-            <i class="fas fa-broom room-icon"></i>
-        </div>
-        <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 2</div>
-        <div class="room-type">Sencilla</div>
-        <div class="room-status">
-            <span class="status-dot"></span>
-            Limpieza
-        </div>
-        <div class="room-time"><i class="fas fa-clock"></i> 24hr</div>
-    </div>
+                    <div class="form-group">
+                        <label for="modalReservaId" class="form-label">Asignar Reserva</label>
+                        <select name="reserva_id" id="modalReservaId" class="form-select">
+                            <option value="">-- Ninguna --</option> {# Opción para desasignar #}
+                            {% for r in reservas_asignables %}
+                                <option value="{{ r.id }}">
+                                    #{{ r.id }} - {{ r.nombre }} {{ r.apellido }} ({{ r.check_in|date:"d/m" }} - {{ r.check_out|date:"d/m" }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                         {# Div para mostrar conteo de habitaciones #}
+                        <div id="info-conteo-habitaciones"></div>
+                    </div>
 
-    <div class="room-card maintenance" data-status="maintenance">
-        <div class="room-header">
-            <div class="room-number">105</div>
-            <i class="fas fa-tools room-icon"></i>
+                    {# Mostrar info de reserva actual si existe #}
+                    <div id="info-reserva-actual"></div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
         </div>
-        <div class="room-floor"><i class="fas fa-layer-group"></i> Piso 1</div>
-        <div class="room-type">Suite</div>
-        <div class="room-status">
-            <span class="status-dot"></span>
-            Mantenimiento
-        </div>
-        <div class="room-time"><i class="fas fa-clock"></i> 24hr</div>
     </div>
 </div>
 
-<!-- Legend -->
-<div class="legend">
-    <div class="legend-item">
-        <div class="legend-dot available"></div>
-        <span>Disponible</span>
-    </div>
-    <div class="legend-item">
-        <div class="legend-dot occupied"></div>
-        <span>Ocupada</span>
-    </div>
-    <div class="legend-item">
-        <div class="legend-dot cleaning"></div>
-        <span>Limpieza</span>
-    </div>
-    <div class="legend-item">
-        <div class="legend-dot maintenance"></div>
-        <span>Mantenimiento</span>
-    </div>
-    <div class="legend-item">
-        <div class="legend-dot reserved"></div>
-        <span>Reservada</span>
-    </div>
-</div>
+<script>
+    // === JAVASCRIPT ===
+    const searchForm = document.getElementById('searchAndFilterForm');
+    const searchInputClient = document.getElementById('searchInput'); // Para JS Client-side
+    const categoriaSelect = document.getElementById('categoriaFilterSelect');
+    const statusButtons = document.querySelectorAll('.filter-group .filter-btn[data-filter]');
+    const hiddenStatusInput = document.getElementById('hiddenStatusInput');
+    const hiddenCategoriaInput = document.getElementById('hiddenCategoriaInput');
+    const roomsGridClient = document.getElementById('roomsGrid'); // Para JS Client-side
+    const roomCardsClient = roomsGridClient ? Array.from(roomsGridClient.querySelectorAll('.room-card')) : []; // Para JS Client-side
+
+    // --- Lógica para FILTRADO SERVER-SIDE (Recarga de página) ---
+    function submitFilterForm() {
+        // Asegura que los hidden inputs tengan los valores seleccionados
+        const activeStatusButton = document.querySelector('.filter-group .filter-btn.active');
+        hiddenStatusInput.value = activeStatusButton ? activeStatusButton.dataset.filter : 'all';
+        hiddenCategoriaInput.value = categoriaSelect ? categoriaSelect.value : '';
+        searchForm.submit(); // Envía el formulario GET
+    }
+
+    // Al cambiar el select de categoría
+    if (categoriaSelect) {
+        categoriaSelect.addEventListener('change', submitFilterForm);
+    }
+
+    // Al hacer clic en un botón de filtro de estado
+    statusButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // No necesitamos marcar/desmarcar active aquí, Django lo hará al recargar
+            hiddenStatusInput.value = this.dataset.filter; // Solo actualiza el hidden
+            submitFilterForm();
+        });
+    });
+
+    // --- Lógica del MODAL y AJAX (Revisada) ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken'); // Obtener CSRF token globalmente
+
+    const editModalElement = document.getElementById('editHabitacionModal');
+    const editForm = document.getElementById('editHabitacionForm');
+    const modalHabitacionNumero = document.getElementById('modalHabitacionNumero');
+    const modalHabitacionIdInput = document.getElementById('modalHabitacionId');
+    const modalEstadoSelect = document.getElementById('modalEstadoHabitacion');
+    const modalReservaSelect = document.getElementById('modalReservaId');
+    const infoReservaActualDiv = document.getElementById('info-reserva-actual');
+    const infoConteoHabitacionesDiv = document.getElementById('info-conteo-habitaciones');
+
+    // Poblar Modal
+    if (editModalElement) {
+        editModalElement.addEventListener('show.bs.modal', function (event) {
+            const card = event.relatedTarget;
+            if (!card || !card.classList.contains('room-card')) return;
+
+            const habitacionId = card.dataset.habitacionId;
+            const numero = card.dataset.numero;
+            const estadoActual = card.dataset.estadoActual; // Valor original del choice
+            const reservaIdActual = card.dataset.reservaIdActual;
+            const reservaActualInfo = card.dataset.reservaActualInfo;
+
+            modalHabitacionNumero.textContent = numero;
+            modalHabitacionIdInput.value = habitacionId;
+            modalEstadoSelect.value = estadoActual;
+
+            infoReservaActualDiv.textContent = '';
+            infoConteoHabitacionesDiv.textContent = '';
+            modalReservaSelect.value = ""; // Reset
+            if (reservaIdActual) {
+                const optionExists = modalReservaSelect.querySelector(`option[value="${reservaIdActual}"]`);
+                if(optionExists){ modalReservaSelect.value = reservaIdActual; }
+                infoReservaActualDiv.textContent = `Actual: ${reservaActualInfo || 'Asignada'}`;
+                modalReservaSelect.dispatchEvent(new Event('change')); // Cargar conteo
+            } else {
+                infoReservaActualDiv.textContent = 'Actual: Sin asignar.';
+            }
+        });
+    }
+
+    // Enviar Formulario Modal AJAX
+    if (editForm) {
+        editForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(editForm);
+            const dataToSend = {
+                habitacion_id: formData.get('habitacion_id'),
+                estado: formData.get('estado'),
+                reserva_id: formData.get('reserva_id') || null
+            };
+            const url = "{% url 'actualizarhabitacionajax' %}"; // Usar name de la URL
+            const submitButton = editForm.querySelector('button[type="submit"]');
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => {
+                if (!response.ok) { return response.json().then(err => { throw new Error(err.message || 'Error del servidor'); }); }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'ok') {
+                    const cardElement = document.getElementById(`habitacion-card-${dataToSend.habitacion_id}`);
+                    if (cardElement) {
+                        // Actualizar clase, data-status y data-estado-actual
+                        const nuevoEstadoLabel = data.nuevo_estado; // Label legible: "Disponible"
+                        const nuevoEstadoValue = modalEstadoSelect.value; // Valor del choice: "Disponible" o "disponible"
+                        const nuevoEstadoClass = nuevoEstadoValue.toLowerCase().replace(/\s+/g, '-');
+
+                        // Limpiar clases de estado antiguas antes de añadir la nueva
+                        cardElement.classList.remove('disponible', 'ocupada', 'limpieza', 'mantenimiento');
+                        cardElement.classList.add(nuevoEstadoClass);
+                        cardElement.dataset.status = nuevoEstadoClass;
+                        cardElement.dataset.estadoActual = nuevoEstadoValue; // Guardar el value
+
+                        // Actualizar texto del estado visible
+                        const statusTextElement = cardElement.querySelector('.room-status-text');
+                        if (statusTextElement) {
+                            const dotSpan = '<span class="status-dot"></span>';
+                            statusTextElement.innerHTML = dotSpan + ` ${nuevoEstadoLabel}`; // Usar el label
+                        }
+
+                        // Actualizar info de reserva en la card y data-*
+                        const reservaInfoDiv = cardElement.querySelector('.room-reserva-info');
+                        if (data.reserva_asignada) {
+                            const reservaInfoText = `Reserva #${data.reserva_asignada.id}`;
+                            const reservaTooltip = data.reserva_asignada.nombre_huesped;
+                             if (!reservaInfoDiv) {
+                                const newInfoDiv = document.createElement('div');
+                                newInfoDiv.className = 'room-reserva-info';
+                                newInfoDiv.innerHTML = `<i class="fas fa-user-tag" title="${reservaTooltip}"></i> ${reservaInfoText}`;
+                                cardElement.querySelector('.room-details').appendChild(newInfoDiv);
+                            } else {
+                                reservaInfoDiv.innerHTML = `<i class="fas fa-user-tag" title="${reservaTooltip}"></i> ${reservaInfoText}`;
+                                reservaInfoDiv.style.display = ''; // Asegurar visibilidad
+                            }
+                            cardElement.dataset.reservaIdActual = data.reserva_asignada.id;
+                            cardElement.dataset.reservaActualInfo = `#${data.reserva_asignada.id} - ${data.reserva_asignada.nombre_huesped}`;
+                        } else {
+                            if (reservaInfoDiv) reservaInfoDiv.style.display = 'none'; // Ocultar
+                            cardElement.dataset.reservaIdActual = '';
+                            cardElement.dataset.reservaActualInfo = '';
+                        }
+                    }
+                    const modalInstance = bootstrap.Modal.getInstance(editModalElement);
+                    modalInstance.hide();
+                } else {
+                    alert(`Error: ${data.message || 'Error desconocido'}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error en fetch:', error);
+                alert(`Error de red o del servidor: ${error.message}`);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Guardar Cambios';
+            });
+        });
+    }
+
+    // --- AJAX para obtener detalles de reserva (conteo) ---
+    if (modalReservaSelect && infoConteoHabitacionesDiv) {
+        modalReservaSelect.addEventListener('change', function() {
+            const reservaId = this.value;
+            infoConteoHabitacionesDiv.textContent = '';
+            if (!reservaId) return;
+
+            infoConteoHabitacionesDiv.textContent = 'Cargando conteo...';
+            // Usa el name de la URL para construirla dinámicamente
+            const urlDetalles = "{% url 'reservadetallesajax' 0 %}".replace('0', reservaId);
+
+            fetch(urlDetalles)
+            .then(response => {
+                 if (!response.ok) { throw new Error('Respuesta no válida del servidor'); }
+                 return response.json();
+            })
+            .then(data => {
+                if (data.status === 'ok') {
+                    infoConteoHabitacionesDiv.textContent = `Necesita: ${data.num_necesarias || '?'} hab. | Asignadas: ${data.num_asignadas || '0'}`;
+                } else {
+                    infoConteoHabitacionesDiv.textContent = 'Error al cargar conteo.';
+                    console.error("Error detalles:", data.message);
+                }
+            })
+            .catch(error => {
+                infoConteoHabitacionesDiv.textContent = 'Error de red.';
+                console.error("Error fetch detalles:", error);
+            });
+        });
+    }
+
+    // --- FILTRADO CLIENT-SIDE (Opcional, si no usas Server-Side) ---
+    /*
+    function applyFiltersClientSide() {
+        // ... (Tu función de filtrado JS si la prefieres) ...
+    }
+    // Añadir listeners para input, select, botones si usas filtrado client-side
+    // if (searchInputClient) searchInputClient.addEventListener('input', applyFiltersClientSide);
+    // if (categoriaSelect) categoriaSelect.addEventListener('change', applyFiltersClientSide);
+    // statusButtons.forEach(button => button.addEventListener('click', function() { ... applyFiltersClientSide(); }));
+    // document.addEventListener('DOMContentLoaded', applyFiltersClientSide); // Aplicar al cargar
+    */
+
+</script>
 
 {% include 'inc/footer.html'%}

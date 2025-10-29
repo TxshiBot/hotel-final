@@ -3,7 +3,8 @@ from django import forms
 
 # ---- MODELS ---- #
 from hotel.models import Reservas
-
+from hotel.models import Categorias
+from hotel.models import Habitaciones
 
 class ReservarForm(forms.ModelForm):
     
@@ -48,3 +49,75 @@ class ReservarForm(forms.ModelForm):
         for campo in opcionales:
             if campo in self.fields:
                 self.fields[campo].required = False
+
+
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categorias
+        fields = [
+            'tipo_hab', 
+            'descripcion', 
+            'camas_matrimoniales', 
+            'camas_individuales', 
+            'especiales'
+        ]
+        widgets = {
+            'tipo_hab': forms.TextInput(attrs={
+                'class': 'form-input', # <-- AÑADIR CLASE
+                'placeholder': 'Ej: Suite Presidencial'
+            }),
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-textarea', # <-- AÑADIR CLASE
+                'rows': 3, 
+                'placeholder': 'Descripción breve...'
+            }),
+            'camas_matrimoniales': forms.NumberInput(attrs={
+                'class': 'form-input', # <-- AÑADIR CLASE (o form-number si tienes estilo específico)
+                'min': 0
+            }),
+            'camas_individuales': forms.NumberInput(attrs={
+                'class': 'form-input', # <-- AÑADIR CLASE
+                'min': 0
+            }),
+            'especiales': forms.Textarea(attrs={
+                'class': 'form-textarea', # <-- AÑADIR CLASE
+                'rows': 3, 
+                'placeholder': 'Ej: Balcón, Jacuzzi...'
+            }),
+        }
+        labels = {
+            'tipo_hab': 'Nombre de la Categoría',
+            'camas_matrimoniales': 'Camas Matrimoniales',
+            'camas_individuales': 'Camas Individuales',
+            'especiales': 'Características Especiales',
+        }
+
+
+class HabitacionForm(forms.ModelForm):
+    class Meta:
+        model = Habitaciones
+        fields = ['numero', 'tipo', 'precio', 'estado'] 
+        widgets = {
+            'numero': forms.TextInput(attrs={
+                'placeholder': 'Ej: 101', 
+                'maxlength': '3', 
+                'pattern': '[0-9]{1,3}', 
+                'title': 'Ingrese un número de habitación de hasta 3 dígitos.'
+            }),
+            'tipo': forms.Select(attrs={'class': 'form-select'}), 
+            'precio': forms.NumberInput(attrs={
+                'placeholder': 'Ej: 150000', 
+                'min': '0',
+                'step': '1000' 
+            }),
+            'estado': forms.RadioSelect(attrs={'class': 'd-none'}), 
+        }
+        labels = {
+            'numero': 'Número de Habitación',
+            'tipo': 'Categoría',
+            'precio': 'Precio por Noche (COP)',
+            'estado': 'Estado Inicial',
+        }
+        field_classes = {
+            'tipo': forms.ModelChoiceField, 
+        }
