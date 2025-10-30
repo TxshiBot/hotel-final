@@ -3,6 +3,7 @@
 
 <style>
     /* === ESTILOS GENERALES === */
+    /* ... (Todos tus estilos de .top-bar, .search-form, .filter-group) ... */
     .top-bar {
         background: var(--white); padding: 20px 25px; border-radius: 8px; margin-bottom: 25px;
         border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
@@ -21,8 +22,6 @@
     .btn-new:hover { background: var(--dark-slate); }
     body.dark-mode .btn-new { background: var(--steel-blue-dark); }
     body.dark-mode .btn-new:hover { background: var(--steel-blue); }
-
-    /* Estilos Buscador y Filtros */
     .search-form { display: flex; gap: 5px; }
     .search-input {
         padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
@@ -34,7 +33,7 @@
     body.dark-mode .search-input:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
     .btn-search {
         padding: 10px 15px; background: var(--ice-blue); color: var(--steel-blue);
-        border: 1px solid var(--border-gray); border-radius: 6px; cursor: pointer; height: 38px; /* Alinear altura */
+        border: 1px solid var(--border-gray); border-radius: 6px; cursor: pointer; height: 38px;
     }
     body.dark-mode .btn-search { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--steel-blue-dark); }
     .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -44,7 +43,7 @@
         border-radius: 20px; appearance: none; -webkit-appearance: none; -moz-appearance: none;
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
         background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px 12px;
-        padding-right: 2.5rem; box-sizing: border-box; /* Incluir padding en altura */
+        padding-right: 2.5rem; box-sizing: border-box;
     }
     body.dark-mode .form-select.filter-select {
         background-color: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text);
@@ -54,7 +53,7 @@
         padding: 8px 14px; background: var(--light-gray); border: 1px solid var(--border-gray);
         border-radius: 20px; color: var(--dark-slate); cursor: pointer; font-size: 0.85rem;
         transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
-        height: 38px; box-sizing: border-box; /* Incluir padding en altura */
+        height: 38px; box-sizing: border-box;
     }
     .filter-btn:hover { background: var(--ice-blue); border-color: var(--steel-blue); }
     .filter-btn.active { background: var(--steel-blue); color: var(--white); border-color: var(--steel-blue); }
@@ -63,7 +62,8 @@
     .status-dot { width: 10px; height: 10px; border-radius: 50%; }
 
     /* === ESTILOS DE LA CARD HABITACIÓN === */
-    .rooms-grid {
+    /* ... (Todos tus estilos de .rooms-grid, .room-card, .room-header, .room-details) ... */
+     .rooms-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
@@ -78,8 +78,6 @@
     body.dark-mode .room-card { background: var(--dark-card); border-color: var(--dark-border); box-shadow: none;}
     .room-card:hover { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
     body.dark-mode .room-card:hover { box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05); }
-
-    /* Clases de Estado (Borde Superior) */
     .room-card.disponible { border-top-color: var(--available); }
     .room-card.ocupada { border-top-color: var(--occupied); }
     .room-card.limpieza { border-top-color: var(--cleaning); }
@@ -88,39 +86,30 @@
     body.dark-mode .room-card.ocupada { border-top-color: var(--occupied-dark); }
     body.dark-mode .room-card.limpieza { border-top-color: var(--cleaning-dark); }
     body.dark-mode .room-card.mantenimiento { border-top-color: var(--maintenance-dark); }
-
     .room-header { padding: 15px; display: flex; justify-content: space-between; align-items: flex-start; }
     .room-number { font-size: 1.6rem; font-weight: 600; color: var(--dark-slate); line-height: 1.1; }
     body.dark-mode .room-number { color: var(--dark-text); }
     .room-type { font-size: 0.8rem; color: var(--medium-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;}
     body.dark-mode .room-type { color: var(--dark-text-secondary); }
-
-    .room-details { padding: 0 15px 15px; font-size: 0.85rem; color: var(--medium-gray); display: flex; flex-direction: column; gap: 8px; margin-top: auto; /* Empuja detalles hacia abajo */ }
+    .room-details { padding: 0 15px 15px; font-size: 0.85rem; color: var(--medium-gray); display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
     body.dark-mode .room-details { color: var(--dark-text-secondary); }
     .room-details > div { display: flex; align-items: center; gap: 6px; }
     .room-details i { width: 14px; text-align: center; opacity: 0.7; }
-
-    /* Status dentro de details */
     .room-status-text { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
-    /* Colores texto estado */
     .room-card.disponible .room-status-text { color: var(--available); }
     .room-card.ocupada .room-status-text { color: var(--occupied); }
     .room-card.limpieza .room-status-text { color: var(--cleaning); }
     .room-card.mantenimiento .room-status-text { color: var(--maintenance); }
-    /* Dark mode status text */
     body.dark-mode .room-card.disponible .room-status-text { color: var(--available-dark); }
     body.dark-mode .room-card.ocupada .room-status-text { color: var(--occupied-dark); }
     body.dark-mode .room-card.limpieza .room-status-text { color: var(--cleaning-dark); }
     body.dark-mode .room-card.mantenimiento .room-status-text { color: var(--maintenance-dark); }
-
-    /* Info de reserva */
     .room-reserva-info { font-size: 0.8rem; color: var(--medium-gray); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
     body.dark-mode .room-reserva-info { color: var(--dark-text-secondary); }
 
-
     /* === ESTILOS DEL MODAL DE EDICIÓN === */
-    /* ... (Todos los estilos del modal que ya tenías) ... */
-     .modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
+    /* ... (Todos tus estilos de .modal-content, .modal-header, .form-select, etc.) ... */
+    .modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
     body.dark-mode .modal-content { background-color: var(--dark-card); border-color: var(--dark-border); color: var(--dark-text); }
     .modal-header { padding: 1rem 1.5rem; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); }
     body.dark-mode .modal-header { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
@@ -149,8 +138,65 @@
     body.dark-mode .form-select:focus { border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2); }
     #info-conteo-habitaciones { font-size: 0.85rem; color: var(--medium-gray); margin-top: 5px; height: 1.5em; }
     body.dark-mode #info-conteo-habitaciones { color: var(--dark-text-secondary); }
-    #info-reserva-actual { font-size: 0.9rem; color: var(--medium-gray); margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-gray); min-height: 1.5em;}
+    
+    /* --- ¡ESTILOS PARA LA MINI-CARD! --- */
+    #info-reserva-actual {
+        font-size: 0.9rem;
+        color: var(--medium-gray);
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--border-gray);
+        min-height: 1.5em;
+    }
     body.dark-mode #info-reserva-actual { color: var(--dark-text-secondary); border-top-color: var(--dark-border); }
+    
+    .assigned-reserva-card {
+        background: var(--light-gray);
+        border: 1px solid var(--border-gray);
+        border-left: 4px solid var(--steel-blue);
+        border-radius: 6px;
+        padding: 12px 15px;
+        margin-top: 10px; /* Separado del dropdown */
+    }
+    body.dark-mode .assigned-reserva-card {
+        background: var(--dark-bg-secondary);
+        border-color: var(--dark-border);
+        border-left-color: var(--steel-blue-dark);
+    }
+    .assigned-reserva-card .reserva-title {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--medium-gray);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+    body.dark-mode .assigned-reserva-card .reserva-title {
+        color: var(--dark-text-secondary);
+    }
+    .assigned-reserva-card .reserva-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--dark-slate);
+    }
+    body.dark-mode .assigned-reserva-card .reserva-name {
+        color: var(--dark-text);
+    }
+    .assigned-reserva-card .reserva-dates {
+        font-size: 0.9rem;
+        color: var(--medium-gray);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    body.dark-mode .assigned-reserva-card .reserva-dates {
+        color: var(--dark-text-secondary);
+    }
+    .assigned-reserva-card .reserva-dates i {
+        width: 14px; text-align: center;
+    }
+    /* --- FIN DE ESTILOS MINI-CARD --- */
+
     .modal-footer { padding: 1rem 1.5rem; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); }
     body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
     .btn { padding: 10px 25px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
@@ -178,11 +224,8 @@
                    placeholder="Buscar por Nº, Cat, Huésped..."
                    value="{{ search_query|default:'' }}"
                    id="searchInput">
-
-            {# Campos ocultos para mantener filtros #}
             <input type="hidden" name="status" value="{{ active_filter|default:'all' }}" id="hiddenStatusInput">
             <input type="hidden" name="categoria_id" value="{{ selected_categoria_id|default:'' }}" id="hiddenCategoriaInput">
-
             <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
         </form>
     </div>
@@ -197,7 +240,6 @@
                 {% endfor %}
             </select>
         </div>
-
         <div class="filter-group">
             <button type="button" class="filter-btn {% if active_filter == 'all' %}active{% endif %}" data-filter="all">Todas</button>
             {% for value, label in habitacion_form.estado.field.choices %}
@@ -218,34 +260,38 @@
 </div>
 
 <div class="rooms-grid" id="roomsGrid">
-    {% csrf_token %} {# Para el AJAX del modal #}
+    {% csrf_token %}
 
     {% for habitacion in habitaciones %}
-    <div class="room-card {{ habitacion.estado|lower|slugify }}" {# Usar slugify para clases CSS seguras #}
+    <div class="room-card {{ habitacion.estado|lower|slugify }}"
          data-status="{{ habitacion.estado|lower }}"
          data-categoria-id="{{ habitacion.tipo.id }}"
          data-bs-toggle="modal"
          data-bs-target="#editHabitacionModal"
          id="habitacion-card-{{ habitacion.id }}"
 
-         data-habitacion-id="{{ habitacion.id }}"
-         data-numero="{{ habitacion.numero }}"
-         data-estado-actual="{{ habitacion.estado }}"
-         
-         data-reserva-id-actual="{{ habitacion.active_reserva.id|default:'' }}"
-         data-reserva-actual-info="{% if habitacion.active_reserva %}#{{ habitacion.active_reserva.id }} - {{ habitacion.active_reserva.nombre }} {{ habitacion.active_reserva.apellido }}{% endif %}"
-         >
+        data-habitacion-id="{{ habitacion.id }}"
+        data-numero="{{ habitacion.numero }}"
+        data-estado-actual="{{ habitacion.estado }}"
+        
+        data-reserva-id-actual="{{ habitacion.active_reserva.id|default:'' }}"
+        data-reserva-actual-info="{% if habitacion.active_reserva %}#{{ habitacion.active_reserva.id }} - {{ habitacion.active_reserva.nombre }} {{ habitacion.active_reserva.apellido }}{% endif %}"
+        
+        data-reserva-checkin="{% if habitacion.active_reserva %}{{ habitacion.active_reserva.check_in|date:'d/m/y' }}{% endif %}"
+        data-reserva-checkout="{% if habitacion.active_reserva %}{{ habitacion.active_reserva.check_out|date:'d/m/y' }}{% endif %}"
+        data-reserva-checkin="{% if habitacion.active_reserva %}{{ habitacion.active_reserva.check_in|date:'d/m/y' }}{% endif %}"
+        data-reserva-checkout="{% if habitacion.active_reserva %}{{ habitacion.active_reserva.check_out|date:'d/m/y' }}{% endif %}"
+        >
         <div class="room-header">
             <div>
                 <div class="room-number">{{ habitacion.numero }}</div>
-                <div class="room-type">{{ habitacion.tipo.tipo_hab }}</div> {# Nombre Categoría #}
+                <div class="room-type">{{ habitacion.tipo.tipo_hab }}</div>
             </div>
-            {# Icono opcional #}
         </div>
         <div class="room-details">
              <div class="room-status-text">
                 <span class="status-dot"></span>
-                {{ habitacion.get_estado_display }} {# Label legible del estado #}
+                {{ habitacion.get_estado_display }}
              </div>
              
              <div>
@@ -269,7 +315,7 @@
 <div class="modal fade" id="editHabitacionModal" tabindex="-1" aria-labelledby="editHabitacionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="editHabitacionForm"> {# Formulario dentro del modal #}
+            <form id="editHabitacionForm">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editHabitacionModalLabel">Editar Habitación <span id="modalHabitacionNumero" style="font-weight: bold;"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -280,7 +326,6 @@
                     <div class="form-group">
                         <label for="modalEstadoHabitacion" class="form-label">Cambiar Estado <span style="color:red">*</span></label>
                         <select name="estado" id="modalEstadoHabitacion" class="form-select" required>
-                             {# Usamos los choices pasados desde la vista #}
                              {% for value, label in habitacion_form.estado.field.choices %}
                                 <option value="{{ value }}">{{ label }}</option>
                              {% endfor %}
@@ -290,18 +335,16 @@
                     <div class="form-group">
                         <label for="modalReservaId" class="form-label">Asignar Reserva</label>
                         <select name="reserva_id" id="modalReservaId" class="form-select">
-                            <option value="">-- Ninguna --</option> {# Opción para desasignar #}
+                            <option value="">-- Ninguna --</option>
                             {% for r in reservas_asignables %}
                                 <option value="{{ r.id }}">
                                     #{{ r.id }} - {{ r.nombre }} {{ r.apellido }} ({{ r.check_in|date:"d/m" }} - {{ r.check_out|date:"d/m" }})
                                 </option>
                             {% endfor %}
                         </select>
-                         {# Div para mostrar conteo de habitaciones #}
                         <div id="info-conteo-habitaciones"></div>
                     </div>
 
-                    {# Mostrar info de reserva actual si existe #}
                     <div id="info-reserva-actual"></div>
 
                 </div>
@@ -316,37 +359,26 @@
 
 <script>
     // === JAVASCRIPT ===
-    // ... (Todo tu JavaScript existente para filtros y AJAX del modal) ...
-    // ... (El script que ya tienes es correcto y no necesita cambios) ...
-    // === JAVASCRIPT ===
+    // ... (Tu script de Filtros Server-Side que ya funciona) ...
     const searchForm = document.getElementById('searchAndFilterForm');
-    const searchInput = document.getElementById('searchInput'); // Usado por Server-side
+    const searchInput = document.getElementById('searchInput');
     const categoriaSelect = document.getElementById('categoriaFilterSelect');
     const statusButtons = document.querySelectorAll('.filter-group .filter-btn[data-filter]');
     const hiddenStatusInput = document.getElementById('hiddenStatusInput');
     const hiddenCategoriaInput = document.getElementById('hiddenCategoriaInput');
-
-    // --- Lógica para FILTRADO SERVER-SIDE (Recarga de página) ---
     function submitFilterForm() {
-        // Asegura que los hidden inputs tengan los valores seleccionados
         const activeStatusButton = document.querySelector('.filter-group .filter-btn.active');
         hiddenStatusInput.value = activeStatusButton ? activeStatusButton.dataset.filter : 'all';
         hiddenCategoriaInput.value = categoriaSelect ? categoriaSelect.value : '';
-        searchForm.submit(); // Envía el formulario GET
+        searchForm.submit();
     }
-
-    // Al cambiar el select de categoría
     if (categoriaSelect) {
         categoriaSelect.addEventListener('change', submitFilterForm);
     }
-
-    // Al hacer clic en un botón de filtro de estado
     statusButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Actualiza el botón activo visualmente ANTES de enviar
             statusButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
-            // Actualiza hidden input y envía
             hiddenStatusInput.value = this.dataset.filter;
             submitFilterForm();
         });
@@ -384,34 +416,48 @@
             const card = event.relatedTarget;
             if (!card || !card.classList.contains('room-card')) return;
 
+            // --- ¡NUEVOS DATOS EXTRAÍDOS! ---
             const habitacionId = card.dataset.habitacionId;
             const numero = card.dataset.numero;
-            const estadoActual = card.dataset.estadoActual; // Valor: 'Disponible', 'Ocupada', etc.
-            const reservaIdActual = card.dataset.reservaIdActual; // <-- ¡ESTO AHORA FUNCIONA!
-            const reservaActualInfo = card.dataset.reservaActualInfo; // <-- ¡ESTO AHORA FUNCIONA!
+            const estadoActual = card.dataset.estadoActual;
+            const reservaIdActual = card.dataset.reservaIdActual;
+            const reservaActualInfo = card.dataset.reservaActualInfo; // Ej: "#1 - Emanuel Guerrero"
+            const reservaCheckin = card.dataset.reservaCheckin;
+            const reservaCheckout = card.dataset.reservaCheckout;
 
+            // --- Resetear Modal ---
             modalHabitacionNumero.textContent = numero;
             modalHabitacionIdInput.value = habitacionId;
-            modalEstadoSelect.value = estadoActual; // Preseleccionar usando el VALOR
-
-            infoReservaActualDiv.textContent = '';
+            modalEstadoSelect.value = estadoActual;
+            infoReservaActualDiv.innerHTML = ''; // Limpiar mini-card
             infoConteoHabitacionesDiv.textContent = '';
-            modalReservaSelect.value = ""; // Reset
-            
-            // ¡ESTA LÓGICA AHORA FUNCIONARÁ GRACIAS A LA CORRECCIÓN!
+            modalReservaSelect.value = ""; // Resetear dropdown
+
+            // --- ¡LÓGICA ACTUALIZADA PARA PRE-SELECCIONAR Y MOSTRAR MINI-CARD! ---
             if (reservaIdActual) {
+                // 1. Pre-seleccionar el dropdown (Esto ahora funciona gracias a la vista corregida)
                 const optionExists = modalReservaSelect.querySelector(`option[value="${reservaIdActual}"]`);
                 if(optionExists){ 
-                    modalReservaSelect.value = reservaIdActual; // <-- Pre-selecciona el dropdown
+                    modalReservaSelect.value = reservaIdActual; 
                 }
-                else { 
-                    console.warn(`La reserva ${reservaIdActual} asignada no está en la lista de asignables.`); 
-                }
-                // Muestra la "mini-card"
-                infoReservaActualDiv.textContent = `Actual: ${reservaActualInfo || 'Asignada'}`;
-                modalReservaSelect.dispatchEvent(new Event('change')); // Cargar conteo
+                
+                // 2. Construir y mostrar la "Mini-Card"
+                const miniCardHTML = `
+                <div class="assigned-reserva-card">
+                    <div class="reserva-title">Actualmente Asignada a:</div>
+                    <div class="reserva-name">${reservaActualInfo}</div>
+                    <div class="reserva-dates">
+                        <i class="fas fa-calendar-alt"></i> ${reservaCheckin} - ${reservaCheckout}
+                    </div>
+                </div>
+                `;
+                infoReservaActualDiv.innerHTML = miniCardHTML;
+                
+                // 3. Disparar evento 'change' para cargar el conteo de habitaciones
+                modalReservaSelect.dispatchEvent(new Event('change'));
             } else {
-                infoReservaActualDiv.textContent = 'Actual: Sin asignar.';
+                // Si no hay reserva, mostrar "Sin asignar"
+                infoReservaActualDiv.innerHTML = '<div class="reserva-title" style="margin-top: 15px; border-top: none; padding-top: 0;">Actual: Sin asignar.</div>';
             }
         });
     }
@@ -419,14 +465,15 @@
     // Enviar Formulario Modal AJAX
     if (editForm) {
         editForm.addEventListener('submit', function(event) {
-            event.preventDefault();
+            // ... (Tu lógica de envío AJAX existente está perfecta y no necesita cambios) ...
+             event.preventDefault();
             const formData = new FormData(editForm);
             const dataToSend = {
                 habitacion_id: formData.get('habitacion_id'),
-                estado: formData.get('estado'), // Valor: 'Disponible', 'Ocupada', etc.
+                estado: formData.get('estado'),
                 reserva_id: formData.get('reserva_id') || null
             };
-            const url = "{% url 'actualizarhabitacionajax' %}"; // Usar name de URL
+            const url = "{% url 'actualizarhabitacionajax' %}";
             const submitButton = editForm.querySelector('button[type="submit"]');
 
             submitButton.disabled = true;
@@ -443,21 +490,19 @@
             })
             .then(data => {
                 if (data.status === 'ok') {
-                    // ... (El resto de la lógica de actualización de la card que ya tenías) ...
-                    // ... (Esta parte ya estaba funcionando bien) ...
-                     const cardElement = document.getElementById(`habitacion-card-${dataToSend.habitacion_id}`);
+                    const cardElement = document.getElementById(`habitacion-card-${dataToSend.habitacion_id}`);
                     if (cardElement) {
-                        const nuevoEstadoLabel = data.nuevo_estado; // Label: "Disponible"
-                        const nuevoEstadoValue = dataToSend.estado; // Valor: "Disponible"
-                        const nuevoEstadoClass = nuevoEstadoValue.toLowerCase().replace(/\s+/g, '-'); // Clase: "disponible"
+                        const nuevoEstadoLabel = data.nuevo_estado;
+                        const nuevoEstadoValue = dataToSend.estado;
+                        const nuevoEstadoClass = nuevoEstadoValue.toLowerCase().replace(/\s+/g, '-'); 
                         cardElement.classList.remove('disponible', 'ocupada', 'limpieza', 'mantenimiento');
                         cardElement.classList.add(nuevoEstadoClass);
                         cardElement.dataset.status = nuevoEstadoClass;
-                        cardElement.dataset.estadoActual = nuevoEstadoValue; // Guardar valor
+                        cardElement.dataset.estadoActual = nuevoEstadoValue;
                         const statusTextElement = cardElement.querySelector('.room-status-text');
                         if (statusTextElement) {
                             const dotSpan = '<span class="status-dot"></span>';
-                            statusTextElement.innerHTML = dotSpan + ` ${nuevoEstadoLabel}`; // Usar label
+                            statusTextElement.innerHTML = dotSpan + ` ${nuevoEstadoLabel}`;
                         }
                         const reservaInfoDiv = cardElement.querySelector('.room-reserva-info');
                         if (data.reserva_asignada) {
@@ -474,10 +519,13 @@
                             }
                             cardElement.dataset.reservaIdActual = data.reserva_asignada.id;
                             cardElement.dataset.reservaActualInfo = `#${data.reserva_asignada.id} - ${data.reserva_asignada.nombre_huesped}`;
-                        } else {
+                            cardElement.dataset.reservaCheckin = data.reserva_asignada.check_in_simple;
+                            cardElement.dataset.reservaCheckout = data.reserva_asignada.check_out_simple;                        } else {
                             if (reservaInfoDiv) reservaInfoDiv.style.display = 'none';
                             cardElement.dataset.reservaIdActual = '';
                             cardElement.dataset.reservaActualInfo = '';
+                            cardElement.dataset.reservaCheckin = '';
+                            cardElement.dataset.reservaCheckout = '';
                         }
                     }
                     const modalInstance = bootstrap.Modal.getInstance(editModalElement);
@@ -500,17 +548,16 @@
     // --- AJAX para obtener detalles de reserva (conteo) ---
     if (modalReservaSelect && infoConteoHabitacionesDiv) {
         modalReservaSelect.addEventListener('change', function() {
+            // ... (Tu lógica de conteo AJAX existente está perfecta) ...
             const reservaId = this.value;
             infoConteoHabitacionesDiv.textContent = '';
             if (!reservaId) return;
-
             infoConteoHabitacionesDiv.textContent = 'Cargando conteo...';
             const urlDetalles = "{% url 'reservadetallesajax' 0 %}".replace('0', reservaId);
-
             fetch(urlDetalles)
             .then(response => {
-                    if (!response.ok) { throw new Error('Respuesta no válida del servidor'); }
-                    return response.json();
+                 if (!response.ok) { throw new Error('Respuesta no válida del servidor'); }
+                 return response.json();
             })
             .then(data => {
                 if (data.status === 'ok') {

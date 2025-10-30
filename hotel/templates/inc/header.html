@@ -366,6 +366,15 @@
                     <i class="fas fa-users"></i> Huéspedes
                 </a>
             </li>
+            </li>
+
+            </li>
+
+            <li class="nav-item">
+                <a href="{% url 'listarproductos' %}" class="sidebar-link">
+                    <i class="fas fa-utensils"></i> Minibar
+                </a>
+            </li>
         </ul>
 
         <!-- Theme Toggle in Sidebar -->
@@ -397,9 +406,13 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="top-navbar-link">
+                <a href="{% url 'listarhuespedes' %}" class="top-navbar-link {% if request.resolver_math.url_name == 'listarhuespedes' %}active{% endif %}">
                     <i class="fas fa-users"></i> Huéspedes
                 </a>
+            </li>
+            <li>
+                <a href="{% url 'listarproductos' %}" class="top-navbar-link {% if request.resolver_math.url_name == 'listarproductos' %}active{% endif %}"></a>
+                <li class="fa-utensils"></li> Minibar
             </li>
         </ul>
     </nav>

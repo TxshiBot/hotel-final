@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo de Consumo C-{{ consumo.id }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 40px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        
+        /* Encabezado: Logo del Hotel y N° de Factura */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333; /* O usa tu color corporativo (var(--steel-blue)) */
+            /* Si tienes un logo:
+            img { max-width: 150px; }
+            */
+        }
+        .header .recibo-info {
+            text-align: right;
+        }
+        .header .recibo-info h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #111;
+        }
+        .header .recibo-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Información del Cliente y Empresa */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info-section h4 {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .info-section p { margin: 0; }
+        .info-section strong { color: #000; }
+
+        /* Tabla de Detalles */
+        .detalle-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .detalle-tabla th,
+        .detalle-tabla td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .detalle-tabla thead th {
+            background-color: #f9f9f9;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #555;
+        }
+        .detalle-tabla tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .detalle-tabla td.text-right { text-align: right; }
+        .detalle-tabla th.text-right { text-align: right; }
+
+        /* Totales */
+        .totales-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -20px; /* Alinear con la tabla */
+        }
+        .totales-tabla {
+            width: 40%;
+            min-width: 250px;
+            font-size: 1rem;
+        }
+        .totales-tabla td {
+            padding: 8px 15px;
+        }
+        .totales-tabla tr.total-final td {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #000;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+        }
+        .totales-tabla td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer-gracias {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+        }
+        
+        /* --- Estilos de Impresión --- */
+        @media print {
+            body {
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none; /* Oculta botones al imprimir */
+            }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="container">
+        
+        <header class="header">
+            <div class="logo">
+                Spirit Of Fire
+            </div>
+            <div class="recibo-info">
+                <h2>RECIBO</h2>
+                <p>Nº: C-{{ consumo.id }}</p>
+                <p>Fecha: {{ consumo.fecha_consumo|date:"d M Y, h:i a" }}</p>
+            </div>
+        </header>
+
+        <section class="info-section">
+            <div class="info-cliente">
+                <h4>Facturado a:</h4>
+                {% if consumo.reserva.huesped_principal %}
+                    <p><strong>{{ consumo.reserva.huesped_principal.nombre }} {{ consumo.reserva.huesped_principal.apellido }}</strong></p>
+                    <p>{{ consumo.reserva.huesped_principal.email|default:'' }}</p>
+                    <p>ID: {{ consumo.reserva.huesped_principal.identificacion|default:'' }}</p>
+                {% else %}
+                    <p><strong>{{ consumo.reserva.nombre }} {{ consumo.reserva.apellido }}</strong></p>
+                    <p>{{ consumo.reserva.email }}</p>
+                    <p>ID: {{ consumo.reserva.identificacion }}</p>
+                {% endif %}
+                <p>Reserva de Habitación: #{{ consumo.reserva.id }}</p>
+            </div>
+            <div class="info-empresa" style="text-align: right;">
+                <h4>Vendido por:</h4>
+                <p><strong>Spirit Of Fire S.A.S.</strong></p>
+                <p>hotel@spiritoffire.com</p>
+                <p>NIT: 900.123.456-1</p>
+                <p>Riohacha, La Guajira</p>
+            </div>
+        </section>
+
+        <section class="detalle-section">
+            <table class="detalle-tabla">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-right">Cantidad</th>
+                        <th class="text-right">Precio Unit.</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>{{ consumo.producto.nombre }}</strong>
+                        </td>
+                        <td class="text-right">{{ consumo.cantidad }}</td>
+                        <td class="text-right">${{ consumo.precio_en_el_momento|floatformat:0 }}</td>
+                        <td class="text-right">${{ subtotal|floatformat:0 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="totales-section">
+            <table class="totales-tabla">
+                <tbody>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td>${{ subtotal|floatformat:0 }}</td>
+                    </tr>
+                    <tr>
+                        <td>IVA (19%)</td>
+                        <td>${{ iva|floatformat:0 }}</td>
+                    </tr>
+                    <tr class="total-final">
+                        <td>TOTAL PAGADO</td>
+                        <td>${{ total|floatformat:0 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <footer class="footer-gracias">
+            ¡Gracias por su compra!
+        </footer>
+        
+    </div>
+
+</body>
+</html>

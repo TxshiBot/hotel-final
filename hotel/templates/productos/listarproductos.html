@@ -1,0 +1,375 @@
+{% load static %}
+{% include 'inc/header.html'%}
+
+<style>
+    /* ... (Tu CSS existente para .top-bar, .product-grid, .product-card, .product-image, .product-info) ... */
+    .top-bar {
+        background: var(--white); padding: 20px 25px; border-radius: 8px; margin-bottom: 25px;
+        border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
+    }
+    body.dark-mode .top-bar { background: var(--dark-card); border-color: var(--dark-border); }
+    .top-bar h1 { font-size: 1.75rem; color: var(--dark-slate); font-weight: 600; margin: 0; }
+    body.dark-mode .top-bar h1 { color: var(--dark-text); }
+    .btn-new {
+        padding: 10px 20px; background: var(--steel-blue); color: var(--white);
+        border: none; border-radius: 6px; font-weight: 500; cursor: pointer;
+        transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+        text-decoration: none; font-size: 0.9rem;
+    }
+    .btn-new:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-new { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-new:hover { background: var(--steel-blue); }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 0 25px 25px;
+    }
+    .product-card {
+        background: var(--white); border-radius: 8px; border: 1px solid var(--border-gray);
+        overflow: hidden; display: flex; flex-direction: column;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    body.dark-mode .product-card { background: var(--dark-card); border-color: var(--dark-border); }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+    .product-image-container {
+        width: 100%; height: 150px; background-color: var(--light-gray);
+        border-bottom: 1px solid var(--border-gray); display: flex;
+        align-items: center; justify-content: center; overflow: hidden;
+    }
+    body.dark-mode .product-image-container { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
+    .product-image { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    .product-info { 
+        padding: 15px; text-align: center; 
+        flex-grow: 1; display: flex; flex-direction: column; 
+    }
+    .product-name {
+        font-size: 1.1rem; font-weight: 600; color: var(--dark-slate);
+        display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    body.dark-mode .product-name { color: var(--dark-text); }
+    .product-price { font-size: 1rem; font-weight: 500; color: var(--available); margin-top: 5px; }
+    body.dark-mode .product-price { color: var(--available-dark); }
+    .product-stock { font-size: 0.85rem; color: var(--medium-gray); margin-top: 5px; margin-bottom: auto; }
+    body.dark-mode .product-stock { color: var(--dark-text-secondary); }
+
+    /* --- ESTILOS PARA LOS 3 BOTONES --- */
+    .product-actions {
+        padding: 10px; border-top: 1px solid var(--border-gray);
+        background: var(--light-gray);
+    }
+    body.dark-mode .product-actions { background: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
+    
+    .btn-add-consumo {
+        width: 100%; padding: 10px 15px; background: var(--steel-blue); color: var(--white);
+        border: none; border-radius: 6px; font-weight: 500; cursor: pointer;
+        transition: all 0.2s ease; display: inline-flex; align-items: center; 
+        gap: 8px; text-decoration: none; font-size: 0.9rem; justify-content: center;
+    }
+    .btn-add-consumo:hover { background: var(--dark-slate); }
+    body.dark-mode .btn-add-consumo { background: var(--steel-blue-dark); }
+    body.dark-mode .btn-add-consumo:hover { background: var(--steel-blue); }
+
+    .product-card-buttons {
+        display: flex;
+        gap: 8px;
+        padding: 10px;
+        border-top: 1px solid var(--border-gray);
+    }
+    body.dark-mode .product-card-buttons { border-top-color: var(--dark-border); }
+    
+    .btn-action {
+        flex: 1; padding: 8px 10px; font-size: 0.8rem; border-radius: 5px;
+        text-decoration: none; text-align: center; border: none;
+        cursor: pointer; transition: all 0.2s ease;
+        display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .btn-edit { background: var(--steel-blue); color: var(--white); }
+    .btn-edit:hover { background: var(--dark-slate); }
+    .btn-delete { background: var(--occupied); color: var(--white); }
+    .btn-delete:hover { background: #c95151; }
+    
+    /* ... (Tu CSS existente para el modal de consumo) ... */
+    .modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
+    body.dark-mode .modal-content { background-color: var(--dark-card); border-color: var(--dark-border); color: var(--dark-text); }
+    .modal-header { padding: 1rem 1.5rem; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); }
+    body.dark-mode .modal-header { background-color: var(--dark-bg-secondary); border-bottom-color: var(--dark-border); }
+    .modal-title { color: var(--dark-slate); font-weight: 600; }
+    body.dark-mode .modal-title { color: var(--dark-text); }
+    .modal-header .btn-close { filter: none; opacity: 0.6; }
+    body.dark-mode .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); opacity: 0.8; }
+    .modal-body { padding: 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--dark-slate); margin-bottom: 8px; }
+    body.dark-mode .form-label { color: var(--dark-text); }
+    .form-input, .form-select {
+        width: 100%; padding: 12px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
+        font-size: 0.95rem; background: var(--white); color: var(--dark-slate); box-sizing: border-box;
+    }
+    body.dark-mode .form-input, body.dark-mode .form-select {
+        background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text);
+    }
+    .modal-footer { padding: 1rem 1.5rem; background-color: var(--light-gray); border-top: 1px solid var(--border-gray); }
+    body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); border-top-color: var(--dark-border); }
+    .btn { padding: 10px 25px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn-primary { background: var(--steel-blue); color: var(--white); }
+    .btn-secondary { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
+    .form-check-input { width: 1.25em; height: 1.25em; margin-top: 0.2em; }
+</style>
+
+<div class="top-bar">
+    <h1><i class="fas fa-utensils"></i> Listado de Productos (Minibar)</h1>
+    <a href="{% url 'registrarproducto' %}" class="btn-new">
+        <i class="fas fa-plus"></i> Registrar Producto
+    </a>
+</div>
+
+<div class="product-grid" id="productGrid">
+    {% for producto in productos %}
+    <div class="product-card" id="product-card-{{ producto.id }}">
+        
+        <div class="product-image-container">
+            <img src="{% static 'img/minibar/'|add:producto.foto %}" 
+                 alt="{{ producto.nombre }}" 
+                 class="product-image"
+                 onerror="this.style.display='none';">
+        </div>
+             
+        <div class="product-info">
+            <span class="product-name" title="{{ producto.nombre }}">{{ producto.nombre }}</span>
+            <span class="product-price">${{ producto.precio|floatformat:0 }} COP</span>
+            <span class="product-stock" id="stock-{{ producto.id }}">{{ producto.stock_disponible }} en stock</span>
+        </div>
+        
+        <div class="product-actions">
+            <button class="btn-add-consumo" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#consumoModal"
+                    data-producto-id="{{ producto.id }}"
+                    data-producto-nombre="{{ producto.nombre }}"
+                    data-producto-precio="{{ producto.precio }}"
+                    data-producto-stock="{{ producto.stock_disponible }}">
+                <i class="fas fa-plus"></i> Añadir Consumo
+            </button>
+        </div>
+        
+        <div class="product-card-buttons">
+            <a href="{% url 'editarproducto' producto.id %}" class="btn-action btn-edit">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            <button type="button" class="btn-action btn-delete btn-eliminar-producto" 
+                    data-producto-id="{{ producto.id }}" 
+                    data-producto-nombre="{{ producto.nombre }}">
+                <i class="fas fa-trash"></i> Eliminar
+            </button>
+        </div>
+        
+    </div>
+    {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center; padding: 50px;">No hay productos registrados en el minibar.</p>
+    {% endfor %}
+</div>
+
+<div class="modal fade" id="consumoModal" tabindex="-1" aria-labelledby="consumoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="consumoForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="consumoModalLabel">Añadir Consumo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="producto_id" id="modalProductoId">
+                    <h4 id="modalProductoNombre">Nombre del Producto</h4>
+                    <p id="modalProductoInfo" style="color: var(--medium-gray); margin-top: -5px;"></p>
+                    <div class="form-group">
+                        <label for="modalReservaId" class="form-label">Asignar a Reserva <span style="color:red">*</span></label>
+                        <select name="reserva_id" id="modalReservaId" class="form-select" required>
+                            <option value="" disabled selected>-- Seleccionar una reserva activa --</option>
+                            {% for res in active_reservas %}
+                                <option value="{{ res.id }}">
+                                    #{{ res.id }} - {{ res.nombre }} {{ res.apellido }} (Activa hasta: {{ res.check_out|date:"d/m" }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalCantidad" class="form-label">Cantidad <span style="color:red">*</span></label>
+                        <input type="number" name="cantidad" id="modalCantidad" class="form-input" value="1" min="1" required>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="modalPagadoYa" name="pagado_inmediatamente">
+                        <label class="form-check-label" for="modalPagadoYa">Cobrar y Pagar Inmediatamente</label>
+                    </div>
+                    <small class="form-text text-muted">
+                        Si no se marca, el costo se añadirá a la factura final de la reserva.
+                    </small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Consumo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    const consumoModalElement = document.getElementById('consumoModal');
+    const consumoForm = document.getElementById('consumoForm');
+    const grid = document.getElementById('productGrid');
+    
+    // --- 1. Llenar el modal al abrir (Sin cambios) ---
+    if (consumoModalElement) {
+        consumoModalElement.addEventListener('show.bs.modal', function(event) {
+            // ... (Tu lógica de rellenar el modal de consumo) ...
+            const button = event.relatedTarget;
+            const productoId = button.dataset.productoId;
+            const nombre = button.dataset.productoNombre;
+            const precio = button.dataset.productoPrecio;
+            const stock = button.dataset.productoStock;
+            const modal = this;
+            modal.querySelector('#modalProductoId').value = productoId;
+            modal.querySelector('#modalProductoNombre').textContent = nombre;
+            modal.querySelector('#modalProductoInfo').textContent = `$${precio} COP | Stock: ${stock}`;
+            const cantidadInput = modal.querySelector('#modalCantidad');
+            cantidadInput.value = 1;
+            cantidadInput.max = stock; 
+            modal.querySelector('#modalReservaId').selectedIndex = 0;
+            modal.querySelector('#modalPagadoYa').checked = false;
+        });
+    }
+
+    // --- 2. Enviar el formulario AJAX (Sin cambios) ---
+    if (consumoForm) {
+        consumoForm.addEventListener('submit', function(event) {
+            // ... (Tu lógica AJAX para registrar consumo) ...
+            event.preventDefault();
+            const submitButton = consumoForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            const formData = new FormData(consumoForm);
+            const data = {
+                producto_id: formData.get('producto_id'),
+                reserva_id: formData.get('reserva_id'),
+                cantidad: formData.get('cantidad'),
+                pagado_inmediatamente: formData.get('pagado_inmediatamente') === 'on'
+            };
+            if (!data.reserva_id) {
+                alert("Error: Debes seleccionar una reserva.");
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Guardar Consumo';
+                return;
+            }
+            fetch("{% url 'registrarconsumoajax' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    const stockSpan = document.getElementById(`stock-${formData.get('producto_id')}`);
+                    if (stockSpan) stockSpan.textContent = `${data.nuevo_stock} en stock`;
+                    const botonCard = document.querySelector(`button[data-producto-id="${formData.get('producto_id')}"]`);
+                    if (botonCard) botonCard.dataset.productoStock = data.nuevo_stock;
+                    const modalInstance = bootstrap.Modal.getInstance(consumoModalElement);
+                    modalInstance.hide();
+                    if (data.recibo_id) {
+                        const reciboUrl = `{% url 'verreciboconsumo' 0 %}`.replace('0', data.recibo_id);
+                        window.open(reciboUrl, '_blank');
+                    } else {
+                        alert(data.message); 
+                    }
+                } else {
+                    alert(`Error: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error en fetch:', error);
+                alert(`Error de red o del servidor: ${error.message}`);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Guardar Consumo';
+            });
+        });
+    }
+
+    // --- ¡NUEVA FUNCIÓN 3: LÓGICA PARA ELIMINAR PRODUCTO! ---
+    if (grid) {
+        grid.addEventListener('click', function(event) {
+            const deleteButton = event.target.closest('.btn-eliminar-producto');
+            if (!deleteButton) return;
+
+            event.stopPropagation(); // Evitar que la card haga otra cosa
+            event.preventDefault(); // Evitar que el modal se abra
+
+            const productoId = deleteButton.dataset.productoId;
+            const productoNombre = deleteButton.dataset.productoNombre;
+
+            if (!confirm(`¿Estás seguro de que deseas eliminar el producto "${productoNombre}"? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            const url = `{% url 'eliminarproducto' 0 %}`.replace('0', productoId);
+            deleteButton.disabled = true;
+            deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // Eliminar la card de la vista
+                    const cardToRemove = document.getElementById(`product-card-${productoId}`);
+                    if (cardToRemove) {
+                        cardToRemove.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        cardToRemove.style.opacity = '0';
+                        cardToRemove.style.transform = 'scale(0.95)';
+                        setTimeout(() => cardToRemove.remove(), 300);
+                    }
+                    // Opcional: mostrar un toast de éxito
+                } else {
+                    alert(`Error al eliminar: ${data.message}`);
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+                }
+            })
+            .catch(error => {
+                alert(`Error de red: ${error.message}`);
+                deleteButton.disabled = false;
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+            });
+        });
+    }
+
+});
+</script>
+
+{% include 'inc/footer.html'%}

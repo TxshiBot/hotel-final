@@ -8,9 +8,11 @@ from hotel.models import Reservas
 from hotel.models import Categorias
 from hotel.models import Habitaciones
 from hotel.models import Registro_Huespedes
+from hotel.models import Producto
 
 class ReservarForm(forms.ModelForm):
 
+    # --- Sobrescribir el campo para que sea un ChoiceField ---
     hospedaje_deseado = forms.ChoiceField(
         choices=[], 
         required=False, 
@@ -18,20 +20,22 @@ class ReservarForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        # ... (tu lógica __init__ existente se mantiene igual) ...
         super().__init__(*args, **kwargs)
         
         opcionales = (
-            'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
+            'telefono_oficina', 'hospedaje_deseado', 
+            # 'cotizado', # <-- ELIMINADO DE AQUÍ
+            'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
             'compania_email', 'solicitud', 'observaciones',
-            'huesped_principal'
+            'huesped_principal', 'companion'
         )
         for campo in opcionales:
             if campo in self.fields:
                 self.fields[campo].required = False
         
+        # ... (El resto de tu __init__ se queda igual) ...
         if 'huesped_principal' in self.fields:
             self.fields['huesped_principal'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.identificacion})"
             self.fields['huesped_principal'].queryset = Registro_Huespedes.objects.order_by('apellido', 'nombre')
@@ -43,7 +47,7 @@ class ReservarForm(forms.ModelForm):
                 categoria_choices.append((cat.tipo_hab, cat.tipo_hab)) 
             self.fields['hospedaje_deseado'].choices = categoria_choices
         except Exception as e:
-            self.fields['hospedaje_deseado'].choices = [("", f"Error al cargar categorías: {e}")]
+            self.fields['huesped_deseado'].choices = [("", f"Error al cargar categorías: {e}")]
     
 
     class Meta:
@@ -53,16 +57,18 @@ class ReservarForm(forms.ModelForm):
             'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
             'ciudad', 'departamento', 'telefono_domicilio',
             'check_in', 'check_out', 
-            'companion', 'formadepago', # <-- Campo
+            'companion', 'formadepago',
             'empleados', 'telefono',
-            'telefono_oficina', 'hospedaje_deseado', 
-            'cotizado', 'solicitado',
+            'telefono_oficina', 'hospedaje_deseado',
+            # 'cotizado', # <-- ELIMINADO DE AQUÍ
+            'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
             'compania_email', 
             'solicitud', 'observaciones' 
         )
 
+        # ... (Tus widgets y labels se quedan igual) ...
         widgets = {
             'huesped_principal': forms.Select(attrs={'class': 'form-select'}),
             'check_in': forms.DateTimeInput(
@@ -71,17 +77,14 @@ class ReservarForm(forms.ModelForm):
             'check_out': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-input'}
             ),
-            
-            # --- ¡AQUÍ ESTÁ LA CORRECCIÓN DE ESTILO! ---
             'formadepago': forms.Select(attrs={'class': 'form-select'}),
         }
-        
         labels = {
             'huesped_principal': 'Buscar Huésped Registrado (Opcional)',
         }
 
+    # --- El método clean() se queda igual ---
     def clean(self):
-        # ... (tu método clean() se mantiene igual) ...
         cleaned_data = super().clean()
         check_in = cleaned_data.get("check_in")
         check_out = cleaned_data.get("check_out")
@@ -90,13 +93,12 @@ class ReservarForm(forms.ModelForm):
             if check_out <= check_in:
                 self.add_error('check_out', "La fecha de salida debe ser posterior a la fecha de llegada.")
             
-            if check_in.date() < timezone.now().date():
-                self.add_error('check_in', "No se pueden registrar reservas para fechas pasadas.")
+            if not self.instance.pk: 
+                if check_in.date() < timezone.now().date():
+                    self.add_error('check_in', "No se pueden registrar reservas para fechas pasadas.")
                 
         return cleaned_data
 
-
-# En forms.py
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -258,3 +260,21 @@ class HuespedForm(forms.ModelForm):
     #     if commit:
     #         instance.save()
     #     return instance
+
+
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['nombre', 'precio', 'stock_disponible', 'esta_activo'] 
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-input'}),
+            'precio': forms.NumberInput(attrs={'class': 'form-input', 'min': 0, 'step': 1000}),
+            'stock_disponible': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
+            'esta_activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}), 
+        }
+        labels = {
+            'nombre': 'Nombre del Producto',
+            'precio': 'Precio (COP)',
+            'stock_disponible': 'Stock Disponible',
+            'esta_activo': 'Producto Activo (Visible para la venta)',
+        }

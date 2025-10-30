@@ -27,12 +27,15 @@ from hotel.views import RegistrarHabitaciones
 from hotel.views import RegistroCategorias
 from hotel.views import ActualizarHabitacionAJAX
 from hotel.views import GetReservaDetallesAJAX
+from hotel.views import RealizarCheckIn
+from hotel.views import RealizarCheckOut
 
 # ---- RESERVAS ---- # 
 from hotel.views import Reservar
 from hotel.views import ListarReservas
 from hotel.views import ConfirmarReserva
 from hotel.views import EditarReserva
+from hotel.views import EliminarReserva
 
 # ---- HUESPEDES ---- # 
 from hotel.views import RegistrarHuesped
@@ -40,10 +43,20 @@ from hotel.views import ListarHuespedes
 from hotel.views import EliminarHuesped
 from hotel.views import EditarHuesped
 from hotel.views import GetHuespedDetallesAJAX
+from hotel.views import GetHuespedReservasAJAX
 
 # ---- FACTURA ---- #
 from hotel.views import GenerarFactura
+from hotel.views import VerFactura
+from hotel.views import MarcarFacturaPagada
 
+# ---- MINIBAR ---- # 
+from hotel.views import ListarProductos
+from hotel.views import RegistrarProducto
+from hotel.views import RegistrarConsumoAJAX
+from hotel.views import VerReciboConsumo
+from hotel.views import EditarProducto
+from hotel.views import EliminarProducto
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -63,4 +76,16 @@ urlpatterns = [
     path('huespedes/detallesajax/<int:huesped_id>/', GetHuespedDetallesAJAX, name='huespeddetallesajax'),
     path('facturas/generar/<int:reserva_id>/', GenerarFactura, name='generarfactura'),
     path('reservas/editar/<int:reserva_id>/', EditarReserva, name='editarreserva'),
+    path('reservas/eliminar/<int:reserva_id>/', EliminarReserva, name='eliminarreserva'),
+    path('huespedes/reservasajax/<int:huesped_id>/', GetHuespedReservasAJAX, name='huespedreservasajax'),
+    path('productos/', ListarProductos, name='listarproductos'),
+    path('productos/registrar/', RegistrarProducto, name='registrarproducto'),
+    path('consumos/registrar/', RegistrarConsumoAJAX, name='registrarconsumoajax'),
+    path('consumos/recibo/<int:consumo_id>/', VerReciboConsumo, name='verreciboconsumo'),
+    path('facturas/ver/<int:factura_id>/', VerFactura, name='verfactura'),
+    path('productos/editar/<int:producto_id>/', EditarProducto, name='editarproducto'),
+    path('productos/eliminar/<int:producto_id>/', EliminarProducto, name='eliminarproducto'),
+    path('facturas/marcarpagada/<int:factura_id>/', MarcarFacturaPagada, name='marcarfacturapagada'),
+    path('checkin/<int:reserva_id>/', RealizarCheckIn, name='realizarcheckin'),
+    path('checkout/<int:reserva_id>/', RealizarCheckOut, name='realizarcheckout'),
 ]

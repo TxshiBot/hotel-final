@@ -1,0 +1,291 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura F-{{ factura.id }}</title>
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0; padding: 20px; background-color: #f9f9f9; color: #333;
+        }
+        .container {
+            max-width: 800px; margin: 0 auto; background-color: #ffffff;
+            border: 1px solid #ddd; padding: 40px; box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        /* ... (Todos tus estilos de .header, .info-section, .detalle-tabla, .totales-section) ... */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px; }
+        .header .logo { font-size: 2.5rem; font-weight: 700; color: #333; display: flex; align-items: center; gap: 10px; }
+        .header .recibo-info { text-align: right; }
+        .header .recibo-info h2 { margin: 0; font-size: 1.8rem; color: #111; }
+        .header .recibo-info p { margin: 0; font-size: 0.9rem; color: #555; }
+        .badge { display: inline-block; padding: 5px 10px; font-size: 0.9rem; font-weight: 600; border-radius: 15px; color: #fff; }
+        .badge-pendiente { background-color: #f0ad4e; }
+        .badge-pagada { background-color: #5cb85c; }
+        .badge-anulada { background-color: #d9534f; }
+        .info-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; font-size: 0.9rem; line-height: 1.6; }
+        .info-section h4 { font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
+        .info-section p { margin: 0; }
+        .info-section strong { color: #000; }
+        .detalle-section h3 { font-size: 1.1rem; font-weight: 600; color: #333; margin-top: 30px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #0d6efd; }
+        .detalle-tabla { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .detalle-tabla th, .detalle-tabla td { padding: 12px 15px; border-bottom: 1px solid #eee; text-align: left; }
+        .detalle-tabla thead th { background-color: #f9f9f9; font-size: 0.85rem; text-transform: uppercase; color: #555; }
+        .detalle-tabla tbody tr:last-child td { border-bottom: none; }
+        .detalle-tabla td.text-right, .detalle-tabla th.text-right { text-align: right; }
+        .detalle-tabla td.text-center, .detalle-tabla th.text-center { text-align: center; }
+        .detalle-tabla .consumo-pagado { color: #999; font-style: italic; }
+        .detalle-tabla .consumo-pagado td { padding-top: 8px; padding-bottom: 8px; }
+        .totales-section { display: flex; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 2px solid #000; }
+        .totales-tabla { width: 50%; min-width: 300px; font-size: 1rem; }
+        .totales-tabla td { padding: 8px 15px; }
+        .totales-tabla tr.total-final td { font-size: 1.5rem; font-weight: 700; color: #000; border-top: 2px solid #333; padding-top: 15px; }
+        .totales-tabla td:last-child { text-align: right; font-weight: 600; }
+        
+        /* --- ESTILOS DE IMPRESIÓN Y BOTONES --- */
+        .btn {
+            padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: 500;
+            cursor: pointer; transition: all 0.2s ease; border: none;
+            display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .btn-success { background: #5cb85c; color: white; }
+        .btn-success:hover { background: #4a934a; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        
+        .print-toolbar {
+            text-align: right;
+            padding: 15px 40px;
+            background: var(--light-gray, #f4f4f4);
+            border-bottom: 1px solid #ddd;
+        }
+
+        @media print {
+            body { background-color: #fff; margin: 0; padding: 0; }
+            .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            .no-print { display: none; } /* Oculta botones al imprimir */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print print-toolbar">
+        <button class="btn btn-secondary" onclick="window.print();">
+            <i class="fas fa-print"></i> Imprimir
+        </button>
+        {% if factura.estado == 'Pendiente' %}
+        <button class="btn btn-success" id="btn-marcar-pagada" data-factura-id="{{ factura.id }}">
+            <i class="fas fa-check-circle"></i> Marcar como Pagada
+        </button>
+        {% endif %}
+    </div>
+    <div class="container" id="factura-container">
+        
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-fire" style="color: #0d6efd;"></i>
+                Spirit Of Fire
+            </div>
+            <div class="recibo-info">
+                <h2>FACTURA</h2>
+                <p>Nº: F-{{ factura.id }}</p>
+                <p>Fecha: {{ factura.fecha_emision|date:"d M Y, h:i a" }}</p>
+                <p>
+                    Estado: 
+                    <span class="badge {% if factura.estado == 'Pagada' %}badge-pagada{% elif factura.estado == 'Anulada' %}badge-anulada{% else %}badge-pendiente{% endif %}"
+                          id="factura-estado-badge">
+                        {{ factura.get_estado_display }}
+                    </span>
+                </p>
+            </div>
+        </header>
+
+        <section class="info-section">
+            <div class="info-cliente">
+                <h4>DATOS DEL CLIENTE</h4>
+                {% if factura.huesped %}
+                    <p><strong>{{ factura.huesped.nombre }} {{ factura.huesped.apellido }}</strong></p>
+                    <p>ID: {{ factura.huesped.identificacion|default:factura.reserva.identificacion }}</p>
+                    <p>Email: {{ factura.huesped.email|default:factura.reserva.email }}</p>
+                {% else %}
+                    <p><strong>{{ factura.reserva.nombre }} {{ factura.reserva.apellido }}</strong></p>
+                    <p>ID: {{ factura.reserva.identificacion }}</p>
+                    <p>Email: {{ factura.reserva.email }}</p>
+                {% endif %}
+                <p>Reserva de Referencia: #{{ factura.reserva.id }}</p>
+            </div>
+            <div class="info-empresa" style="text-align: right;">
+                <h4>DATOS DE LA EMPRESA</h4>
+                <p><strong>Spirit Of Fire S.A.S.</strong></p>
+                <p>hotel@spiritoffire.com</p>
+                <p>NIT: 900.123.456-1</p>
+                <p>Riohacha, La Guajira</p>
+            </div>
+        </section>
+
+        <section class="detalle-section">
+            <h3>Detalles de Alojamiento</h3>
+            <table class="detalle-tabla">
+                <thead>
+                    <tr>
+                        <th>Habitación</th>
+                        <th>Categoría</th>
+                        <th class="text-center">Noches</th>
+                        <th class="text-right">Precio x Noche</th>
+                        <th class="text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hab_data in habitaciones_data %}
+                    <tr>
+                        <td><strong>{{ hab_data.numero }}</strong></td>
+                        <td>{{ hab_data.tipo_hab }}</td>
+                        <td class="text-center">{{ factura.total_noches }}</td>
+                        <td class="text-right">${{ hab_data.precio_noche|floatformat:0 }}</td>
+                        <td class="text-right">${{ hab_data.subtotal|floatformat:0 }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="background: #f9f9f9;">
+                        <td colspan="4" class="text-right" style="font-weight: 600;">Subtotal Alojamiento</td>
+                        <td class="text-right" style="font-weight: 600;">${{ factura.subtotal_alojamiento|floatformat:0 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        {% if consumos_data %}
+        <section class="detalle-section">
+            <h3>Consumos (Minibar y Restaurante)</h3>
+            <table class="detalle-tabla">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Cant.</th>
+                        <th class="text-right">Precio Unit.</th>
+                        <th class="text-right">Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c_data in consumos_data %}
+                    <tr class {% if c_data.pagado %}"consumo-pagado"{% endif %}>
+                        <td><strong>{{ c_data.nombre }}</strong></td>
+                        <td class="text-center">{{ c_data.cantidad }}</td>
+                        <td class="text-right">${{ c_data.precio_unitario|floatformat:0 }}</td>
+                        <td class="text-right">${{ c_data.subtotal|floatformat:0 }}</td>
+                        <td>
+                            {% if c_data.pagado %}
+                                (Pagado)
+                            {% else %}
+                                <strong>Pendiente</strong>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="background: #f9f9f9;">
+                        <td colspan="4" class="text-right" style="font-weight: 600;">Subtotal Consumos (Pendientes en esta factura)</td>
+                        <td class="text-right" style="font-weight: 600;">${{ factura.subtotal_consumos|floatformat:0 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+
+        <section class="totales-section">
+            <table class="totales-tabla">
+                <tbody>
+                    <tr>
+                        <td>Subtotal General</td>
+                        <td>${{ subtotal_general|floatformat:0 }}</td>
+                    </tr>
+                    <tr>
+                        <td>IVA (19%)</td>
+                        <td>${{ factura.impuestos|floatformat:0 }}</td>
+                    </tr>
+                    <tr class="total-final">
+                        <td>TOTAL A PAGAR</td>
+                        <td>${{ factura.total_facturado|floatformat:0 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Función para obtener el CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // --- Lógica del botón "Marcar como Pagada" ---
+    const btnMarcarPagada = document.getElementById('btn-marcar-pagada');
+    
+    if (btnMarcarPagada) {
+        btnMarcarPagada.addEventListener('click', function() {
+            const facturaId = this.dataset.facturaId;
+            if (!facturaId) return;
+
+            if (!confirm("¿Confirmas que se ha recibido el pago completo de esta factura?")) {
+                return;
+            }
+            
+            const url = `{% url 'marcarfacturapagada' 0 %}`.replace('0', facturaId);
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // 1. Actualizar el badge de estado
+                    const badge = document.getElementById('factura-estado-badge');
+                    if (badge) {
+                        badge.textContent = data.nuevo_estado; // "Pagada"
+                        badge.classList.remove('badge-pendiente');
+                        badge.classList.add('badge-pagada');
+                    }
+                    // 2. Ocultar el botón de pagar
+                    this.style.display = 'none';
+                } else {
+                    alert(`Error: ${data.message}`);
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-check-circle"></i> Marcar como Pagada';
+                }
+            })
+            .catch(error => {
+                alert(`Error de red: ${error.message}`);
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check-circle"></i> Marcar como Pagada';
+            });
+        });
+    }
+
+});
+</script>
+</body>
+</html>

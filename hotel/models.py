@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Registro_Huespedes(models.Model):
     id = models.AutoField(primary_key=True)
@@ -88,6 +89,12 @@ class Reservas(models.Model):
         ('Otro', 'Otro'),
     ]
     
+    ESTANCIA_CHOICES = [
+        ('Pendiente', 'Pendiente (No ha llegado)'),
+        ('Activa', 'Activa (Checked-in)'),
+        ('Completada', 'Completada (Checked-out)'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(null=False, max_length=50)
     apellido = models.CharField(null=False, max_length=50)
@@ -109,7 +116,7 @@ class Reservas(models.Model):
     
     check_in = models.DateTimeField(null=False, max_length=50)
     check_out = models.DateTimeField(null=False, max_length=50)
-    companion = models.IntegerField(null=False)
+    companion = models.IntegerField(null=True, default=0)
     
     # OPCIONAL: COMPAÑÍA #
     nombre_compania = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
@@ -119,7 +126,6 @@ class Reservas(models.Model):
 
     # HUESPEDES #
     hospedaje_deseado = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    cotizado = models.IntegerField(null=True, blank=True) # Añadido blank=True
     solicitado = models.IntegerField(null=True, blank=True) # Añadido blank=True
     num_hues= models.IntegerField(null=True, blank=True) # Añadido blank=True
     num_habt = models.IntegerField(null=True, blank=True) # Añadido blank=True
@@ -149,6 +155,12 @@ class Reservas(models.Model):
         related_name='reservas_asignadas'
     )
 
+    estado_estancia = models.CharField(
+        max_length=20, 
+        choices=ESTANCIA_CHOICES, 
+        default='Pendiente'
+    )
+
     class Meta:
         db_table = 'reserva'
 
@@ -159,24 +171,32 @@ class Reservas(models.Model):
 class Factura(models.Model):
     id = models.AutoField(primary_key=True)
     
-    # --- La conexión clave ---
+    # --- La conexión clave (Sin cambios) ---
     reserva = models.OneToOneField(
         Reservas, 
-        on_delete=models.PROTECT, # No borrar factura si se borra la reserva
+        on_delete=models.PROTECT, 
         related_name='factura'
     )
     huesped = models.ForeignKey(
         Registro_Huespedes, 
-        on_delete=models.SET_NULL, # A quién se le facturó
+        on_delete=models.SET_NULL, 
         null=True,
         related_name='facturas'
     )
     
-    # --- Datos de la Factura ---
-    fecha_emision = models.DateTimeField(auto_now_add=True)
-    total_noches = models.IntegerField(null=False)
-    subtotal_alojamiento = models.IntegerField(null=False) # Usamos IntegerField como en 'precio'
-    impuestos = models.IntegerField(null=False, default=0)
+    # --- Datos de la Factura y Cálculos ---
+    fecha_emision = models.DateTimeField(default=timezone.now)
+    total_noches = models.IntegerField(default=0)
+    
+    # 1. Alojamiento (Existente)
+    subtotal_alojamiento = models.IntegerField(null=False) 
+    
+    # 2. Consumos (¡NUEVO CAMPO!)
+    subtotal_consumos = models.IntegerField(null=False, default=0)
+    
+    # 3. Totales (Existentes)
+    # (Asegúrate de que tu modelo original lo llame 'impuestos' o 'valor_impuestos')
+    impuestos = models.IntegerField(null=False, default=0) 
     total_facturado = models.IntegerField(null=False)
     
     ESTADO_CHOICES = [
@@ -188,6 +208,46 @@ class Factura(models.Model):
 
     class Meta:
         db_table = 'facturas'
+        verbose_name_plural = "Facturas"
 
     def __str__(self):
         return f"Factura #{self.id} (Reserva #{self.reserva.id})"
+
+class Producto(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100, unique=True)
+    precio = models.IntegerField(null=False) 
+    stock_disponible = models.PositiveIntegerField(default=0)
+    esta_activo = models.BooleanField(default=True)
+    
+    # --- APLICANDO TU LÓGICA DE TIENDA ---
+    # Guardamos solo el nombre del archivo (ej: uuid_coca_cola.jpg)
+    foto = models.CharField(max_length=255, blank=True, null=True) 
+    
+    class Meta:
+        db_table = 'productos'
+        verbose_name_plural = "Productos"
+
+    def __str__(self):
+        return f"{self.nombre} (${self.precio})"
+
+class Consumo(models.Model):
+    id = models.AutoField(primary_key=True)
+    reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE, related_name='consumos')
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    cantidad = models.PositiveIntegerField(default=1)
+    
+    # Guardamos el precio del momento (buena práctica)
+    precio_en_el_momento = models.IntegerField() 
+    
+    fecha_consumo = models.DateTimeField(auto_now_add=True)
+    
+    # Tu lógica: True = Cobrado al instante, False = Cargar a la habitación/reserva
+    pagado_inmediatamente = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'consumos'
+        verbose_name_plural = "Consumos"
+
+    def __str__(self):
+        return f"{self.cantidad}x {self.producto.nombre} para Reserva #{self.reserva.id}"

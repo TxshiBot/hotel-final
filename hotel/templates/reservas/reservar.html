@@ -237,17 +237,10 @@
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Tarifa Cotizada</label>
-                    {{ form.cotizado }}
-                    {% for error in form.cotizado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Depósito Solicitado</label>
-                    {{ form.solicitado }}
-                    {% for error in form.solicitado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
+            <div class="form-group">
+                <label class="form-label">Depósito Solicitado</label>
+                {{ form.solicitado }}
+                {% for error in form.solicitado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
             </div>
         </div>
 
