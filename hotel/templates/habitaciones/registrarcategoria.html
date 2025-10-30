@@ -21,7 +21,7 @@
 
     .form-container {
         background: var(--white); padding: 30px; border-radius: 8px;
-        border: 1px solid var(--border-gray); margin: 0 auto; max-width: 600px; /* Ancho ajustado */
+        border: 1px solid var(--border-gray); margin: 0 auto; max-width: 600px;
     }
     body.dark-mode .form-container { background: var(--dark-card); border-color: var(--dark-border); }
     .form-section { margin-bottom: 30px; }
@@ -37,94 +37,36 @@
     .form-input,
     .form-textarea,
     .form-select,
-    input[type="text"], /* Estilos para inputs genéricos si Django no añade la clase */
-    input[type="number"],
-    input[type="email"], /* Añade otros tipos si los usas */
-    textarea,
-    select {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid var(--border-gray);
-        border-radius: 6px;
-        font-size: 0.95rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        font-family: inherit;
-        background: var(--white);
-        color: var(--dark-slate);
-        line-height: 1.5;
-        box-sizing: border-box; /* Asegura que padding no afecte el ancho total */
+    input[type="text"], input[type="number"], textarea {
+        width: 100%; padding: 12px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
+        font-size: 0.95rem; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        font-family: inherit; background: var(--white); color: var(--dark-slate);
+        line-height: 1.5; box-sizing: border-box; 
     }
-
-    /* Estilos específicos para Textarea */
-    .form-textarea,
-    textarea { /* Aplica también a la etiqueta textarea directa */
-        min-height: 80px;
-        resize: vertical;
+    .form-textarea, textarea { min-height: 80px; resize: vertical; }
+    body.dark-mode .form-input, body.dark-mode .form-textarea, body.dark-mode .form-select,
+    body.dark-mode input[type="text"], body.dark-mode input[type="number"], body.dark-mode textarea {
+        background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text);
     }
-
-    /* === ESTILOS MODO OSCURO PARA INPUTS, TEXTAREAS Y SELECTS === */
-    body.dark-mode .form-input,
-    body.dark-mode .form-textarea,
-    body.dark-mode .form-select,
-    body.dark-mode input[type="text"],
-    body.dark-mode input[type="number"],
-    body.dark-mode input[type="email"],
-    body.dark-mode textarea,
-    body.dark-mode select {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
-        color: var(--dark-text);
-    }
-    /* Placeholder color en modo oscuro */
-    body.dark-mode .form-input::placeholder,
-    body.dark-mode .form-textarea::placeholder,
-    body.dark-mode input[type="text"]::placeholder,
-    body.dark-mode input[type="number"]::placeholder,
+    body.dark-mode .form-input::placeholder, body.dark-mode .form-textarea::placeholder,
+    body.dark-mode input[type="text"]::placeholder, body.dark-mode input[type="number"]::placeholder,
     body.dark-mode textarea::placeholder {
-        color: var(--dark-text-secondary);
-        opacity: 0.8;
+        color: var(--dark-text-secondary); opacity: 0.8;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus,
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+        outline: none; border-color: var(--steel-blue); box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1);
+    }
+    body.dark-mode .form-input:focus, body.dark-mode .form-textarea:focus, body.dark-mode .form-select:focus,
+    body.dark-mode input[type="text"]:focus, body.dark-mode input[type="number"]:focus, body.dark-mode textarea:focus {
+        border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2);
     }
 
-    /* === ESTILOS DE FOCO === */
-    .form-input:focus,
-    .form-textarea:focus,
-    .form-select:focus,
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="email"]:focus,
-    textarea:focus,
-    select:focus {
-        outline: none;
-        border-color: var(--steel-blue);
-        box-shadow: 0 0 0 3px rgba(74, 144, 164, 0.1);
-    }
-
-    body.dark-mode .form-input:focus,
-    body.dark-mode .form-textarea:focus,
-    body.dark-mode .form-select:focus,
-    body.dark-mode input[type="text"]:focus,
-    body.dark-mode input[type="number"]:focus,
-    body.dark-mode input[type="email"]:focus,
-    body.dark-mode textarea:focus,
-    body.dark-mode select:focus {
-        border-color: var(--steel-blue-dark);
-        box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2);
-    }
-
-    /* === ESTILOS PARA LAYOUT Y BOTONES === */
+    /* === LAYOUT Y BOTONES === */
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    .form-actions {
-        display: flex; gap: 15px; justify-content: flex-end;
-        margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-gray);
-    }
+    .form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-gray); }
     body.dark-mode .form-actions { border-top-color: var(--dark-border); }
-
-    .btn {
-        padding: 12px 30px; border-radius: 6px; font-size: 0.95rem; font-weight: 500;
-        cursor: pointer; transition: all 0.2s ease; border: none;
-        display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
-    }
+    .btn { padding: 12px 30px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
     .btn-primary { background: var(--steel-blue); color: var(--white); }
     .btn-primary:hover { background: var(--dark-slate); }
     body.dark-mode .btn-primary { background: var(--steel-blue-dark); }
@@ -133,16 +75,13 @@
     .btn-secondary:hover { background: var(--ice-blue); }
     body.dark-mode .btn-secondary { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
     body.dark-mode .btn-secondary:hover { background: var(--dark-bg); }
-
-    /* Estilos para mostrar errores de Django */
-    .invalid-feedback { color: #dc3545; /* Color rojo típico de error */ font-size: 0.85em; margin-top: 4px; }
-    .d-block { display: block !important; } /* Para asegurar que se muestre */
-
+    .invalid-feedback { color: #dc3545; font-size: 0.85em; margin-top: 4px; }
+    .d-block { display: block !important; } 
 </style>
 
 <div class="page-header">
     <h1><i class="fas fa-tags"></i> Registrar Nueva Categoría</h1>
-    <a href="{% url 'dashboard' %}" class="btn-back"> {# Cambia 'dashboard' si la URL de volver es otra #}
+    <a href="{% url 'dashboard' %}" class="btn-back"> 
         <i class="fas fa-arrow-left"></i> Volver
     </a>
 </div>
@@ -179,7 +118,7 @@
                 <label for="{{ form.tipo_hab.id_for_label }}" class="form-label">
                     {{ form.tipo_hab.label }} <span class="required">*</span>
                 </label>
-                {{ form.tipo_hab }} {# Django renderizará el input con los widgets definidos #}
+                {{ form.tipo_hab }}
                 {% if form.tipo_hab.errors %}
                     <div class="invalid-feedback d-block">
                         {% for error in form.tipo_hab.errors %}<span>{{ error }}</span>{% endfor %}
@@ -189,10 +128,26 @@
             </div>
 
             <div class="form-group">
+                <label for="{{ form.precio_base.id_for_label }}" class="form-label">
+                    {{ form.precio_base.label }} <span class="required">*</span>
+                </label>
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--medium-gray);">$</span>
+                    {{ form.precio_base }}
+                    <style> input[name='precio_base'] { padding-left: 30px !important; } </style>
+                </div>
+                {% if form.precio_base.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.precio_base.errors %}<span>{{ error }}</span>{% endfor %}
+                    </div>
+                {% endif %}
+                <div class="form-text">Precio base por noche en COP. El input sube de 1000 en 1000.</div>
+            </div>
+            <div class="form-group">
                 <label for="{{ form.descripcion.id_for_label }}" class="form-label">
                     {{ form.descripcion.label }} <span class="optional">(Opcional)</span>
                 </label>
-                {{ form.descripcion }} {# Django renderizará el textarea #}
+                {{ form.descripcion }}
                 {% if form.descripcion.errors %}
                     <div class="invalid-feedback d-block">
                         {% for error in form.descripcion.errors %}<span>{{ error }}</span>{% endfor %}
@@ -205,7 +160,7 @@
                     <label for="{{ form.camas_matrimoniales.id_for_label }}" class="form-label">
                         {{ form.camas_matrimoniales.label }}
                     </label>
-                    {{ form.camas_matrimoniales }} {# Django renderizará el input number #}
+                    {{ form.camas_matrimoniales }}
                     {% if form.camas_matrimoniales.errors %}
                         <div class="invalid-feedback d-block">
                             {% for error in form.camas_matrimoniales.errors %}<span>{{ error }}</span>{% endfor %}
@@ -216,7 +171,7 @@
                     <label for="{{ form.camas_individuales.id_for_label }}" class="form-label">
                         {{ form.camas_individuales.label }}
                     </label>
-                    {{ form.camas_individuales }} {# Django renderizará el input number #}
+                    {{ form.camas_individuales }}
                     {% if form.camas_individuales.errors %}
                         <div class="invalid-feedback d-block">
                             {% for error in form.camas_individuales.errors %}<span>{{ error }}</span>{% endfor %}
@@ -241,7 +196,7 @@
         </div>
 
         <div class="form-actions">
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary"> {# Cambia 'dashboard' si es necesario #}
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Cancelar
             </a>
             <button type="submit" class="btn btn-primary">

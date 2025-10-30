@@ -21,7 +21,7 @@
 
     .form-container {
         background: var(--white); padding: 30px; border-radius: 8px;
-        border: 1px solid var(--border-gray); margin: 0 auto; max-width: 700px; /* Ancho original */
+        border: 1px solid var(--border-gray); margin: 0 auto; max-width: 700px;
     }
     body.dark-mode .form-container { background: var(--dark-card); border-color: var(--dark-border); }
     .form-section { margin-bottom: 30px; }
@@ -99,13 +99,6 @@
     /* Errores */
     .invalid-feedback { color: #dc3545; font-size: 0.85em; margin-top: 4px; }
     .d-block { display: block !important; }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .form-container { padding: 20px; }
-        .form-row, .radio-grid { grid-template-columns: 1fr; }
-        /* ... */
-    }
 </style>
 
 <div class="page-header">
@@ -120,7 +113,6 @@
         {% csrf_token %}
 
         {% if messages %}
-            {# ... Bloque mensajes flash ... #}
              <div style="margin-bottom: 20px;">
                 {% for message in messages %}
                     <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert"
@@ -156,20 +148,20 @@
                 </div>
 
                  <div class="form-group">
-                    <label for="{{ form.precio.id_for_label }}" class="form-label">
-                        {{ form.precio.label }} <span class="required">*</span>
+                    <label for="{{ form.adicional_precio.id_for_label }}" class="form-label">
+                        {{ form.adicional_precio.label }} <span class="optional">(Opcional)</span>
                     </label>
                     <div style="position: relative;">
                         <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--medium-gray);">$</span>
-                         {{ form.precio }}
-                         <style> input[name='precio'] { padding-left: 30px !important; } </style>
+                         {{ form.adicional_precio }}
+                         <style> input[name='adicional_precio'] { padding-left: 30px !important; } </style>
                     </div>
-                     {% if form.precio.errors %}
-                        <div class="invalid-feedback d-block">{% for error in form.precio.errors %}<span>{{ error }}</span>{% endfor %}</div>
+                     {% if form.adicional_precio.errors %}
+                        <div class="invalid-feedback d-block">{% for error in form.adicional_precio.errors %}<span>{{ error }}</span>{% endfor %}</div>
                     {% endif %}
-                    <div class="form-helper">Precio en Pesos Colombianos (COP).</div>
+                    <div class="form-helper">Valor extra (Ej: 50000) por vista, balcón, etc. Se suma al precio base de la categoría. Dejar en 0 si no hay adicional.</div>
                 </div>
-            </div>
+                </div>
 
              <div class="form-group">
                  <label for="{{ form.tipo.id_for_label }}" class="form-label">
@@ -193,7 +185,6 @@
                 </label>
                 <div class="radio-grid">
                     {% for radio in form.estado %}
-                        {# Usamos radio.choice_label directamente para el texto y la lógica #}
                         <label class="radio-card">
                             {{ radio.tag }} {# Input radio oculto #}
                             <div class="radio-content">

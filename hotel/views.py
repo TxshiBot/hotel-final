@@ -39,7 +39,7 @@ def ListarHabitaciones(request):
     status_filter = request.GET.get('status', 'all').strip().lower()
 
     if query:
-         habitaciones_list = habitaciones_list.filter(
+        habitaciones_list = habitaciones_list.filter(
             Q(numero__icontains=query) |
             Q(tipo__tipo_hab__icontains=query) |
             Q(estado__icontains=query)
@@ -190,7 +190,7 @@ def GetReservaDetallesAJAX(request, reserva_id):
                 'num_asignadas': num_asignadas
             })
         except Exception as e:
-             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     else:
         return HttpResponseBadRequest("Método no permitido. Solo GET.")
 
@@ -202,14 +202,14 @@ def RegistrarHabitaciones(request):
                 # Validar que el número de habitación no exista ya (si no pusiste unique=True en el modelo)
                 numero = form.cleaned_data['numero']
                 if Habitaciones.objects.filter(numero=numero).exists():
-                     messages.error(request, f"La habitación número '{numero}' ya existe.")
+                    messages.error(request, f"La habitación número '{numero}' ya existe.")
                 else:
                     form.save()
                     messages.success(request, f"Habitación '{numero}' guardada con éxito.")
                     # Redirige a la lista de habitaciones (asegúrate que 'habitaciones' es el name= de tu URL)
                     return redirect('habitaciones') 
             except Exception as e:
-                 messages.error(request, f"Error al guardar la habitación: {e}")
+                messages.error(request, f"Error al guardar la habitación: {e}")
         else:
             # Si el form no es válido, se volverá a renderizar con errores
             messages.error(request, "Por favor corrige los errores en el formulario.")
@@ -260,6 +260,7 @@ def ListarReservas(request):
     
     # Renderiza el template pasándole el contexto
     return render(request, 'reservas/reservas.html', context)
+
 
 def ConfirmarReserva(request, reserva_id):
     # Solo permitimos POST
@@ -492,71 +493,62 @@ def GetHuespedDetallesAJAX(request, huesped_id):
 def GenerarFactura(request, reserva_id):
     """
     Vista AJAX para calcular el costo de la estadía y generar la factura.
+    (MODIFICADA para el nuevo modelo de precios)
     """
-    # Solo permitimos peticiones POST (para crear la factura)
     if request.method != 'POST':
         return HttpResponseBadRequest("Método no permitido. Solo POST.")
 
     try:
-        # 1. Obtener la Reserva con las habitaciones asignadas
+        # 1. Obtener la Reserva
+        # Usamos select_related para optimizar la consulta de las habitaciones y sus tipos (categorías)
         reserva = get_object_or_404(
-            Reservas.objects.prefetch_related('habitaciones_asignadas'), 
+            Reservas.objects.prefetch_related('habitaciones_asignadas__tipo'), 
             pk=reserva_id
         )
 
-        # 2. Verificar precondiciones
-
-        # A) ¿Ya existe factura?
+        # 2. Verificar precondiciones (sin cambios)
         if hasattr(reserva, 'factura'):
             return JsonResponse({'status': 'error', 'message': f'La Reserva #{reserva_id} ya tiene una Factura (ID: {reserva.factura.id}) emitida.'}, status=400)
-
-        # B) ¿Tiene habitaciones asignadas?
         if not reserva.habitaciones_asignadas.exists():
             return JsonResponse({'status': 'error', 'message': 'No se puede facturar: la reserva no tiene habitaciones asignadas.'}, status=400)
-        
-        # C) ¿Tiene huésped principal ligado? (Opcional, pero ideal para la factura)
         if not reserva.huesped_principal:
              return JsonResponse({'status': 'error', 'message': 'No se puede facturar: la reserva debe tener un Huésped Titular asignado.'}, status=400)
 
-
-        # 3. Lógica de Cálculo
+        # 3. Lógica de Cálculo (MODIFICADA)
         
-        # 3.1. Calcular Noches
+        # 3.1. Calcular Noches (sin cambios)
         check_in_date = reserva.check_in.date()
         check_out_date = reserva.check_out.date()
         total_noches = (check_out_date - check_in_date).days
-        
-        # Si la reserva dura menos de 1 día (check-in y check-out el mismo día), se factura 1 noche.
         if total_noches == 0:
             total_noches = 1 
 
-        # 3.2. Calcular Subtotal Alojamiento
-        # Sumar el precio de CADA habitación asignada y multiplicar por las noches
-        subtotal_alojamiento = sum(
-            h.precio for h in reserva.habitaciones_asignadas.all()
-        ) * total_noches
-
-        # Convertir a Decimal para precisión de factura
-        subtotal_alojamiento_d = decimal.Decimal(subtotal_alojamiento)
+        # 3.2. Calcular Subtotal Alojamiento (¡LÓGICA ACTUALIZADA!)
+        subtotal_alojamiento = 0
+        for h in reserva.habitaciones_asignadas.all():
+            # Suma el precio base de la CATEGORÍA + el adicional de la HABITACIÓN
+            precio_noche_hab = h.tipo.precio_base + h.adicional_precio
+            subtotal_alojamiento += precio_noche_hab
         
-        # 3.3. Calcular Impuestos (19%)
-        IMPUESTO_PORCENTAJE = decimal.Decimal('0.19') # Definido aquí para el cálculo
-        valor_impuestos = subtotal_alojamiento_d * IMPUESTO_PORCENTAJE
+        # Multiplicar el total de las habitaciones por el número de noches
+        subtotal_alojamiento *= total_noches
+
+        # 3.3. Calcular Impuestos (Usando Integers, como en tu modelo Factura)
+        IMPUESTO_PORCENTAJE = 0.19 # 19%
+        valor_impuestos = int(subtotal_alojamiento * IMPUESTO_PORCENTAJE)
         
         # 3.4. Calcular Total Final
-        total_facturado = subtotal_alojamiento_d + valor_impuestos
-
+        total_facturado = subtotal_alojamiento + valor_impuestos
 
         # 4. Crear la Factura
         factura = Factura.objects.create(
             reserva=reserva,
-            huesped=reserva.huesped_principal, # Usamos el FK que ligamos
+            huesped=reserva.huesped_principal,
             total_noches=total_noches,
-            subtotal_alojamiento=round(subtotal_alojamiento_d, 2),
-            impuestos_porcentaje=IMPUESTO_PORCENTAJE,
-            valor_impuestos=round(valor_impuestos, 2),
-            total_facturado=round(total_facturado, 2),
-            estado='Pendiente' # Estado inicial
+            subtotal_alojamiento=subtotal_alojamiento, # Guardamos el Int
+            impuestos=valor_impuestos, # Guardamos el Int (Asegúrate que tu modelo Factura tenga este campo)
+            total_facturado=total_facturado, # Guardamos el Int
+            estado='Pendiente'
         )
 
         # 5. Respuesta de éxito
@@ -568,6 +560,5 @@ def GenerarFactura(request, reserva_id):
         })
 
     except Exception as e:
-        # Esto captura errores de la base de datos o lógica no prevista
         return JsonResponse({'status': 'error', 'message': f'Error al generar factura: {str(e)}'}, status=500)
 #endregion

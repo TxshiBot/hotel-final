@@ -11,84 +11,112 @@ from hotel.models import Registro_Huespedes
 
 class ReservarForm(forms.ModelForm):
 
+    # --- Sobrescribir el campo para que sea un ChoiceField ---
+    # Lo definimos aquí para que el __init__ pueda modificarlo
+    hospedaje_deseado = forms.ChoiceField(
+        choices=[], # Se rellenará dinámicamente en __init__
+        required=False, 
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
     def __init__(self, *args, **kwargs):
-        # 1. Ejecutar el constructor original (Crea los campos de Meta.fields)
         super().__init__(*args, **kwargs)
         
+        # --- Lógica de campos opcionales (existente) ---
         opcionales = (
             'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
             'compania_email', 'solicitud', 'observaciones',
-            'huesped_principal' # <-- ¡AQUÍ ESTÁ!
+            'huesped_principal'
         )
-        
         for campo in opcionales:
             if campo in self.fields:
                 self.fields[campo].required = False
         
-        # --- Lógica extra para el campo de huésped ---
-        if 'huesped_principal' in self.fields: # <--- Verificación robusta (ya no es crítica, pero es buena práctica)
-            # Personalizamos cómo se ve el campo en el select
+        # --- Lógica de Huésped Principal (existente) ---
+        if 'huesped_principal' in self.fields:
             self.fields['huesped_principal'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.identificacion})"
-            # Ordenamos la lista de huéspedes
             self.fields['huesped_principal'].queryset = Registro_Huespedes.objects.order_by('apellido', 'nombre')
+            
+        # --- ¡NUEVA LÓGICA PARA HOSPEDAJE DESEADO! ---
+        try:
+            # 1. Crear la lista de choices: [(valor_a_guardar, texto_a_mostrar)]
+            #    Comenzamos con la opción por defecto.
+            categoria_choices = [("", "Seleccionar tipo...")]
+            
+            # 2. Consultar todas las categorías de la base de datos
+            categorias = Categorias.objects.all().order_by('tipo_hab')
+            
+            # 3. Añadir cada categoría a la lista de choices
+            for cat in categorias:
+                # Guardamos el nombre (tipo_hab) porque el modelo espera un CharField
+                categoria_choices.append((cat.tipo_hab, cat.tipo_hab)) 
+                
+            # 4. Asignar las choices dinámicas al campo del formulario
+            self.fields['hospedaje_deseado'].choices = categoria_choices
+            
+        except Exception as e:
+            # En caso de que la tabla 'categorias' no exista (ej. durante migraciones)
+            self.fields['hospedaje_deseado'].choices = [("", f"Error al cargar categorías: {e}")]
+        # --- FIN DE LA NUEVA LÓGICA ---
     
 
     class Meta:
         model = Reservas
         fields = (
-            # 1. CAMPO LIGADO A HUESPED (AÑADIDO)
             'huesped_principal', 
-            
-            # Campos obligatorios/facturación
             'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
             'ciudad', 'departamento', 'telefono_domicilio',
-            
-            # Fechas y detalles
-            'check_in', 'check_out', 'companion', 'formadepago',
+            'check_in', 'check_out', 
+            'companion', 'formadepago',
             'empleados', 'telefono',
-            
-            # Campos Opcionales/NULLABLE 
-            'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
+            'telefono_oficina', 'hospedaje_deseado', # <-- El campo ya estaba aquí
+            'cotizado', 'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
             'compania_email', 
             'solicitud', 'observaciones' 
         )
 
-        # 2. WIDGETS Y LABELS AÑADIDOS
         widgets = {
             'huesped_principal': forms.Select(attrs={'class': 'form-select'}),
+            'check_in': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-input'}
+            ),
+            'check_out': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-input'}
+            ),
+            # No definimos 'hospedaje_deseado' aquí porque ya lo sobrescribimos arriba
         }
+        
         labels = {
             'huesped_principal': 'Buscar Huésped Registrado (Opcional)',
         }
 
-# --- VERIFICA QUE ESTA FUNCIÓN ESTÉ PRESENTE Y CORRECTA ---
+    # --- El método clean() se mantiene igual ---
     def clean(self):
         cleaned_data = super().clean()
         check_in = cleaned_data.get("check_in")
         check_out = cleaned_data.get("check_out")
         
         if check_in and check_out:
-            # 1. Chequear que la fecha de salida sea posterior a la entrada
             if check_out <= check_in:
-                # Lanza el error en el campo específico
                 self.add_error('check_out', "La fecha de salida debe ser posterior a la fecha de llegada.")
             
-            # 2. Chequear que la reserva no sea en el pasado
             if check_in.date() < timezone.now().date():
                 self.add_error('check_in', "No se pueden registrar reservas para fechas pasadas.")
                 
         return cleaned_data
 
+# En forms.py
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categorias
         fields = [
             'tipo_hab', 
+            'precio_base', # <-- Campo
             'descripcion', 
             'camas_matrimoniales', 
             'camas_individuales', 
@@ -96,30 +124,37 @@ class CategoriaForm(forms.ModelForm):
         ]
         widgets = {
             'tipo_hab': forms.TextInput(attrs={
-                'class': 'form-input', # <-- AÑADIR CLASE
+                'class': 'form-input', 
                 'placeholder': 'Ej: Suite Presidencial'
             }),
+            
+            # --- ¡WIDGET ACTUALIZADO CON STEP! ---
+            'precio_base': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Ej: 150000',
+                'min': '0',
+                'step': '1000' # <-- ¡REQUERIMIENTO CUMPLIDO!
+            }),
+            # --- FIN DE LA ACTUALIZACIÓN ---
+            
             'descripcion': forms.Textarea(attrs={
-                'class': 'form-textarea', # <-- AÑADIR CLASE
-                'rows': 3, 
+                'class': 'form-textarea', 'rows': 3, 
                 'placeholder': 'Descripción breve...'
             }),
             'camas_matrimoniales': forms.NumberInput(attrs={
-                'class': 'form-input', # <-- AÑADIR CLASE (o form-number si tienes estilo específico)
-                'min': 0
+                'class': 'form-input', 'min': 0
             }),
             'camas_individuales': forms.NumberInput(attrs={
-                'class': 'form-input', # <-- AÑADIR CLASE
-                'min': 0
+                'class': 'form-input', 'min': 0
             }),
             'especiales': forms.Textarea(attrs={
-                'class': 'form-textarea', # <-- AÑADIR CLASE
-                'rows': 3, 
+                'class': 'form-textarea', 'rows': 3, 
                 'placeholder': 'Ej: Balcón, Jacuzzi...'
             }),
         }
         labels = {
             'tipo_hab': 'Nombre de la Categoría',
+            'precio_base': 'Precio Base (COP)', # <-- REQUERIMIENTO CUMPLIDO
             'camas_matrimoniales': 'Camas Matrimoniales',
             'camas_individuales': 'Camas Individuales',
             'especiales': 'Características Especiales',
@@ -129,17 +164,16 @@ class CategoriaForm(forms.ModelForm):
 class HabitacionForm(forms.ModelForm):
     class Meta:
         model = Habitaciones
-        fields = ['numero', 'tipo', 'precio', 'estado'] 
+        fields = ['numero', 'tipo', 'adicional_precio', 'estado'] # <-- CAMBIADO
         widgets = {
             'numero': forms.TextInput(attrs={
-                'placeholder': 'Ej: 101', 
-                'maxlength': '3', 
-                'pattern': '[0-9]{1,3}', 
-                'title': 'Ingrese un número de habitación de hasta 3 dígitos.'
+                'placeholder': 'Ej: 101', 'maxlength': '3', 
+                'pattern': '[0-9]{1,3}', 'title': 'Ingrese un número de habitación de hasta 3 dígitos.'
             }),
             'tipo': forms.Select(attrs={'class': 'form-select'}), 
-            'precio': forms.NumberInput(attrs={
-                'placeholder': 'Ej: 150000', 
+            # --- WIDGET CAMBIADO ---
+            'adicional_precio': forms.NumberInput(attrs={
+                'placeholder': 'Ej: 50000 (por vista)', 
                 'min': '0',
                 'step': '1000' 
             }),
@@ -148,7 +182,7 @@ class HabitacionForm(forms.ModelForm):
         labels = {
             'numero': 'Número de Habitación',
             'tipo': 'Categoría',
-            'precio': 'Precio por Noche (COP)',
+            'adicional_precio': 'Adicional al Precio Base (COP)', # <-- CAMBIADO
             'estado': 'Estado Inicial',
         }
         field_classes = {

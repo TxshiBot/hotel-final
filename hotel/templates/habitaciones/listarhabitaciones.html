@@ -245,22 +245,22 @@
             {# Icono opcional #}
         </div>
         <div class="room-details">
-             <div class="room-status-text">
+            <div class="room-status-text">
                 <span class="status-dot"></span>
-                {{ habitacion.get_estado_display }} {# Label legible del estado #}
-             </div>
-             <div>
-                 <i class="fas fa-dollar-sign"></i> {{ habitacion.precio }} COP / Noche
-             </div>
-             {# Mostrar info de reserva si está asignada #}
-             {% if habitacion.reserva %}
-                 <div class="room-reserva-info">
-                     <i class="fas fa-user-tag" title="{{ habitacion.reserva.nombre }} {{ habitacion.reserva.apellido }}"></i> Reserva #{{ habitacion.reserva.id }}
-                 </div>
-             {% else %}
-                  {# Espacio reservado para mantener altura consistente #}
-                  <div class="room-reserva-info" style="visibility: hidden;"><i class="fas fa-user-tag"></i></div>
-             {% endif %}
+                {{ habitacion.get_estado_display }} <!-- Label legible del estado -->
+        </div>
+            <div>
+                    <i class="fas fa-dollar-sign"></i> 
+                    {{ habitacion.tipo.precio_base|add:habitacion.adicional_precio }} COP / Noche
+            </div>             <!-- Mostrar info de reserva si está asignada -->
+                {% if habitacion.reserva %}
+                    <div class="room-reserva-info">
+                        <i class="fas fa-user-tag" title="{{ habitacion.reserva.nombre }} {{ habitacion.reserva.apellido }}"></i> Reserva #{{ habitacion.reserva.id }}
+                    </div>
+                {% else %}
+                    {# Espacio reservado para mantener altura consistente #}
+                    <div class="room-reserva-info" style="visibility: hidden;"><i class="fas fa-user-tag"></i></div>
+                {% endif %}
         </div>
     </div>
     {% empty %}
@@ -282,10 +282,10 @@
                     <div class="form-group">
                         <label for="modalEstadoHabitacion" class="form-label">Cambiar Estado <span style="color:red">*</span></label>
                         <select name="estado" id="modalEstadoHabitacion" class="form-select" required>
-                             {# Usamos los choices pasados desde la vista #}
-                             {% for value, label in habitacion_form.estado.field.choices %}
-                                <option value="{{ value }}">{{ label }}</option>
-                             {% endfor %}
+                                {# Usamos los choices pasados desde la vista #}
+                                {% for value, label in habitacion_form.estado.field.choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
                         </select>
                     </div>
 

@@ -24,20 +24,27 @@ class Registro_Huespedes(models.Model):
         return f"{self.nombre} {self.apellido}"
 
 
+# En models.py
+
 class Categorias(models.Model):
     id = models.AutoField(primary_key=True)
-    tipo_hab = models.CharField(max_length=100, null=False, unique=True) # Este es el nombre que queremos mostrar
+    tipo_hab = models.CharField(max_length=100, null=False, unique=True)
     descripcion = models.TextField(blank=True, null=True)
+    
+    # --- CAMPO NUEVO ---
+    # Precio base para este tipo de habitación
+    precio_base = models.IntegerField(null=False, default=100000) 
+    
     camas_matrimoniales = models.PositiveIntegerField(default=0)
     camas_individuales = models.PositiveIntegerField(default=0)
     especiales = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'categorias'
-        verbose_name_plural = "Categorias" # Opcional, para el admin
+        verbose_name_plural = "Categorias"
 
     def __str__(self):
-        return self.tipo_hab # Devuelve el valor del campo 'tipo_hab' como representación
+        return self.tipo_hab
 
 
 class Habitaciones(models.Model):
@@ -51,7 +58,17 @@ class Habitaciones(models.Model):
     numero = models.CharField(max_length=10, null=False, blank=True)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Disponible')
     tipo = models.ForeignKey(Categorias, on_delete=models.CASCADE, null=False, blank=True)
-    precio = models.IntegerField(null=False)
+    
+    # --- CAMPO ELIMINADO ---
+    # precio = models.IntegerField(null=False) # <--- ELIMINAMOS ESTE
+    
+    # --- CAMPO NUEVO ---
+    # Adicional por características únicas (vista, balcón, etc.)
+    adicional_precio = models.IntegerField(
+        null=False, 
+        default=0, 
+        help_text="Valor extra por vistas, balcón, etc. (se suma al precio base de la categoría)"
+    )
 
     class Meta:
         db_table = 'habitaciones'
@@ -61,6 +78,16 @@ class Habitaciones(models.Model):
 
 
 class Reservas(models.Model):
+    
+    # --- ¡NUEVO! Opciones de Forma de Pago ---
+    FORMA_PAGO_CHOICES = [
+        ('Efectivo', 'Efectivo'),
+        ('Tarjeta de Credito', 'Tarjeta de Crédito'),
+        ('Transferencia', 'Transferencia Bancaria'),
+        ('cobrar_compania', 'Cobrar a Compañía'), # Valor clave para tu JS
+        ('Otro', 'Otro'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(null=False, max_length=50)
     apellido = models.CharField(null=False, max_length=50)
@@ -71,48 +98,55 @@ class Reservas(models.Model):
     domicilio = models.CharField(null=False, max_length=255)
     departamento = models.CharField(null=False, max_length=50)
     telefono_oficina = models.CharField(null=False, max_length=50)
-    formadepago = models.CharField(null=False, max_length=50)
+    
+    # --- ¡CAMPO ACTUALIZADO! ---
+    formadepago = models.CharField(
+        null=False, 
+        max_length=50,
+        choices=FORMA_PAGO_CHOICES, # <-- Conecta las opciones
+        default='Efectivo'          # <-- Añade un valor por defecto
+    )
+    
     check_in = models.DateTimeField(null=False, max_length=50)
     check_out = models.DateTimeField(null=False, max_length=50)
     companion = models.IntegerField(null=False)
     
     # OPCIONAL: COMPAÑÍA #
-    nombre_compania = models.CharField(null=True, max_length=50)
-    compania_domicilio = models.CharField(null=True, max_length=50)
-    compania_ciudad = models.CharField(null=True, max_length=50)
-    compania_email = models.CharField(null=True, max_length=50)
+    nombre_compania = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    compania_domicilio = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    compania_ciudad = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    compania_email = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
 
     # HUESPEDES #
-    hospedaje_deseado = models.CharField(null=True, max_length=50)
-    cotizado = models.IntegerField(null=True)
-    solicitado = models.IntegerField(null=True)
-    num_hues= models.IntegerField(null=True)
-    num_habt = models.IntegerField(null=True)
+    hospedaje_deseado = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    cotizado = models.IntegerField(null=True, blank=True) # Añadido blank=True
+    solicitado = models.IntegerField(null=True, blank=True) # Añadido blank=True
+    num_hues= models.IntegerField(null=True, blank=True) # Añadido blank=True
+    num_habt = models.IntegerField(null=True, blank=True) # Añadido blank=True
     
     # DATOS EMPLEADO # 
     empleados = models.CharField(null=False, max_length=50)
     telefono = models.CharField(null=False, max_length=10, blank=True)
     
     # EXTRA # 
-    solicitud = models.CharField(null=True, max_length=50)
-    observaciones = models.CharField(null=True, max_length=50)
-    confirmado = models.CharField(null=True, max_length=50, default='Pendiente')
-
+    solicitud = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    observaciones = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    confirmado = models.CharField(null=True, max_length=50, default='Pendiente', blank=True) # Añadido blank=True
 
     # REGISTRO HUESPEDES # 
     huesped_principal = models.ForeignKey(
         Registro_Huespedes,
-        on_delete=models.SET_NULL, # Importante: Si se borra el huésped, no borres sus reservas
+        on_delete=models.SET_NULL,
         null=True, 
         blank=True, 
-        related_name='reservas_como_principal' # Para acceder desde el huésped
+        related_name='reservas_como_principal'
     )
 
     # MANY TO MANY - MUCHOS A MUCHOS # 
     habitaciones_asignadas = models.ManyToManyField(
         Habitaciones,
-        blank=True, # Una reserva puede existir sin habitaciones asignadas
-        related_name='reservas_asignadas' # Para acceder a las reservas desde una habitación
+        blank=True,
+        related_name='reservas_asignadas'
     )
 
     class Meta:

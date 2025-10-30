@@ -187,9 +187,11 @@ body.dark-mode .modal-footer { background-color: var(--dark-bg-secondary); borde
 
     </div>
     <div class="top-bar-right">
-        <a href="{% url 'reservar' %}" class="btn-new">
+        <a href="{% url 'reservar' %}" 
+        class="btn-new"
+        onclick="window.location.href = '{% url 'reservar' %}'; return false;">
             <i class="fas fa-plus"></i> Nueva Reserva
-        </a>
+        </a>    
     </div>
 </div>
 
