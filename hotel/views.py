@@ -33,7 +33,7 @@ def ListarHabitaciones(request):
     habitaciones_list = Habitaciones.objects.select_related('tipo').order_by('numero')
     todas_categorias = Categorias.objects.all().order_by('tipo_hab')
 
-    # --- Lógica de Búsqueda ---
+    # --- Lógica de Filtros (Sin cambios) ---
     query = request.GET.get('q', '').strip()
     selected_categoria_id = request.GET.get('categoria_id', '').strip()
     status_filter = request.GET.get('status', 'all').strip().lower()
@@ -44,37 +44,56 @@ def ListarHabitaciones(request):
             Q(tipo__tipo_hab__icontains=query) |
             Q(estado__icontains=query)
         )
-
-    # --- Filtrado por Categoría ---
     if selected_categoria_id.isdigit():
         habitaciones_list = habitaciones_list.filter(tipo_id=int(selected_categoria_id))
-
-    # --- Lógica de Filtrado por Estado ---
     valid_statuses = [choice[0].lower() for choice in Habitaciones.ESTADO_CHOICES]
     if status_filter != 'all' and status_filter in valid_statuses:
         habitaciones_list = habitaciones_list.filter(estado__iexact=status_filter)
         active_filter = status_filter
     else:
         active_filter = 'all'
+    # --- Fin de Filtros ---
 
-    # --- OBTENER RESERVAS ASIGNABLES (CORREGIDO) ---
-    # Lógica: Reservas que necesitan habitaciones (num_habt > 0)
-    # y que AÚN NO tienen suficientes habitaciones asignadas.
+    
+    # --- ¡NUEVA LÓGICA PARA ENCONTRAR RESERVA ACTIVA! ---
+    now = timezone.now()
+    
+    # 1. Buscamos todas las reservas activas o futuras
+    #    Usamos prefetch_related para cargar eficientemente las habitaciones asignadas
+    future_reservas = Reservas.objects.filter(
+        check_out__gt=now, 
+        confirmado='Confirmado'
+    ).prefetch_related('habitaciones_asignadas')
+
+    # 2. Creamos un mapa: { id_habitacion: objeto_reserva }
+    active_reserva_map = {}
+    for res in future_reservas:
+        for hab in res.habitaciones_asignadas.all():
+            # Como no permitimos solapamientos, la primera que encontremos es la activa.
+            if hab.id not in active_reserva_map:
+                 active_reserva_map[hab.id] = res
+
+    # 3. Adjuntamos la reserva encontrada a cada objeto 'habitacion'
+    for hab in habitaciones_list:
+        hab.active_reserva = active_reserva_map.get(hab.id, None)
+    # --- FIN DE LA NUEVA LÓGICA ---
+
+
+    # --- Lógica de Reservas Asignables (Sin cambios) ---
     reservas_asignables = Reservas.objects.annotate(
-        num_asignadas=Count('habitaciones_asignadas') # Contar cuántas tienen
+        num_asignadas=Count('habitaciones_asignadas')
     ).filter(
-        # ---- ESTA ES LA LÍNEA CORREGIDA ----
-        Q(num_habt__gt=F('num_asignadas')) | # Necesita más de las que tiene
-        Q(num_habt__isnull=True, num_asignadas=0) # O necesita (implícitamente 1) y no tiene
+        Q(num_habt__gt=F('num_asignadas')) |
+        Q(num_habt__isnull=True, num_asignadas=0)
     ).filter(
-        confirmado='Confirmado', # Solo asignar reservas confirmadas
-        check_out__gt=timezone.now() # Solo asignar reservas activas o futuras
+        confirmado='Confirmado',
+        check_out__gt=timezone.now()
     ).distinct().order_by('-id')
     
     habitacion_form = HabitacionForm()
 
     context = {
-        'habitaciones': habitaciones_list,
+        'habitaciones': habitaciones_list, # ¡Ahora cada habitacion tiene un .active_reserva!
         'reservas_asignables': reservas_asignables,
         'habitacion_form': habitacion_form,
         'todas_categorias': todas_categorias,

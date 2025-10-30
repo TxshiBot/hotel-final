@@ -11,18 +11,16 @@ from hotel.models import Registro_Huespedes
 
 class ReservarForm(forms.ModelForm):
 
-    # --- Sobrescribir el campo para que sea un ChoiceField ---
-    # Lo definimos aquí para que el __init__ pueda modificarlo
     hospedaje_deseado = forms.ChoiceField(
-        choices=[], # Se rellenará dinámicamente en __init__
+        choices=[], 
         required=False, 
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     def __init__(self, *args, **kwargs):
+        # ... (tu lógica __init__ existente se mantiene igual) ...
         super().__init__(*args, **kwargs)
         
-        # --- Lógica de campos opcionales (existente) ---
         opcionales = (
             'telefono_oficina', 'hospedaje_deseado', 'cotizado', 'solicitado',
             'num_hues', 'num_habt',
@@ -34,32 +32,18 @@ class ReservarForm(forms.ModelForm):
             if campo in self.fields:
                 self.fields[campo].required = False
         
-        # --- Lógica de Huésped Principal (existente) ---
         if 'huesped_principal' in self.fields:
             self.fields['huesped_principal'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.identificacion})"
             self.fields['huesped_principal'].queryset = Registro_Huespedes.objects.order_by('apellido', 'nombre')
             
-        # --- ¡NUEVA LÓGICA PARA HOSPEDAJE DESEADO! ---
         try:
-            # 1. Crear la lista de choices: [(valor_a_guardar, texto_a_mostrar)]
-            #    Comenzamos con la opción por defecto.
             categoria_choices = [("", "Seleccionar tipo...")]
-            
-            # 2. Consultar todas las categorías de la base de datos
             categorias = Categorias.objects.all().order_by('tipo_hab')
-            
-            # 3. Añadir cada categoría a la lista de choices
             for cat in categorias:
-                # Guardamos el nombre (tipo_hab) porque el modelo espera un CharField
                 categoria_choices.append((cat.tipo_hab, cat.tipo_hab)) 
-                
-            # 4. Asignar las choices dinámicas al campo del formulario
             self.fields['hospedaje_deseado'].choices = categoria_choices
-            
         except Exception as e:
-            # En caso de que la tabla 'categorias' no exista (ej. durante migraciones)
             self.fields['hospedaje_deseado'].choices = [("", f"Error al cargar categorías: {e}")]
-        # --- FIN DE LA NUEVA LÓGICA ---
     
 
     class Meta:
@@ -69,9 +53,9 @@ class ReservarForm(forms.ModelForm):
             'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
             'ciudad', 'departamento', 'telefono_domicilio',
             'check_in', 'check_out', 
-            'companion', 'formadepago',
+            'companion', 'formadepago', # <-- Campo
             'empleados', 'telefono',
-            'telefono_oficina', 'hospedaje_deseado', # <-- El campo ya estaba aquí
+            'telefono_oficina', 'hospedaje_deseado', 
             'cotizado', 'solicitado',
             'num_hues', 'num_habt',
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
@@ -87,15 +71,17 @@ class ReservarForm(forms.ModelForm):
             'check_out': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-input'}
             ),
-            # No definimos 'hospedaje_deseado' aquí porque ya lo sobrescribimos arriba
+            
+            # --- ¡AQUÍ ESTÁ LA CORRECCIÓN DE ESTILO! ---
+            'formadepago': forms.Select(attrs={'class': 'form-select'}),
         }
         
         labels = {
             'huesped_principal': 'Buscar Huésped Registrado (Opcional)',
         }
 
-    # --- El método clean() se mantiene igual ---
     def clean(self):
+        # ... (tu método clean() se mantiene igual) ...
         cleaned_data = super().clean()
         check_in = cleaned_data.get("check_in")
         check_out = cleaned_data.get("check_out")
@@ -108,6 +94,7 @@ class ReservarForm(forms.ModelForm):
                 self.add_error('check_in', "No se pueden registrar reservas para fechas pasadas.")
                 
         return cleaned_data
+
 
 # En forms.py
 
