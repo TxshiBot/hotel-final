@@ -58,34 +58,55 @@ from hotel.views import VerReciboConsumo
 from hotel.views import EditarProducto
 from hotel.views import EliminarProducto
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # ---- DASHBAORD ---- #
     path('', Dashboard, name='dashboard'),
+    # ------------------- #
+    
+    # ---- HABITACIONES ---- #
     path('listahabitaciones', ListarHabitaciones, name='habitaciones'),
     path('registrohabitaciones', RegistrarHabitaciones, name='registrohabitaciones'),
+    path('actualizarajax', ActualizarHabitacionAJAX, name='actualizarhabitacionajax'),
+    # ---------------------- #
+    
+    # ---- RESERVAS ---- #
     path('reservar', Reservar, name='reservar'),
     path('listarreservas', ListarReservas, name='reservas'),
     path('reservas/confirmar/<int:reserva_id>/', ConfirmarReserva, name='confirmarreserva'),
-    path('registrocategorias', RegistroCategorias, name='registrocategorias'),
-    path('actualizarajax', ActualizarHabitacionAJAX, name='actualizarhabitacionajax'),
     path('reservas/detallesajax/<int:reserva_id>/', GetReservaDetallesAJAX, name='reservadetallesajax'),
+    path('reservas/eliminar/<int:reserva_id>/', EliminarReserva, name='eliminarreserva'),
+    path('reservas/editar/<int:reserva_id>/', EditarReserva, name='editarreserva'),
+    path('checkin/<int:reserva_id>/', RealizarCheckIn, name='realizarcheckin'),
+    path('checkout/<int:reserva_id>/', RealizarCheckOut, name='realizarcheckout'),
+    # ------------------ #
+    
+    # ---- CATEGORIAS ---- #
+    path('registrocategorias', RegistroCategorias, name='registrocategorias'),
+    # -------------------- #
+    
+    # ---- HUESPEDES ---- #
     path('registrohuespedes', RegistrarHuesped, name='registrarhuesped'),
     path('listarhuespedes', ListarHuespedes, name='listarhuespedes'),
     path('huespedes/eliminar/<int:huesped_id>/', EliminarHuesped, name='eliminarhuesped'),
     path('huespedes/editar/<int:huesped_id>/', EditarHuesped, name='editarhuesped'),
     path('huespedes/detallesajax/<int:huesped_id>/', GetHuespedDetallesAJAX, name='huespeddetallesajax'),
-    path('facturas/generar/<int:reserva_id>/', GenerarFactura, name='generarfactura'),
-    path('reservas/editar/<int:reserva_id>/', EditarReserva, name='editarreserva'),
-    path('reservas/eliminar/<int:reserva_id>/', EliminarReserva, name='eliminarreserva'),
     path('huespedes/reservasajax/<int:huesped_id>/', GetHuespedReservasAJAX, name='huespedreservasajax'),
+    # ------------------- #
+    
+    # ---- FACTURA ---- #
+    path('facturas/generar/<int:reserva_id>/', GenerarFactura, name='generarfactura'),
+    path('facturas/ver/<int:factura_id>/', VerFactura, name='verfactura'),
+    # ----------------- #
+    
+    # ---- PRODUCTOS ---- #
     path('productos/', ListarProductos, name='listarproductos'),
     path('productos/registrar/', RegistrarProducto, name='registrarproducto'),
     path('consumos/registrar/', RegistrarConsumoAJAX, name='registrarconsumoajax'),
-    path('consumos/recibo/<int:consumo_id>/', VerReciboConsumo, name='verreciboconsumo'),
-    path('facturas/ver/<int:factura_id>/', VerFactura, name='verfactura'),
     path('productos/editar/<int:producto_id>/', EditarProducto, name='editarproducto'),
+    path('consumos/recibo/<int:consumo_id>/', VerReciboConsumo, name='verreciboconsumo'),
     path('productos/eliminar/<int:producto_id>/', EliminarProducto, name='eliminarproducto'),
     path('facturas/marcarpagada/<int:factura_id>/', MarcarFacturaPagada, name='marcarfacturapagada'),
-    path('checkin/<int:reserva_id>/', RealizarCheckIn, name='realizarcheckin'),
-    path('checkout/<int:reserva_id>/', RealizarCheckOut, name='realizarcheckout'),
+    # ------------------- #
 ]

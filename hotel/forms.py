@@ -1,6 +1,5 @@
 from django import forms 
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 
 
 # ---- MODELS ---- #
@@ -9,7 +8,7 @@ from hotel.models import Categorias
 from hotel.models import Habitaciones
 from hotel.models import Registro_Huespedes
 from hotel.models import Producto
-
+# ---------------- #
 class ReservarForm(forms.ModelForm):
 
     hospedaje_deseado = forms.ChoiceField(
@@ -53,7 +52,7 @@ class ReservarForm(forms.ModelForm):
         model = Reservas
         fields = (
             'huesped_principal', 
-            'acompanantes', # <-- ¡AÑADIDO!
+            'acompanantes', 
             'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
             'ciudad', 'departamento', 'telefono_domicilio',
             'check_in', 'check_out', 
@@ -70,8 +69,6 @@ class ReservarForm(forms.ModelForm):
         widgets = {
             'huesped_principal': forms.Select(attrs={'class': 'form-select'}),
             
-            # --- ¡WIDGET CORREGIDO! ---
-            # Ahora usará checkboxes
             'acompanantes': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}), 
             
             'check_in': forms.DateTimeInput(
@@ -90,7 +87,6 @@ class ReservarForm(forms.ModelForm):
         }
 
     def clean(self):
-        # ... (El método clean() se mantiene igual) ...
         cleaned_data = super().clean()
         check_in = cleaned_data.get("check_in")
         check_out = cleaned_data.get("check_out")
@@ -111,7 +107,7 @@ class CategoriaForm(forms.ModelForm):
         model = Categorias
         fields = [
             'tipo_hab', 
-            'precio_base', # <-- Campo
+            'precio_base',
             'descripcion', 
             'camas_matrimoniales', 
             'camas_individuales', 
@@ -123,14 +119,12 @@ class CategoriaForm(forms.ModelForm):
                 'placeholder': 'Ej: Suite Presidencial'
             }),
             
-            # --- ¡WIDGET ACTUALIZADO CON STEP! ---
             'precio_base': forms.NumberInput(attrs={
                 'class': 'form-input',
                 'placeholder': 'Ej: 150000',
                 'min': '0',
-                'step': '1000' # <-- ¡REQUERIMIENTO CUMPLIDO!
+                'step': '1000' 
             }),
-            # --- FIN DE LA ACTUALIZACIÓN ---
             
             'descripcion': forms.Textarea(attrs={
                 'class': 'form-textarea', 'rows': 3, 
@@ -149,7 +143,7 @@ class CategoriaForm(forms.ModelForm):
         }
         labels = {
             'tipo_hab': 'Nombre de la Categoría',
-            'precio_base': 'Precio Base (COP)', # <-- REQUERIMIENTO CUMPLIDO
+            'precio_base': 'Precio Base (COP)',
             'camas_matrimoniales': 'Camas Matrimoniales',
             'camas_individuales': 'Camas Individuales',
             'especiales': 'Características Especiales',
@@ -159,7 +153,7 @@ class CategoriaForm(forms.ModelForm):
 class HabitacionForm(forms.ModelForm):
     class Meta:
         model = Habitaciones
-        fields = ['numero', 'tipo', 'adicional_precio', 'estado'] # <-- CAMBIADO
+        fields = ['numero', 'tipo', 'adicional_precio', 'estado'] 
         widgets = {
             'numero': forms.TextInput(attrs={
                 'placeholder': 'Ej: 101', 'maxlength': '3', 
@@ -186,7 +180,6 @@ class HabitacionForm(forms.ModelForm):
 
 
 class HuespedForm(forms.ModelForm):
-    # Definir choices para tipo_documento y razon (opcional pero recomendado)
     TIPO_DOCUMENTO_CHOICES = [
         ('', 'Seleccionar...'), # Opción vacía
         ('CC', 'Cédula de Ciudadanía'),
@@ -197,7 +190,7 @@ class HuespedForm(forms.ModelForm):
         ('Otro', 'Otro'),
     ]
     RAZON_VIAJE_CHOICES = [
-         ('', 'Seleccionar...'),
+        ('', 'Seleccionar...'),
         ('Turismo', 'Turismo'),
         ('Negocios', 'Negocios'),
         ('Evento', 'Evento/Conferencia'),
@@ -270,19 +263,15 @@ class HuespedForm(forms.ModelForm):
 
 class ProductoForm(forms.ModelForm):
     
-    # --- ¡CAMBIO! ---
-    # Hacemos que el campo 'esta_activo' sea True (marcado) por defecto en el formulario
     esta_activo = forms.BooleanField(required=False, initial=True, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
     class Meta:
         model = Producto
-        # Añadimos 'esta_activo' a la lista de campos
         fields = ['nombre', 'precio', 'stock_disponible', 'esta_activo'] 
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-input'}),
             'precio': forms.NumberInput(attrs={'class': 'form-input', 'min': 0, 'step': 1000}),
             'stock_disponible': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
-            # 'esta_activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}), # <--- Lo definimos arriba
         }
         labels = {
             'nombre': 'Nombre del Producto',
