@@ -35,15 +35,49 @@ from hotel.models import Consumo
 from hotel.models import Factura
 # ----------------- #
 
+
 def Dashboard(request):
-    return render(request, 'dashboard.html')
+    
+    today = timezone.now().date()
+
+    
+    # Cuántas habitaciones están listas para vender
+    disponibles_count = Habitaciones.objects.filter(estado='Disponible').count()
+    
+    # Cuántas están ocupadas
+    ocupadas_count = Habitaciones.objects.filter(estado='Ocupada').count()
+    
+    # Cuántas necesitan limpieza (después de un Check-out)
+    limpieza_count = Habitaciones.objects.filter(estado='Limpieza').count()
+
+    
+    # Huéspedes que llegan hoy (Reservas que empiezan hoy Y que aún no han hecho Check-in)
+    llegadas_hoy_count = Reservas.objects.filter(
+        check_in__date=today,
+        estado_estancia='Pendiente' # Aún no han llegado
+    ).count()
+    
+    # Huéspedes que se van hoy (Reservas que están 'Activas' Y terminan hoy)
+    salidas_hoy_count = Reservas.objects.filter(
+        check_out__date=today,
+        estado_estancia='Activa' 
+    ).count()
+
+    context = {
+        'disponibles_count': disponibles_count,
+        'ocupadas_count': ocupadas_count,
+        'limpieza_count': limpieza_count,
+        'llegadas_hoy_count': llegadas_hoy_count,
+        'salidas_hoy_count': salidas_hoy_count,
+    }
+    return render(request, 'dashboard.html', context)
 
 #region ------ HABITACIONES ------ #
 def ListarHabitaciones(request):
     habitaciones_list = Habitaciones.objects.select_related('tipo').order_by('numero')
     todas_categorias = Categorias.objects.all().order_by('tipo_hab')
 
-    # --- Lógica de Filtros (Sin cambios) ---
+    # --- Lógica de Filtros --- #
     query = request.GET.get('q', '').strip()
     selected_categoria_id = request.GET.get('categoria_id', '').strip()
     status_filter = request.GET.get('status', 'all').strip().lower()
@@ -62,7 +96,7 @@ def ListarHabitaciones(request):
         active_filter = status_filter
     else:
         active_filter = 'all'
-    # --- Fin de Filtros ---
+    # --- ------------ --- #
 
     
     # --- ¡NUEVA LÓGICA PARA ENCONTRAR RESERVA ACTIVA! ---
@@ -495,7 +529,7 @@ def RegistrarHuesped(request):
             
             except Exception as e:
                  # Captura otros errores (como fallos de DB)
-                 messages.error(request, f"Error al guardar: {e}")
+                    messages.error(request, f"Error al guardar: {e}")
         else:
             # Si el formulario no es válido, se mostrará con errores
             messages.error(request, "Por favor corrige los errores en el formulario.")
@@ -539,7 +573,7 @@ def EditarHuesped(request, huesped_id):
                 messages.success(request, f"Huésped '{huesped.nombre} {huesped.apellido}' actualizado con éxito.")
                 return redirect('listarhuespedes') # Redirigir a la lista
             except Exception as e:
-                 messages.error(request, f"Error al actualizar: {e}")
+                    messages.error(request, f"Error al actualizar: {e}")
         else:
             messages.error(request, "Por favor corrige los errores en el formulario.")
             
@@ -618,25 +652,49 @@ def GetHuespedDetallesAJAX(request, huesped_id):
 
 def GetHuespedReservasAJAX(request, huesped_id):
     """
-    Vista AJAX para obtener el historial de reservas de un huésped.
+    Vista AJAX para obtener el historial de reservas de un huésped,
+    buscando si es Titular O Acompañante. (VERSIÓN CORREGIDA)
     """
     if request.method == 'GET':
         try:
             huesped = get_object_or_404(Registro_Huespedes, pk=huesped_id)
             
-            # Usamos el 'related_name' que definimos en models.py
-            # para encontrar todas sus reservas
-            reservas = huesped.reservas_como_principal.all().order_by('-check_in') # De la más nueva a la más vieja
+            # 1. Obtener los IDs de las reservas donde es Titular
+            reservas_p_ids = set(huesped.reservas_como_principal.values_list('id', flat=True))
             
-            # Convertimos los datos a un formato JSON simple
+            # 2. Obtener los IDs de las reservas donde es Acompañante
+            reservas_a_ids = set(huesped.reservas_como_acompanante.values_list('id', flat=True))
+            
+            # 3. Combinar todos los IDs únicos
+            all_ids = reservas_p_ids.union(reservas_a_ids)
+            
+            if not all_ids:
+                return JsonResponse({'status': 'ok', 'reservas': []}) # No tiene reservas
+
+            # 4. Obtener todos los objetos Reserva de una sola vez
+            todas_reservas = Reservas.objects.filter(id__in=all_ids).order_by('-check_in')
+            
             data_reservas = []
-            for res in reservas:
+            for res in todas_reservas:
+                # 5. Determinar el rol para cada reserva
+                rol = "Titular" if res.id in reservas_p_ids else "Acompañante"
+                
+                # 6. Determinar el estado más relevante
+                estado_label = res.get_estado_estancia_display() # Ej: "Activa"
+                estado_class = res.estado_estancia.lower()      # Ej: "activa"
+                
+                # Si la estancia aún está 'Pendiente', es más útil saber si está 'Confirmada'
+                if res.estado_estancia == 'Pendiente':
+                    estado_label = res.confirmado
+                    estado_class = res.confirmado.lower()
+
                 data_reservas.append({
                     'id': res.id,
                     'check_in': res.check_in.strftime('%d/%m/%Y'),
                     'check_out': res.check_out.strftime('%d/%m/%Y'),
-                    'estado': res.confirmado, # Devolvemos 'Confirmado' o 'Pendiente'
-                    'tipo': res.hospedaje_deseado or 'N/A'
+                    'estado_label': estado_label, # "Activa", "Completada", "Confirmado"
+                    'estado_class': estado_class, # "activa", "completada", "confirmado"
+                    'rol': rol # "Titular" o "Acompañante"
                 })
 
             return JsonResponse({'status': 'ok', 'reservas': data_reservas})

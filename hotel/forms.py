@@ -12,7 +12,6 @@ from hotel.models import Producto
 
 class ReservarForm(forms.ModelForm):
 
-    # --- Sobrescribir el campo para que sea un ChoiceField ---
     hospedaje_deseado = forms.ChoiceField(
         choices=[], 
         required=False, 
@@ -23,23 +22,23 @@ class ReservarForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         opcionales = (
-            'telefono_oficina', 'hospedaje_deseado', 
-            # 'cotizado', # <-- ELIMINADO DE AQUÍ
-            'solicitado',
-            'num_hues', 'num_habt',
-            'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
+            'telefono_oficina', 'hospedaje_deseado', 'solicitado',
+            'num_habt', 'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
             'compania_email', 'solicitud', 'observaciones',
-            'huesped_principal', 'companion'
+            'huesped_principal', 'acompanantes'
         )
         for campo in opcionales:
             if campo in self.fields:
                 self.fields[campo].required = False
         
-        # ... (El resto de tu __init__ se queda igual) ...
         if 'huesped_principal' in self.fields:
             self.fields['huesped_principal'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.identificacion})"
             self.fields['huesped_principal'].queryset = Registro_Huespedes.objects.order_by('apellido', 'nombre')
-            
+        
+        if 'acompanantes' in self.fields:
+            self.fields['acompanantes'].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido} ({obj.identificacion})"
+            self.fields['acompanantes'].queryset = Registro_Huespedes.objects.order_by('apellido', 'nombre')
+
         try:
             categoria_choices = [("", "Seleccionar tipo...")]
             categorias = Categorias.objects.all().order_by('tipo_hab')
@@ -47,30 +46,34 @@ class ReservarForm(forms.ModelForm):
                 categoria_choices.append((cat.tipo_hab, cat.tipo_hab)) 
             self.fields['hospedaje_deseado'].choices = categoria_choices
         except Exception as e:
-            self.fields['huesped_deseado'].choices = [("", f"Error al cargar categorías: {e}")]
+            self.fields['hospedaje_deseado'].choices = [("", f"Error al cargar categorías: {e}")]
     
 
     class Meta:
         model = Reservas
         fields = (
             'huesped_principal', 
+            'acompanantes', # <-- ¡AÑADIDO!
             'apellido', 'nombre', 'identificacion', 'email', 'domicilio',
             'ciudad', 'departamento', 'telefono_domicilio',
             'check_in', 'check_out', 
-            'companion', 'formadepago',
+            'formadepago',
             'empleados', 'telefono',
             'telefono_oficina', 'hospedaje_deseado',
-            # 'cotizado', # <-- ELIMINADO DE AQUÍ
             'solicitado',
-            'num_hues', 'num_habt',
+            'num_habt', 
             'nombre_compania', 'compania_domicilio', 'compania_ciudad', 
             'compania_email', 
             'solicitud', 'observaciones' 
         )
 
-        # ... (Tus widgets y labels se quedan igual) ...
         widgets = {
             'huesped_principal': forms.Select(attrs={'class': 'form-select'}),
+            
+            # --- ¡WIDGET CORREGIDO! ---
+            # Ahora usará checkboxes
+            'acompanantes': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}), 
+            
             'check_in': forms.DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-input'}
             ),
@@ -79,12 +82,15 @@ class ReservarForm(forms.ModelForm):
             ),
             'formadepago': forms.Select(attrs={'class': 'form-select'}),
         }
+        
         labels = {
-            'huesped_principal': 'Buscar Huésped Registrado (Opcional)',
+            'huesped_principal': 'Buscar Huésped Registrado (El que paga)',
+            'acompanantes': 'Añadir Acompañantes (Opcional)',
+            'num_habt': 'N° de Habitaciones',
         }
 
-    # --- El método clean() se queda igual ---
     def clean(self):
+        # ... (El método clean() se mantiene igual) ...
         cleaned_data = super().clean()
         check_in = cleaned_data.get("check_in")
         check_out = cleaned_data.get("check_out")
@@ -95,7 +101,7 @@ class ReservarForm(forms.ModelForm):
             
             if not self.instance.pk: 
                 if check_in.date() < timezone.now().date():
-                    self.add_error('check_in', "No se pueden registrar reservas para fechas pasadas.")
+                    self.add_error('check_in', "No se pueden registrar reservas para fechas pastadas.")
                 
         return cleaned_data
 
@@ -263,14 +269,20 @@ class HuespedForm(forms.ModelForm):
 
 
 class ProductoForm(forms.ModelForm):
+    
+    # --- ¡CAMBIO! ---
+    # Hacemos que el campo 'esta_activo' sea True (marcado) por defecto en el formulario
+    esta_activo = forms.BooleanField(required=False, initial=True, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
     class Meta:
         model = Producto
+        # Añadimos 'esta_activo' a la lista de campos
         fields = ['nombre', 'precio', 'stock_disponible', 'esta_activo'] 
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-input'}),
             'precio': forms.NumberInput(attrs={'class': 'form-input', 'min': 0, 'step': 1000}),
             'stock_disponible': forms.NumberInput(attrs={'class': 'form-input', 'min': 0}),
-            'esta_activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}), 
+            # 'esta_activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}), # <--- Lo definimos arriba
         }
         labels = {
             'nombre': 'Nombre del Producto',

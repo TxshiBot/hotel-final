@@ -80,12 +80,11 @@ class Habitaciones(models.Model):
 
 class Reservas(models.Model):
     
-    # --- ¡NUEVO! Opciones de Forma de Pago ---
     FORMA_PAGO_CHOICES = [
         ('Efectivo', 'Efectivo'),
         ('Tarjeta de Credito', 'Tarjeta de Crédito'),
         ('Transferencia', 'Transferencia Bancaria'),
-        ('cobrar_compania', 'Cobrar a Compañía'), # Valor clave para tu JS
+        ('cobrar_compania', 'Cobrar a Compañía'),
         ('Otro', 'Otro'),
     ]
     
@@ -106,49 +105,59 @@ class Reservas(models.Model):
     departamento = models.CharField(null=False, max_length=50)
     telefono_oficina = models.CharField(null=False, max_length=50)
     
-    # --- ¡CAMPO ACTUALIZADO! ---
     formadepago = models.CharField(
         null=False, 
         max_length=50,
-        choices=FORMA_PAGO_CHOICES, # <-- Conecta las opciones
-        default='Efectivo'          # <-- Añade un valor por defecto
+        choices=FORMA_PAGO_CHOICES,
+        default='Efectivo'
     )
     
     check_in = models.DateTimeField(null=False, max_length=50)
     check_out = models.DateTimeField(null=False, max_length=50)
-    companion = models.IntegerField(null=True, default=0)
     
-    # OPCIONAL: COMPAÑÍA #
-    nombre_compania = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    compania_domicilio = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    compania_ciudad = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    compania_email = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
+    # --- CAMPOS ELIMINADOS (Tu visión) ---
+    # companion = models.IntegerField(null=True, default=0) 
+    # num_hues= models.IntegerField(null=True, blank=True)
+    
+    # CAMPO MANTENIDO (para saber cuántas habitaciones reservar)
+    num_habt = models.IntegerField(null=True, blank=True) 
 
-    # HUESPEDES #
-    hospedaje_deseado = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    solicitado = models.IntegerField(null=True, blank=True) # Añadido blank=True
-    num_hues= models.IntegerField(null=True, blank=True) # Añadido blank=True
-    num_habt = models.IntegerField(null=True, blank=True) # Añadido blank=True
+    # OPCIONAL: COMPAÑÍA
+    nombre_compania = models.CharField(null=True, max_length=50, blank=True)
+    compania_domicilio = models.CharField(null=True, max_length=50, blank=True)
+    compania_ciudad = models.CharField(null=True, max_length=50, blank=True)
+    compania_email = models.CharField(null=True, max_length=50, blank=True)
     
-    # DATOS EMPLEADO # 
+    # HUESPEDES
+    hospedaje_deseado = models.CharField(null=True, max_length=50, blank=True)
+    solicitado = models.IntegerField(null=True, blank=True) 
+    
+    # DATOS EMPLEADO
     empleados = models.CharField(null=False, max_length=50)
     telefono = models.CharField(null=False, max_length=10, blank=True)
     
-    # EXTRA # 
-    solicitud = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    observaciones = models.CharField(null=True, max_length=50, blank=True) # Añadido blank=True
-    confirmado = models.CharField(null=True, max_length=50, default='Pendiente', blank=True) # Añadido blank=True
+    # EXTRA
+    solicitud = models.CharField(null=True, max_length=50, blank=True)
+    observaciones = models.CharField(null=True, max_length=50, blank=True)
+    confirmado = models.CharField(null=True, max_length=50, default='Pendiente', blank=True)
 
-    # REGISTRO HUESPEDES # 
+    # --- CAMPO HUESPED PRINCIPAL (Sin cambios) ---
     huesped_principal = models.ForeignKey(
         Registro_Huespedes,
         on_delete=models.SET_NULL,
         null=True, 
         blank=True, 
-        related_name='reservas_como_principal'
+        related_name='reservas_como_principal' # El que paga
     )
 
-    # MANY TO MANY - MUCHOS A MUCHOS # 
+    # --- ¡NUEVO CAMPO MANY-TO-MANY! (Tu visión) ---
+    acompanantes = models.ManyToManyField(
+        Registro_Huespedes,
+        blank=True,
+        related_name='reservas_como_acompanante' # Los que no pagan
+    )
+    # --- FIN DEL NUEVO CAMPO ---
+
     habitaciones_asignadas = models.ManyToManyField(
         Habitaciones,
         blank=True,

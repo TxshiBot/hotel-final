@@ -2,6 +2,7 @@
 {% include 'inc/header.html'%}
 
 <style>
+    /* ... (Todos tus estilos CSS existentes, sin cambios) ... */
     /* === ESTILOS GENERALES DEL FORMULARIO === */
     .page-header {
         background: var(--white); padding: 25px; border-radius: 8px; margin-bottom: 25px;
@@ -63,6 +64,22 @@
     .btn-secondary { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
     .invalid-feedback { color: #dc3545; font-size: 0.85em; margin-top: 4px; }
     .d-block { display: block !important; }
+
+    /* Estilos para el Checkbox (form-switch) */
+    .form-check { display: flex; align-items: center; padding-left: 0; }
+    .form-check-input {
+        width: 2.5em; /* Ancho del toggle */
+        height: 1.25em; /* Alto del toggle */
+        margin-left: 0;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+    .form-check-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--dark-slate);
+    }
+    body.dark-mode .form-check-label { color: var(--dark-text); }
 </style>
 
 <div class="page-header">
@@ -78,17 +95,7 @@
         {% csrf_token %}
 
         {% if messages %}
-            <div style="margin-bottom: 20px;">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert"
-                         style="padding: 10px 15px; border-radius: 6px; border: 1px solid transparent;
-                                {% if message.tags == 'success' %} background-color: #d4edda; border-color: #c3e6cb; color: #155724;
-                                {% else %} background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; {% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+            {% endif %}
         
         <div class="form-group">
             <label for="{{ form.nombre.id_for_label }}" class="form-label">
@@ -119,7 +126,15 @@
             <input type="file" name="foto" id="id_foto" class="form-input" accept="image/*" required>
         </div>
 
-
+        <div class="form-group">
+            <div class="form-check form-switch">
+                {{ form.esta_activo }}
+                <label class="form-check-label" for="{{ form.esta_activo.id_for_label }}">
+                    {{ form.esta_activo.label }}
+                </label>
+            </div>
+             {% if form.esta_activo.errors %}<div class="invalid-feedback d-block">{% for e in form.esta_activo.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
         <div class="form-actions">
             <a href="{% url 'listarproductos' %}" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Cancelar

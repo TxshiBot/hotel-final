@@ -2,7 +2,7 @@
 {% include 'inc/header.html'%}
 
 <style>
-    /* === ESTILOS GENERALES DEL FORMULARIO === */
+    /* ... (Todos tus estilos CSS existentes para .page-header, .form-container, .btn, etc.) ... */
     .page-header {
         background: var(--white); padding: 25px; border-radius: 8px; margin-bottom: 25px;
         border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
@@ -18,8 +18,6 @@
     body.dark-mode .btn-back { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
     .btn-back:hover { background: var(--ice-blue); border-color: var(--steel-blue); }
     body.dark-mode .btn-back:hover { background: var(--dark-bg); border-color: var(--steel-blue-dark); }
-
-    /* Form Container */
     .form-container {
         background: var(--white); padding: 30px; border-radius: 8px;
         border: 1px solid var(--border-gray); max-width: 1000px; margin: 0 auto;
@@ -38,8 +36,6 @@
     .form-label { display: block; font-size: 0.9rem; font-weight: 500; color: var(--dark-slate); margin-bottom: 8px; }
     body.dark-mode .form-label { color: var(--dark-text); }
     .form-label .required { color: var(--occupied); }
-
-    /* Inputs y Selects */
     .form-input, .form-select, .form-textarea,
     input[type="text"], input[type="email"], input[type="number"], input[type="datetime-local"], select {
         width: 100%; padding: 12px 15px; border: 1px solid var(--border-gray); border-radius: 6px;
@@ -60,18 +56,12 @@
     body.dark-mode input[type="datetime-local"]:focus, body.dark-mode select:focus {
         border-color: var(--steel-blue-dark); box-shadow: 0 0 0 3px rgba(90, 163, 184, 0.2);
     }
-
-    /* Info Box */
     .info-box { background: var(--ice-blue); border-left: 4px solid var(--steel-blue); padding: 15px; border-radius: 6px; margin-bottom: 20px; }
     body.dark-mode .info-box { background: var(--dark-bg-secondary); border-left-color: var(--steel-blue-dark); }
     .info-box p { margin: 0; font-size: 0.9rem; color: var(--dark-slate); }
     body.dark-mode .info-box p { color: var(--dark-text); }
-    
-    /* Error Feedback */
     .invalid-feedback { color: var(--occupied); font-size: 0.85em; margin-top: 4px; }
     .d-block { display: block !important; }
-
-    /* Botones */
     .form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-gray); }
     body.dark-mode .form-actions { border-top-color: var(--dark-border); }
     .btn { padding: 12px 30px; border-radius: 6px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
@@ -87,6 +77,37 @@
     .btn-info:hover { background: var(--steel-blue); color: var(--white); }
     body.dark-mode .btn-info { background: var(--dark-bg-secondary); color: var(--steel-blue-dark); border-color: var(--steel-blue-dark); }
     body.dark-mode .btn-info:hover { background: var(--steel-blue-dark); color: var(--white); }
+    .form-text-helper { font-size: 0.85rem; color: var(--medium-gray); margin-top: 5px; }
+    body.dark-mode .form-text-helper { color: var(--dark-text-secondary); }
+
+    /* --- ¡NUEVOS ESTILOS PARA CHECKBOXES! --- */
+    .checkbox-list-container {
+        max-height: 150px; /* Altura fija */
+        overflow-y: auto; /* Scroll vertical */
+        border: 1px solid var(--border-gray);
+        border-radius: 6px;
+        padding: 10px 15px;
+        background: var(--white);
+    }
+    body.dark-mode .checkbox-list-container {
+        background: var(--dark-bg-secondary);
+        border-color: var(--dark-border);
+    }
+    .checkbox-list-container .form-check {
+        display: block; /* Un checkbox por línea */
+        margin-bottom: 8px;
+    }
+    .form-check-input {
+        width: 1em; height: 1em;
+        margin-top: 0.25em; /* Alinear con el texto */
+    }
+    .form-check-label {
+        font-size: 0.95rem;
+        color: var(--dark-slate);
+        padding-left: 8px;
+    }
+    body.dark-mode .form-check-label { color: var(--dark-text); }
+    /* --- FIN DE NUEVOS ESTILOS --- */
 </style>
 
 <div class="page-header">
@@ -100,96 +121,52 @@
     <form method="POST" action="">
         {% csrf_token %}
         
-        {% if messages %}
-            <div style="margin-bottom: 20px;">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert"
-                         style="padding: 10px 15px; border-radius: 6px; border: 1px solid transparent;
-                                {% if message.tags == 'success' %} background-color: #d4edda; border-color: #c3e6cb; color: #155724;
-                                {% elif message.tags == 'error' %} background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;
-                                {% else %} background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; {% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% if form.non_field_errors %}
-             <div class="alert alert-danger" role="alert" style="background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px;">
-                {% for error in form.non_field_errors %} <p style="margin: 0;">{{ error }}</p> {% endfor %}
-            </div>
-        {% endif %}
+        {% if messages %} {% endif %}
+        {% if form.non_field_errors %} {% endif %}
 
         <div class="form-section">
             <h2 class="form-section-title">
-                <i class="fas fa-user"></i> Huésped Titular y Facturación
+                <i class="fas fa-user"></i> Huésped Titular y Acompañantes
             </h2>
             
             <div class="form-group">
                 <label for="{{ form.huesped_principal.id_for_label }}" class="form-label">
-                    {{ form.huesped_principal.label }}
+                    {{ form.huesped_principal.label }} <span class="required">*</span>
                 </label>
                 {{ form.huesped_principal }}
                 {% for error in form.huesped_principal.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
             </div>
 
-            <div id="huesped-link-container" style="display: none; margin-bottom: 20px;">
-                </div>
+            <div id="huesped-link-container" style="display: none; margin-bottom: 20px;"></div>
+
+            <div class="form-group">
+                <label for="{{ form.acompanantes.id_for_label }}" class="form-label">
+                    {{ form.acompanantes.label }}
+                </label>
+                <div class="checkbox-list-container">
+                    {{ form.acompanantes }} </div>
+                <div class="form-text-helper">Puedes seleccionar varios.</div>
+                {% for error in form.acompanantes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--dark-slate); margin-top: 30px;">Datos de Contacto y Facturación</h3>
+            <p class="form-text-helper" style="margin-top: -15px; margin-bottom: 15px;">(Se autocompletan al elegir un Huésped Titular)</p>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Apellidos <span class="required">*</span></label>
-                    {{ form.apellido }}
-                    {% for error in form.apellido.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nombres <span class="required">*</span></label>
-                    {{ form.nombre }}
-                    {% for error in form.nombre.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
+                <div class="form-group"><label class="form-label">Apellidos <span class="required">*</span></label>{{ form.apellido }}{% for error in form.apellido.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="form-group"><label class="form-label">Nombres <span class="required">*</span></label>{{ form.nombre }}{% for error in form.nombre.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
             </div>
-
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Cédula/NIT <span class="required">*</span></label>
-                    {{ form.identificacion }}
-                    {% for error in form.identificacion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">E-mail <span class="required">*</span></label>
-                    {{ form.email }}
-                    {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
+                <div class="form-group"><label class="form-label">Cédula/NIT <span class="required">*</span></label>{{ form.identificacion }}{% for error in form.identificacion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="form-group"><label class="form-label">E-mail <span class="required">*</span></label>{{ form.email }}{% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
             </div>
-
-            <div class="form-group full-width">
-                <label class="form-label">Domicilio <span class="required">*</span></label>
-                {{ form.domicilio }}
-                {% for error in form.domicilio.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-            </div>
-
+            <div class="form-group full-width"><label class="form-label">Domicilio <span class="required">*</span></label>{{ form.domicilio }}{% for error in form.domicilio.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
             <div class="form-row-3">
-                <div class="form-group">
-                    <label class="form-label">Ciudad <span class="required">*</span></label>
-                    {{ form.ciudad }}
-                    {% for error in form.ciudad.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Departamento <span class="required">*</span></label>
-                    {{ form.departamento }}
-                    {% for error in form.departamento.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Teléfono Domicilio <span class="required">*</span></label>
-                    {{ form.telefono_domicilio }}
-                    {% for error in form.telefono_domicilio.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
+                <div class="form-group"><label class="form-label">Ciudad <span class="required">*</span></label>{{ form.ciudad }}{% for error in form.ciudad.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="form-group"><label class="form-label">Departamento <span class="required">*</span></label>{{ form.departamento }}{% for error in form.departamento.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="form-group"><label class="form-label">Teléfono Domicilio <span class="required">*</span></label>{{ form.telefono_domicilio }}{% for error in form.telefono_domicilio.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
             </div>
-
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Teléfono Oficina</label>
-                    {{ form.telefono_oficina }}
-                </div>
+                <div class="form-group"><label class="form-label">Teléfono Oficina</label>{{ form.telefono_oficina }}</div>
             </div>
         </div>
 
@@ -199,36 +176,16 @@
             </h2>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Fecha de Llegada <span class="required">*</span></label>
-                    {{ form.check_in }}
-                    {% for error in form.check_in.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Fecha de Salida <span class="required">*</span></label>
-                    {{ form.check_out }}
-                    {% for error in form.check_out.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
+                <div class="form-group"><label class="form-label">Fecha de Llegada <span class="required">*</span></label>{{ form.check_in }}{% for error in form.check_in.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
+                <div class="form-group"><label class="form-label">Fecha de Salida <span class="required">*</span></label>{{ form.check_out }}{% for error in form.check_out.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>
             </div>
 
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">N° de Huéspedes <span class="required">*</span></label>
-                    {{ form.num_hues }}
-                    {% for error in form.num_hues.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
                 <div class="form-group">
                     <label class="form-label">N° de Habitaciones <span class="required">*</span></label>
                     {{ form.num_habt }}
+                    <div class="form-text-helper">¿Cuántas habitaciones necesita este grupo?</div>
                     {% for error in form.num_habt.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">N° de Acompañantes</label>
-                    {{ form.companion }}
-                    {% for error in form.companion.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                 </div>
                 <div class="form-group">
                     <label class="form-label">Hospedaje Deseado</label>
@@ -237,29 +194,26 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Depósito Solicitado</label>
-                {{ form.solicitado }}
-                {% for error in form.solicitado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Depósito Solicitado</label>
+                    {{ form.solicitado }}
+                    {% for error in form.solicitado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
             </div>
         </div>
 
         <div class="form-section">
-            <h2 class="form-section-title">
-                <i class="fas fa-credit-card"></i> Forma de Pago
-            </h2>
+            <h2 class="form-section-title"><i class="fas fa-credit-card"></i> Forma de Pago</h2>
             <div class="form-group">
                 <label class="form-label">Forma de Pago <span class="required">*</span></label>
                 {{ form.formadepago }}
                 {% for error in form.formadepago.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
             </div>
         </div>
-
         <div class="form-section" id="company-section" style="display: none;">
             <h2 class="form-section-title"><i class="fas fa-building"></i> Información de la Compañía</h2>
-            <div class="info-box">
-                <p><i class="fas fa-info-circle"></i> Complete esta sección solo si la compañía pagará la reserva.</p>
-            </div>
+            <div class="info-box"><p><i class="fas fa-info-circle"></i> Complete esta sección solo si la compañía pagará la reserva.</p></div>
             <div class="form-group"><label class="form-label">Nombre de la Compañía</label>{{ form.nombre_compania }}</div>
             <div class="form-group"><label class="form-label">Domicilio de la Compañía</label>{{ form.compania_domicilio }}</div>
             <div class="form-row">
@@ -267,25 +221,16 @@
                 <div class="form-group"><label class="form-label">E-mail Compañía</label>{{ form.compania_email }}</div>
             </div>
         </div>
-
         <div class="form-section">
             <h2 class="form-section-title"><i class="fas fa-clipboard-list"></i> Información Adicional</h2>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Registrado por (Empleado) <span class="required">*</span></label>
-                    {{ form.empleados }}
-                    {% for error in form.empleados.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Teléfono de Contacto <span class="required">*</span></label>
-                    {{ form.telefono }}
-                    {% for error in form.telefono.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
-                </div>
+                <div class="form-group"><label class="form-label">Registrado por (Empleado) <span class="required">*</span></label>{{ form.empleados }}</div>
+                <div class="form-group"><label class="form-label">Teléfono de Contacto <span class="required">*</span></label>{{ form.telefono }}</div>
             </div>
             <div class="form-group"><label class="form-label">Solicitudes Especiales</label>{{ form.solicitud }}</div>
             <div class="form-group"><label class="form-label">Observaciones Especiales</label>{{ form.observaciones }}</div>
         </div>
-
+        
         <div class="form-actions">
             <a href="{% url 'reservas' %}" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Cancelar
@@ -301,6 +246,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         
         // --- 1. Lógica de Huésped Titular (Autocompletado) ---
+        // ... (El script de autocompletado existente se mantiene igual) ...
         const huespedSelect = document.getElementById('id_huesped_principal');
         const linkContainer = document.getElementById('huesped-link-container');
         const fieldsToUpdate = {
@@ -313,12 +259,9 @@
         };
         const editUrlTemplate = "{% url 'editarhuesped' 0 %}";
         const ajaxUrlTemplate = "{% url 'huespeddetallesajax' 0 %}";
-
         async function handleHuespedSelect(event) {
             const huespedId = event.target.value;
-            
             if (!huespedId || huespedId === '') {
-                // En 'Crear Reserva', SÍ limpiamos los campos
                 for (const key in fieldsToUpdate) {
                     if (fieldsToUpdate[key]) { fieldsToUpdate[key].value = ''; }
                 }
@@ -348,28 +291,26 @@
                 } else { console.error("Error al cargar detalles:", data.message); }
             } catch (error) { console.error("Error en AJAX:", error); }
         }
-
         if (huespedSelect) {
             huespedSelect.addEventListener('change', handleHuespedSelect);
         }
 
         // --- 2. Lógica de Forma de Pago (Compañía) ---
+        // ... (El script de compañía existente se mantiene igual) ...
         const companySection = document.getElementById('company-section');
         const formaPagoElement = document.getElementById('id_formadepago'); 
-
         function toggleCompanyFields() {
             if (formaPagoElement && companySection) {
-                if (formaPagoElement.value === 'cobrar_compania') { // Asegúrate que 'cobrar_compania' sea el valor correcto
+                if (formaPagoElement.value === 'cobrar_compania') {
                     companySection.style.display = 'block';
                 } else {
                     companySection.style.display = 'none';
                 }
             }
         }
-        
         if (formaPagoElement) {
             formaPagoElement.addEventListener('change', toggleCompanyFields);
-            toggleCompanyFields(); // Ejecutar al cargar la página
+            toggleCompanyFields();
         }
         
     });

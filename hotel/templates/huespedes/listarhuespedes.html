@@ -2,8 +2,7 @@
 {% include 'inc/header.html'%}
 
 <style>
-    /* === ESTILOS GENERALES === */
-    /* ... (tus estilos .page-header, .btn-new, .btn-back) ... */
+    /* ... (tus estilos .page-header, .huesped-grid, .huesped-card, etc.) ... */
     .page-header {
         background: var(--white); padding: 25px; border-radius: 8px; margin-bottom: 25px;
         border: 1px solid var(--border-gray); display: flex; justify-content: space-between; align-items: center;
@@ -22,9 +21,6 @@
     body.dark-mode .btn-new:hover { background: var(--steel-blue); }
     .btn-back { background: var(--light-gray); color: var(--dark-slate); border: 1px solid var(--border-gray); }
     body.dark-mode .btn-back { background: var(--dark-bg-secondary); border-color: var(--dark-border); color: var(--dark-text); }
-
-    /* === ESTILOS HUESPED GRID & CARD === */
-    /* ... (tus estilos .huesped-grid, .huesped-card, .card-header, etc.) ... */
     .huesped-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -61,7 +57,6 @@
     body.dark-mode .info-item i { color: var(--steel-blue-dark); }
     
     /* === ESTILOS DEL MODAL === */
-    /* ... (tus estilos .modal-content, .modal-header, .detail-section, etc.) ... */
     .modal-content { background-color: var(--white); border: 1px solid var(--border-gray); border-radius: 8px; }
     body.dark-mode .modal-content { background-color: var(--dark-card); border-color: var(--dark-border); color: var(--dark-text); }
     .modal-header { padding: 1rem 1.5rem; background-color: var(--light-gray); border-bottom: 1px solid var(--border-gray); }
@@ -99,56 +94,50 @@
     body.dark-mode .btn-danger { background: #E74C3C; border-color: #E74C3C; }
     body.dark-mode .btn-danger:hover { background: #c0392b; }
 
-    /* --- ¡NUEVOS ESTILOS PARA MINI-CARD DE RESERVA! --- */
+    /* --- ESTILOS PARA MINI-CARD DE RESERVA (ACTUALIZADOS) --- */
     #huesped-reservas-container {
-        max-height: 200px; /* Límite de altura */
-        overflow-y: auto; /* Scroll si hay muchas reservas */
-        padding-right: 10px; /* Espacio para el scrollbar */
+        max-height: 200px; overflow-y: auto; padding-right: 10px;
     }
     .reserva-mini-card {
-        background: var(--light-gray);
-        border: 1px solid var(--border-gray);
-        border-radius: 6px;
-        padding: 10px 15px;
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
+        background: var(--light-gray); border: 1px solid var(--border-gray);
+        border-radius: 6px; padding: 10px 15px; margin-bottom: 10px;
     }
     body.dark-mode .reserva-mini-card {
-        background: var(--dark-bg-secondary);
-        border-color: var(--dark-border);
+        background: var(--dark-bg-secondary); border-color: var(--dark-border);
     }
-    .reserva-mini-card-info {
-        font-size: 0.9rem;
+    .reserva-mini-card-details {
+        display: flex; justify-content: space-between; align-items: center;
+        width: 100%; margin-bottom: 5px;
     }
+    .reserva-mini-card-info { font-size: 0.9rem; }
     .reserva-mini-card-info .reserva-id {
-        font-weight: 600;
-        color: var(--dark-slate);
-        display: block;
+        font-weight: 600; color: var(--dark-slate); display: block;
     }
-    body.dark-mode .reserva-mini-card-info .reserva-id {
-        color: var(--dark-text);
-    }
+    body.dark-mode .reserva-mini-card-info .reserva-id { color: var(--dark-text); }
     .reserva-mini-card-info .reserva-dates {
-        font-size: 0.85rem;
-        color: var(--medium-gray);
+        font-size: 0.85rem; color: var(--medium-gray);
     }
-    body.dark-mode .reserva-mini-card-info .reserva-dates {
-        color: var(--dark-text-secondary);
+    body.dark-mode .reserva-mini-card-info .reserva-dates { color: var(--dark-text-secondary); }
+    
+    .reserva-role-badge {
+        padding: 3px 8px; border-radius: 10px; font-size: 0.75rem;
+        font-weight: 600; text-transform: uppercase;
     }
+    .role-titular { background-color: var(--available); color: white; }
+    .role-acompanante { background-color: var(--medium-gray); color: white; }
+    body.dark-mode .role-acompanante { background-color: var(--dark-border); color: var(--dark-text-secondary); }
+    
     .reserva-mini-card-status {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--white);
+        display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;
+        font-weight: 500; color: var(--white);
     }
+    /* Clases de Estado (NUEVAS) */
     .status-confirmado { background-color: var(--available); }
     .status-pendiente { background-color: var(--reserved); }
+    .status-activa { background-color: var(--steel-blue); }
+    .status-completada { background-color: var(--medium-gray); }
+    body.dark-mode .status-completada { background-color: var(--dark-border); color: var(--dark-text-secondary); }
     /* --- FIN DE NUEVOS ESTILOS --- */
-    
 </style>
 
 <div class="page-header">
@@ -310,8 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Generar HTML principal
             modalBody.innerHTML = generateDetailModalHTML(data);
              
-            // --- ¡NUEVA LÓGICA! ---
-            // Llamar a la función para cargar el historial de reservas
+            // --- Llamar a la función para cargar el historial de reservas ---
             fetchHuespedReservas(huespedId);
         });
     }
@@ -332,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
     }
 
-    // --- ¡NUEVA FUNCIÓN ASÍNCRONA PARA CARGAR RESERVAS! ---
+    // --- ¡FUNCIÓN ACTUALIZADA PARA CARGAR RESERVAS! ---
     async function fetchHuespedReservas(huespedId) {
         const container = document.getElementById('huesped-reservas-container');
         if (!container) return;
@@ -342,8 +330,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error('Error de red al cargar reservas.');
+                // Si la respuesta es 404 o 500, el .json() falla, así que lanzamos error primero
+                throw new Error(`Error de red: ${response.statusText}`);
             }
+            
             const data = await response.json();
 
             if (data.status === 'ok') {
@@ -352,12 +342,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     data.reservas.forEach(res => {
                         html += `
                         <div class="reserva-mini-card">
-                            <div class="reserva-mini-card-info">
-                                <span class="reserva-id">Reserva #${res.id} (${res.tipo})</span>
-                                <span class="reserva-dates">${res.check_in} - ${res.check_out}</span>
+                            <div class="reserva-mini-card-details">
+                                <div class="reserva-mini-card-info">
+                                    <span class="reserva-id">Reserva #${res.id}</span>
+                                    <span class="reserva-dates">${res.check_in} - ${res.check_out}</span>
+                                </div>
+                                <span class="reserva-role-badge role-${res.rol.toLowerCase()}">
+                                    ${res.rol}
+                                </span>
                             </div>
-                            <span class="reserva-mini-card-status status-${res.estado.toLowerCase()}">
-                                ${res.estado}
+                            <span class="reserva-mini-card-status status-${res.estado_class}">
+                                ${res.estado_label}
                             </span>
                         </div>
                         `;
@@ -367,11 +362,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     container.innerHTML = '<p>Este huésped no tiene reservas asociadas.</p>';
                 }
             } else {
-                container.innerHTML = `<p class="text-danger">Error: ${data.message}</p>`;
+                // Error de lógica (ej. 500 pero con JSON)
+                container.innerHTML = `<p style="color: var(--occupied);">Error: ${data.message}</p>`;
             }
         } catch (error) {
+            // Error de red (ej. 404, 500) o JSON inválido
             console.error("Error en fetchHuespedReservas:", error);
-            container.innerHTML = '<p class="text-danger">No se pudo cargar el historial.</p>';
+            container.innerHTML = '<p style="color: var(--occupied);">No se pudo cargar el historial.</p>';
         }
     }
 
@@ -431,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => cardToRemove.remove(), 500);
                     }
                     if(bootstrapConfirmDeleteModal) bootstrapConfirmDeleteModal.hide();
-                    alert(data.message); // O un toast/mensaje global
+                    alert(data.message); 
                 } else {
                     alert(`Error al eliminar: ${data.message}`);
                 }
