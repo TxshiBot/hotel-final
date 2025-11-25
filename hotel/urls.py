@@ -21,6 +21,9 @@ from django.urls import path
 from hotel.views import Dashboard
 from hotel.views import Dashboard
 
+# ---- CONFIGURACION ---- #
+from hotel.views import Configuracion
+
 # ---- HABITACIONES ---- #
 from hotel.views import ListarHabitaciones
 from hotel.views import RegistrarHabitaciones
@@ -109,4 +112,7 @@ urlpatterns = [
     path('productos/eliminar/<int:producto_id>/', EliminarProducto, name='eliminarproducto'),
     path('facturas/marcarpagada/<int:factura_id>/', MarcarFacturaPagada, name='marcarfacturapagada'),
     # ------------------- #
+    
+    # ---- CONFIGURACION ---- #
+    path('configuracion', Configuracion, name='configuracion'),
 ]

@@ -414,6 +414,11 @@
                 <a href="{% url 'listarproductos' %}" class="top-navbar-link {% if request.resolver_math.url_name == 'listarproductos' %}active{% endif %}"></a>
                 <li class="fa-utensils"></li> Minibar
             </li>
+            <li>
+                <a href="{% url 'configuracion' %}" class="top-navbar-link {% if request.resolver_math.url_name == 'configuracion' %}active{% endif %}">
+                    <i class="fas fa-cog"></i> Configuración
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -422,14 +427,12 @@
         <i class="fas fa-exchange-alt"></i>
     </button>
 
-    <!-- Main Content Area (Aquí va el contenido de cada página) -->
     <div class="main-content">
 
     <!-- Script para funciones globales - DEBE IR AQUÍ PARA QUE ESTÉ DISPONIBLE DESDE EL INICIO -->
     <script>
-        // ============================================
+
         // FUNCIÓN: Alternar Tema Oscuro/Claro
-        // ============================================
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
 
@@ -438,9 +441,7 @@
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
 
-        // ============================================
         // FUNCIÓN: Cambiar Layout de Navegación
-        // ============================================
         function toggleLayout() {
             document.body.classList.toggle('layout-top');
 

@@ -65,6 +65,11 @@ def Dashboard(request):
     }
     return render(request, 'dashboard.html', context)
 
+
+def Configuracion(request):
+    return render(request, 'configuracion.html')
+
+
 #region ------ HABITACIONES ------ #
 def ListarHabitaciones(request):
     habitaciones_list = Habitaciones.objects.select_related('tipo').order_by('numero')
